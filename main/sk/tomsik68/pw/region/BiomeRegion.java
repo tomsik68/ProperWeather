@@ -1,10 +1,24 @@
+/*    This file is part of ProperWeather.
+
+    ProperWeather is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    ProperWeather is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with ProperWeather.  If not, see <http://www.gnu.org/licenses/>.*/
 package sk.tomsik68.pw.region;
 
-import java.awt.Rectangle;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Iterator;
+import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -12,6 +26,8 @@ import org.bukkit.Location;
 import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+
+import sk.tomsik68.pw.Util;
 import sk.tomsik68.pw.region.blockiter.BiomeBlockIterator;
 
 public class BiomeRegion extends BaseRegion {
@@ -35,19 +51,18 @@ public class BiomeRegion extends BaseRegion {
         if (!isWorldLoaded())
             return new Player[0];
         Player[] result = new Player[0];
-        for (Player p : getWorld().getPlayers()) {
-            if (contains(p.getLocation())) {
-                Player[] result2 = new Player[result.length + 1];
-                System.arraycopy(result, 0, result2, 0, result.length);
-                result2[result.length] = p;
-                result = result2;
+        List<Player> plr = Util.getPlayers(getWorld());
+        synchronized (plr) {
+            for (Player p : plr) {
+                if (contains(p.getLocation())) {
+                    Player[] result2 = new Player[result.length + 1];
+                    System.arraycopy(result, 0, result2, 0, result.length);
+                    result2[result.length] = p;
+                    result = result2;
+                }
             }
         }
         return result;
-    }
-
-    public Rectangle getBounds() {
-        return null;
     }
 
     public Iterator<Block> iterator() {
@@ -69,11 +84,6 @@ public class BiomeRegion extends BaseRegion {
     }
 
     public String toString() {
-        return "Biome '" + biome.name() + "' in '" + Bukkit.getWorld(world).getName()+"'";
-    }
-
-    @Override
-    public boolean isProbabilityOn() {
-        return false;
+        return "Biome '" + biome.name() + "' in '" + Bukkit.getWorld(world).getName() + "'";
     }
 }

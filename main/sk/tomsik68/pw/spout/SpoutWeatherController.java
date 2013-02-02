@@ -1,18 +1,28 @@
+/*    This file is part of ProperWeather.
+
+    ProperWeather is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    ProperWeather is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with ProperWeather.  If not, see <http://www.gnu.org/licenses/>.*/
 /*     */package sk.tomsik68.pw.spout;
 
-/*     */
-/*     */import org.bukkit.entity.Player;
-/*     */
+import org.bukkit.block.Biome;
+import org.bukkit.entity.Player;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.getspout.spoutapi.SpoutManager;
-/*     */
+import org.getspout.spoutapi.block.SpoutWeather;
 import org.getspout.spoutapi.player.SpoutPlayer;
-/*     */
-import sk.tomsik68.pw.api.WeatherController;
-/*     */
+
 import sk.tomsik68.pw.impl.DefaultWeatherController;
-/*     */
 import sk.tomsik68.pw.plugin.ProperWeather;
-/*     */
 import sk.tomsik68.pw.region.Region;
 
 /*     */
@@ -30,6 +40,7 @@ import sk.tomsik68.pw.region.Region;
     /*     */private boolean sun;
     /*     */private boolean stars;
     /*     */private int cloudsHeight;
+    private boolean snowing;
 
     /*     */
     /*     */public SpoutWeatherController(Region region1)
@@ -53,6 +64,7 @@ import sk.tomsik68.pw.region.Region;
         /* 47 */this(defaultWeatherController.getRegion());
         /*     */
         /* 49 */setRaining(defaultWeatherController.isRaining());
+                elements = defaultWeatherController.getActiveElements();
         /*     */}
 
     /*     */
@@ -268,7 +280,7 @@ import sk.tomsik68.pw.region.Region;
     /*     */
     /*     */public void setMoon(boolean moon1)
     /*     */{
-        /* 243 */moon1 = moon1;
+        /* 243 */this.moon = moon1;
         /* 244 */Player[] players = region.getPlayers();
         /* 245 */for (Player p : players) {
             /* 246 */SpoutPlayer player = SpoutManager.getPlayer(p);
@@ -286,7 +298,7 @@ import sk.tomsik68.pw.region.Region;
     /*     */
     /*     */public void setSun(boolean sun1)
     /*     */{
-        /* 264 */sun1 = sun1;
+        /* 264 */sun = sun1;
         /* 265 */Player[] players = region.getPlayers();
         /* 266 */for (Player p : players) {
             /* 267 */SpoutPlayer player = SpoutManager.getPlayer(p);
@@ -357,6 +369,24 @@ import sk.tomsik68.pw.region.Region;
         /* 328 */setSun(sun);
         /* 329 */setSunSize(sunSize);
         /*     */}
+    @Override
+    public void update(Player p) {
+        super.update(p);
+        if (!p.hasMetadata("pw.snowing") || (p.getMetadata("pw.snowing").get(0).asBoolean() != isRaining())) {
+            SpoutPlayer sp = SpoutManager.getPlayer(p);
+            p.setMetadata("pw.snowing", new FixedMetadataValue(ProperWeather.instance(), isSnowing()));
+            
+        }
+        
+    }
+    @Override
+    public void setSnowing(boolean snow) {
+        this.snowing = snow;
+    }
+    @Override
+    public boolean isSnowing() {
+        return snowing;
+    }
     /*     */
 }
 

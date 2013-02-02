@@ -1,3 +1,17 @@
+/*    This file is part of ProperWeather.
+
+    ProperWeather is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    ProperWeather is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with ProperWeather.  If not, see <http://www.gnu.org/licenses/>.*/
 package sk.tomsik68.pw.impl;
 
 import java.io.File;
@@ -13,10 +27,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
+
 import sk.tomsik68.pw.RegionType;
 import sk.tomsik68.pw.api.RegionManager;
 import sk.tomsik68.pw.plugin.ProperWeather;
@@ -36,6 +52,7 @@ public class SimpleRegionManager implements RegionManager {
 
     public int addRegion(Region region) {
         int r = lastRegionID++;
+        
         while (regions.containsKey(Integer.valueOf(r))) {
             r++;
         }
@@ -142,24 +159,23 @@ public class SimpleRegionManager implements RegionManager {
                 ois.close();
                 HashMap<UUID, ArrayList<Integer>> worldregs = new HashMap<UUID, ArrayList<Integer>>();
                 for (Region region : regs) {
-                    if(region.getWorldId() == null)
+                    if(region.getWorldId() == null || region.getWorld() == null)
                         continue;
-                    regions.put(Integer.valueOf(region.getUID()), region);
+                    regions.put(region.getUID(), region);
                     if (!worldregs.containsKey(region.getWorldId())) {
                         worldregs.put(region.getWorldId(), new ArrayList<Integer>());
                     }
                     ArrayList<Integer> worldRegionss = worldregs.get(region.getWorldId());
-                    worldRegionss.add(Integer.valueOf(region.getUID()));
+                    worldRegionss.add(region.getUID());
                     worldregs.put(region.getWorldId(), worldRegionss);
+                    lastRegionID = region.getUID();
                 }
-                if (regs.size() > 0)
-                    lastRegionID = regs.get(regs.size() - 1).getUID();
-                else
+                if (regions.size() == 0)
                     lastRegionID = 0;
                 for (Entry<UUID, ArrayList<Integer>> entry : worldregs.entrySet()) {
                     worldRegions.put(entry.getKey(), entry.getValue().toArray(new Integer[0]));
                 }
-                System.out.println("[ProperWeather] Loaded " + regions.size() + " regions.");
+                System.out.println("[ProperWeather] Dropped regions: "+(regs.size() - regions.size()));
             } catch (Exception e) {
                 e.printStackTrace();
             }

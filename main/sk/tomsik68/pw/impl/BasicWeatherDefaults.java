@@ -1,49 +1,68 @@
-package sk.tomsik68.pw.impl;
+/*    This file is part of ProperWeather.
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+    ProperWeather is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    ProperWeather is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with ProperWeather.  If not, see <http://www.gnu.org/licenses/>.*/package sk.tomsik68.pw.impl;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import sk.tomsik68.pw.api.WeatherDefaults;
+import sk.tomsik68.pw.config.WeatherDescription;
 
 public class BasicWeatherDefaults implements WeatherDefaults {
-	private final int maxDuration;
-	private final int probability;
-	private final int randTimeProbability;
-	private final String[] cantBeAfter;
+    private final int maxDuration;
+    private final int probability;
+    private final int randTimeProbability;
+    private final String[] cantBeAfter;
+    private final String[] activeElements;
+    private final Set<String> biomes;
 
-	public BasicWeatherDefaults(int maxDuration1, int probability1,
-			int randTimeProbability1, String[] cantBeAfter1) {
-		this.maxDuration = maxDuration1;
-		this.probability = probability1;
-		this.randTimeProbability = randTimeProbability1;
-		this.cantBeAfter = cantBeAfter1;
-	}
+    public BasicWeatherDefaults(int maxDuration1, int probability1, int randTimeProbability1, String[] cantBeAfter1, String... elements) {
+        this(maxDuration1, probability1, randTimeProbability1, cantBeAfter1, new HashSet<String>(WeatherDescription.allBiomes), elements);
+    }
 
-	public int getDefMaxDuration() {
-		return this.maxDuration;
-	}
+    public BasicWeatherDefaults(int maxDuration1, int probability1, int randTimeProbability1, String[] cantBeAfter1, Set<String> allowedBiomes, String... elements) {
+        this.maxDuration = maxDuration1;
+        this.probability = probability1;
+        this.randTimeProbability = randTimeProbability1;
+        this.cantBeAfter = cantBeAfter1;
+        this.activeElements = elements;
+        biomes = allowedBiomes;
+    }
 
-	public String[] getDefCantBeAfter() {
-		return this.cantBeAfter;
-	}
+    public int getDefMaxDuration() {
+        return this.maxDuration;
+    }
 
-	public int getDefRandomTimeProbability() {
-		return this.randTimeProbability;
-	}
+    public String[] getDefCantBeAfter() {
+        return this.cantBeAfter;
+    }
 
-	public int getDefProbability() {
-		return this.probability;
-	}
+    public int getDefRandomTimeProbability() {
+        return this.randTimeProbability;
+    }
+
+    public int getDefProbability() {
+        return this.probability;
+    }
 
     @Override
-    public Map<String, Object> serialize() {
-        HashMap<String,Object> result = new HashMap<String,Object>();
-        result.put("probability", probability);
-        result.put("max-duration", maxDuration);
-        result.put("rand-time-probability", randTimeProbability);
-        result.put("cant-be-after", Arrays.asList(cantBeAfter));
-        result.put("customs", Arrays.asList(""));
-        return result;
+    public String[] getDefElements() {
+        return activeElements;
+    }
+
+    @Override
+    public Set<String> getAllowedBiomes() {
+        return biomes;
     }
 }

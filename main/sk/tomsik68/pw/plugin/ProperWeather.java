@@ -1,8 +1,24 @@
+/*    This file is part of ProperWeather.
+
+    ProperWeather is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    ProperWeather is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with ProperWeather.  If not, see <http://www.gnu.org/licenses/>.*/
 package sk.tomsik68.pw.plugin;
 
 import java.awt.Color;
 import java.io.File;
+import java.lang.instrument.Instrumentation;
 import java.util.Set;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -10,6 +26,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import sk.tomsik68.bukkitbp.v1.PackageResolver;
 import sk.tomsik68.permsguru.EPermissions;
 import sk.tomsik68.pw.WeatherInfoManager;
 import sk.tomsik68.pw.WeatherManager;
@@ -30,6 +47,7 @@ import sk.tomsik68.pw.transl.Translator;
 public class ProperWeather extends JavaPlugin {
     public static boolean isSpout = true;
     public static final Color defaultSkyColor = new Color(9742079, false);
+    public static final int TASK_PERIOD = 88;
     private PWWeatherListener weatherListener;
     private WeatherSystem weatherSystem;
     private final PWServerListener serverListener;
@@ -44,28 +62,46 @@ public class ProperWeather extends JavaPlugin {
     private int weatherUpdateTask;
     private int regionUpdateTask;
     private final BiomeMapperManager mapperManager = new DefaultBiomeMapperManager();
-
     public ProperWeather() {
         serverListener = new PWServerListener();
     }
 
     public void onDisable() {
-        weatherSystem.deInit();
-        getServer().getScheduler().cancelTask(weatherUpdateTask);
-        getServer().getScheduler().cancelTask(regionUpdateTask);
-        System.out.println("ProperWeather disabled");
+        // maybe we're disabling because of an error.
+        if (weatherSystem != null) {
+            System.out.println("[ProperWeather] Killing bad projectiles...");
+            int c = ProjectileManager.size();
+            ProjectileManager.killAll();
+            System.out.println("[ProperWeather] Killed " + c + " projectiles ;)");
+            weatherSystem.deInit();
+            getServer().getScheduler().cancelTask(weatherUpdateTask);
+            getServer().getScheduler().cancelTask(regionUpdateTask);
+            System.out.println("ProperWeather disabled");
+        }
     }
 
     public void onEnable() {
+        try {
+            PackageResolver.init(Bukkit.class.getClassLoader());
+            CompatibilityChecker.test();
+            System.out.println("[ProperWeather] Bukkit compatibility test done. ");
+        } catch (Exception e) {
+            //DEBUG
+            e.printStackTrace();
+            System.out.println("[ProperWeather] Incompatible CraftBukkit version. Plugin will now shutdown to prevent further issues.");
+            System.out.println("[ProperWeather] Error: " + e.getMessage());
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
         File dataFolder = new File("plugins", getDescription().getName());
         System.out.println("Enabling ProperWeather...");
         if (!dataFolder.exists())
             dataFolder.mkdir();
         wim.init(dataFolder);
-
-        if (!new File(dataFolder, "config.yml").exists())
+        if (!new File(dataFolder, "config.yml").exists()) {
             ConfigFile.generateDefaultConfig(new File(getDataFolder(), "config.yml"));
-        config = new ConfigFile(YamlConfiguration.loadConfiguration(new File(getDataFolder(), "config.yml")));
+        }
+        config = new ConfigFile(getConfig());
         permissions = config.getPerms();
         color = config.getColorTheme()[0];
         factColor = config.getColorTheme()[1];
@@ -84,7 +120,7 @@ public class ProperWeather extends JavaPlugin {
         registerAllEvents(PWPlayerListener.class, playerListener);
         registerAllEvents(PWServerListener.class, serverListener);
         registerAllEvents(PWWeatherListener.class, weatherListener);
-        weatherUpdateTask = getServer().getScheduler().scheduleAsyncRepeatingTask(this, new WeatherUpdateTask(weatherSystem), 88L, 88L);
+        weatherUpdateTask = getServer().getScheduler().runTaskTimerAsynchronously(this, new WeatherUpdateTask(weatherSystem), 88L, TASK_PERIOD).getTaskId();
         regionUpdateTask = getServer().getScheduler().scheduleSyncRepeatingTask(this, new RegionUpdateTask(weatherSystem.getRegionManager()), 88L, 88L);
         if ((weatherUpdateTask == -1) || (regionUpdateTask == -1)) {
             System.out.println(ChatColor.GREEN + "[ProperWeather] FATAL ERROR: Task scheduling failed! Plugin will now shut down itself");
@@ -102,11 +138,14 @@ public class ProperWeather extends JavaPlugin {
         } catch (Exception e) {
             Translator.init(new File(dataFolder, config.getTranslationFilePath()).getAbsolutePath());
         }
-        System.out.println("ProperWeather " + getDescription().getVersion() + " is enabled");
+
         weatherSystem.init();
         if (config.shouldMapBiomes()) {
+            // initiate a complete scan...
+            mapperManager.completeScan();
             getServer().getPluginManager().registerEvents(mapperManager, this);
         }
+        System.out.println("ProperWeather " + getDescription().getVersion() + " is enabled");
     }
 
     public static ProperWeather instance() {
@@ -137,7 +176,7 @@ public class ProperWeather extends JavaPlugin {
             } catch (ClassNotFoundException cnfe) {
                 sm = null;
                 System.out.println("[ProperWeather] Spout not detected!");
-                System.out.println("[ProperWeather] It's recommended that you install spout on your server if you're using custom weathers(all weathers except Rain,Storm and Clear). ALL CAN ALSO WORK WITHOUT SPOUT, BUT CERTAIN FEATURES WILL BE DISABLED.");
+                // System.out.println("[ProperWeather] It's recommended that you install spout on your server if you're using custom weathers(all weathers except Rain,Storm and Clear). ALL CAN ALSO WORK WITHOUT SPOUT, BUT CERTAIN FEATURES WILL BE DISABLED.");
                 isSpout = false;
                 weatherSystem.changeControllers(isSpout);
             }

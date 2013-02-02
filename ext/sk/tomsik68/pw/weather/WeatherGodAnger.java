@@ -14,50 +14,70 @@
     along with ProperWeather.  If not, see <http://www.gnu.org/licenses/>.*/
 package sk.tomsik68.pw.weather;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
+import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Creeper;
+import org.bukkit.entity.Monster;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Skeleton;
+import org.bukkit.entity.Spider;
+import org.bukkit.entity.Zombie;
 
 import sk.tomsik68.pw.Defaults;
 import sk.tomsik68.pw.api.Weather;
 import sk.tomsik68.pw.api.WeatherController;
-import sk.tomsik68.pw.api.WeatherDefaults;
 import sk.tomsik68.pw.config.WeatherDescription;
 import sk.tomsik68.pw.impl.BasicWeatherDefaults;
 import sk.tomsik68.pw.region.Region;
 
-public class WeatherStorm extends Weather {
+public class WeatherGodAnger extends Weather {
     @Defaults
-    public static final WeatherDefaults def = new BasicWeatherDefaults(24000, 45, 45, new String[] { "meteorstorm", "storm", "itemrain" });
-
-    public WeatherStorm(WeatherDescription wd1, Integer uid) {
-        super(wd1, uid);
+    public static final BasicWeatherDefaults def = new BasicWeatherDefaults(36000, 35, 55, new String[] {});
+    private final Random rand = new Random();
+    private final List<Class<? extends Monster>> monsters = Arrays.asList(Zombie.class,Skeleton.class,Creeper.class,Spider.class);
+    public WeatherGodAnger(WeatherDescription wd1, Integer region) {
+        super(wd1, region);
     }
 
+    @Override
     public void initWeather() {
         getController().clear();
-        getController().setRaining(true);
         getController().allowThundering();
+        getController().setRaining(true);
     }
 
+    @Override
     public void onRandomTime() {
         final WeatherController controller = getController();
+        final World world = controller.getRegion().getWorld();
         final Region region = controller.getRegion();
-        final Random rand = new Random();
         for (Block block : region) {
             if (block == null)
                 continue;
-            if (block.getType() == Material.FIRE && rand.nextInt(10) == 7) {
-                BlockState state = block.getState();
-                state.setType(Material.AIR);
-                region.updateBlockState(state);
-            }
             if (rand.nextInt(100000) != 0 || block.getType() == Material.SAND)
                 continue;
-            controller.strike(block.getLocation());
-
+            int r = rand.nextInt(10);
+            if (r == 5) {
+                controller.strike(block.getLocation());
+                world.createExplosion(block.getLocation(), rand.nextFloat() * 4);
+            }else if(r == 7){
+                region.spawnEntity(monsters.get(rand.nextInt(monsters.size())), block.getRelative(BlockFace.UP,3).getLocation(), null);
+            }
         }
+        Player[] players = region.getPlayers();
+        for (Player player : players) {
+            if (rand.nextInt(137) == 0x7F) {
+                getController().strikeEntity(player);
+                player.damage(player.getHealth() - 1);
+            }
+        }
+
     }
+
 }

@@ -1,7 +1,22 @@
+/*    This file is part of ProperWeather.
+
+    ProperWeather is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    ProperWeather is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with ProperWeather.  If not, see <http://www.gnu.org/licenses/>.*/
 package sk.tomsik68.pw.command;
 
 import java.util.Collection;
 import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -29,15 +44,15 @@ public class CommandHandler implements ICommandHandler {
             return;
         }
         if (!WeatherManager.isRegistered(weatherName)) {
-            sender.sendMessage(ChatColor.RED + "[ProperWeather]" + Translator.instance.translate("error.nofound.weather", new Object[] { weatherName }));
+            sender.sendMessage(ChatColor.RED + "[ProperWeather]" + Translator.translateString("error.nofound.weather", new Object[] { weatherName }));
             return;
         }
         if (Bukkit.getServer().getWorld(worldName) == null) {
-            sender.sendMessage(ChatColor.RED + "[ProperWeather]" + Translator.instance.translate("error.nofound.world", new Object[] { worldName }));
+            sender.sendMessage(ChatColor.RED + "[ProperWeather]" + Translator.translateString("error.nofound.world", new Object[] { worldName }));
             return;
         }
         weatherSystem.stopAtWeather(worldName, weatherName);
-        sender.sendMessage(ProperWeather.color + "[ProperWeather]" + Translator.instance.translate("notify.stopped", new Object[] { weatherName, worldName }));
+        sender.sendMessage(ProperWeather.color + "[ProperWeather]" + Translator.translateString("notify.stopped", new Object[] { weatherName, worldName }));
     }
 
     public void run(CommandSender sender, String worldName) {
@@ -46,7 +61,7 @@ public class CommandHandler implements ICommandHandler {
             return;
         }
         if (Bukkit.getServer().getWorld(worldName) == null) {
-            sender.sendMessage(ChatColor.RED + "[ProperWeather]" + Translator.instance.translate("error.nofound.world", new Object[] { worldName }));
+            sender.sendMessage(ChatColor.RED + "[ProperWeather]" + Translator.translateString("error.nofound.world", new Object[] { worldName }));
             return;
         }
         weatherSystem.runWeather(worldName);
@@ -80,7 +95,7 @@ public class CommandHandler implements ICommandHandler {
         }
         Collection<String> weathers = weatherSystem.getWeatherList();
         if ((weathers == null) || (weathers.isEmpty())) {
-            sender.sendMessage(ProperWeather.color + "[ProperWeather]" + Translator.instance.translate("notify.noweathers", new Object[] { "" }));
+            sender.sendMessage(ProperWeather.color + "[ProperWeather]" + Translator.translateString("notify.noweathers"));
         } else {
             StringBuilder sb = new StringBuilder();
             for (String name : weathers) {
@@ -88,16 +103,16 @@ public class CommandHandler implements ICommandHandler {
                 sb = sb.append(name);
                 sb = sb.append(ProperWeather.color).append(",");
             }
-            sender.sendMessage(ProperWeather.color + "[ProperWeather]" + Translator.instance.translate("notify.weathers", new Object[] { "" }));
+            sender.sendMessage(ProperWeather.color + "[ProperWeather]" + Translator.translateString("notify.weathers"));
             sender.sendMessage(sb.deleteCharAt(sb.length() - 1).toString());
         }
     }
 
     public void disable(CommandSender sender, String worldName) {
-        if (!verifyPermission(sender, "pw.disable"))
+        if (!verifyPermission(sender, "pw.off") && !verifyPermission(sender, "pw.disable"))
             return;
         weatherSystem.unHook(worldName);
-        sender.sendMessage(ProperWeather.color + "[ProperWeather]" + Translator.instance.translate("notify.unhooked", new Object[] { worldName }));
+        sender.sendMessage(ProperWeather.color + "[ProperWeather]" + Translator.translateString("notify.unhooked", new Object[] { worldName }));
     }
 
     public boolean verifyPermission(CommandSender sender, String p) {
@@ -115,17 +130,17 @@ public class CommandHandler implements ICommandHandler {
     }
 
     public void sendPermissionInfo(CommandSender sender) {
-        sender.sendMessage(ProperWeather.color + Translator.instance.translate("notify.permissionsys", new Object[] { ProperWeather.instance().permissions.name() }));
-        if (verifyPermission(sender, "pw.perm.check")) {
-            sender.sendMessage(formPNMessage(sender, "[ALL]"));
-            sender.sendMessage(formPNMessage(sender, "/pw"));
-            sender.sendMessage(formPNMessage(sender, "/pw stopat"));
-            sender.sendMessage(formPNMessage(sender, "/pw run"));
-            sender.sendMessage(formPNMessage(sender, "/pw off"));
-            sender.sendMessage(formPNMessage(sender, "/pw perms"));
-            sender.sendMessage(formPNMessage(sender, "/pw sit"));
-            sender.sendMessage(formPNMessage(sender, "/pw rgt"));
-        }
+        sender.sendMessage(ProperWeather.color + Translator.translateString("notify.permissionsys", new Object[] { ProperWeather.instance().permissions.name() }));
+        sender.sendMessage(formPNMessage(sender, "pw.*"));
+        sender.sendMessage(formPNMessage(sender, "pw.pw"));
+        sender.sendMessage(formPNMessage(sender, "pw.stopat"));
+        sender.sendMessage(formPNMessage(sender, "pw.run"));
+        sender.sendMessage(formPNMessage(sender, "pw.off"));
+        sender.sendMessage(formPNMessage(sender, "pw.conf"));
+        sender.sendMessage(formPNMessage(sender, "pw.sit"));
+        sender.sendMessage(formPNMessage(sender, "pw.rgt"));
+        sender.sendMessage(formPNMessage(sender, "pw.reload"));
+        sender.sendMessage(formPNMessage(sender, "pw.im"));
     }
 
     private String formPNMessage(CommandSender sender, String node) {
@@ -136,27 +151,31 @@ public class CommandHandler implements ICommandHandler {
 
     public void reload(CommandSender sender) {
         if (verifyPermission(sender, "pw.reload")) {
-            sender.sendMessage(ProperWeather.color + "[ProperWeather]" + Translator.instance.translate("notify.reload", new Object[] { "" }));
+            sender.sendMessage(ProperWeather.color + "[ProperWeather]" + Translator.translateString("notify.reload"));
             ProperWeather.instance().reload();
-            sender.sendMessage(ProperWeather.color + "[ProperWeather]" + Translator.instance.translate("notify.reload.finish", new Object[] { "" }));
+            sender.sendMessage(ProperWeather.color + "[ProperWeather]" + Translator.translateString("notify.reload.finish"));
         } else {
             sender.sendMessage(ChatColor.RED + "[ProperWeather]" + Translator.translateString("notify.noperm"));
         }
     }
 
     public void im(CommandSender sender) {
+        if (!verifyPermission(sender, "pw.im")) {
+            sender.sendMessage(ChatColor.RED + "[ProperWeather]" + Translator.translateString("notify.noperm"));
+            return;
+        }
         MVInteraction mv = MVInteraction.getInstance();
         if (mv.setup(sender.getServer())) {
-            sender.sendMessage(ProperWeather.color + "[ProperWeather]" + Translator.instance.translate("notify.mv.import", new Object[] { "" }));
+            sender.sendMessage(ProperWeather.color + "[ProperWeather]" + Translator.translateString("notify.mv.import"));
             List<World> worlds = MVInteraction.getInstance().getControlledWorlds();
             for (World world : worlds) {
                 boolean canEverChange = mv.isWeatherOn(world.getName());
                 if (!canEverChange)
                     weatherSystem.stopAtWeather(world.getName(), "clear");
             }
-            sender.sendMessage(ProperWeather.color + "[ProperWeather]" + Translator.instance.translate("notify.mv.import.finish", new Object[] { "" }));
+            sender.sendMessage(ProperWeather.color + "[ProperWeather]" + Translator.translateString("notify.mv.import.finish"));
         } else {
-            sender.sendMessage(ProperWeather.color + "[ProperWeather]" + Translator.instance.translate("error.mv", new Object[] { "" }));
+            sender.sendMessage(ProperWeather.color + "[ProperWeather]" + Translator.translateString("error.mv"));
         }
     }
 
@@ -166,8 +185,20 @@ public class CommandHandler implements ICommandHandler {
             return;
         }
         try {
-            for (Region region : weatherSystem.getRegionManager().getAllRegions())
-                sender.sendMessage(region.toString() + " : " + weatherSystem.getCurrentSituation(region.getUID()).getCurrentWeather());
+            if (!(sender instanceof Player)) {
+                for (Region region : weatherSystem.getRegionManager().getAllRegions()) {
+                    if (region.getWorld() != null && region.getWeatherData() != null && region.getWeatherData().getCurrentWeather() != null)
+                        sender.sendMessage(region.toString() + " : " + region.getWeatherData().getCurrentWeather().getName());
+                }
+            } else {
+                if (!weatherSystem.isHooked(((Player) sender).getWorld())) {
+                    sender.sendMessage(ChatColor.RED + "[ProperWeather]" + Translator.translateString("error.noregion"));
+                    return;
+                }
+                Region region = weatherSystem.getRegionManager().getRegionAt(((Player) sender).getLocation());
+                if (region.getWorld() != null && region.getWeatherData() != null && region.getWeatherData().getCurrentWeather() != null)
+                    sender.sendMessage(ProperWeather.color + "[ProperWeather]" + region.toString() + " : " + region.getWeatherData().getCurrentWeather().getName() + " for next " + region.getWeatherData().getDuration() + " ticks.");
+            }
         } catch (Exception e) {
             e.printStackTrace();
             sender.sendMessage(ChatColor.RED + "[ProperWeather]" + Translator.translateString("error.invalidsit"));
@@ -186,5 +217,53 @@ public class CommandHandler implements ICommandHandler {
             return;
         }
         ProperWeather.instance().getConfigFile().setRegionType(world, type);
+        sender.sendMessage(ProperWeather.color + "[ProperWeather] " + Translator.translateString("notify.region-type", world, type));
+    }
+
+    @Override
+    public void sendConfigProperty(CommandSender sender, String prop) {
+        if (!verifyPermission(sender, "pw.conf")) {
+            sender.sendMessage(ChatColor.RED + "[ProperWeather]" + Translator.translateString("notify.noperm"));
+            return;
+        }
+        sender.sendMessage(ProperWeather.color + "[ProperWeather-config] '" + prop + "': '" + ProperWeather.instance().getConfig().getString(prop) + "'");
+    }
+
+    @Override
+    public void inGameConfig(CommandSender sender, String prop, String val) {
+        if (!verifyPermission(sender, "pw.conf")) {
+            sender.sendMessage(ChatColor.RED + "[ProperWeather]" + Translator.translateString("notify.noperm"));
+            return;
+        }
+        if (!ProperWeather.instance().getConfig().getKeys(false).contains(prop)) {
+            sender.sendMessage(ChatColor.RED + "[ProperWeather]" + Translator.translateString("warning.noproperty", prop));
+        }
+        Object obj = parse(val);
+        ProperWeather.instance().getConfig().set(prop, obj);
+        ProperWeather.instance().saveConfig();
+        sender.sendMessage(ProperWeather.color + "[ProperWeather-config] '" + prop + "' = '" + val + "'");
+    }
+
+    private Object parse(String val) {
+        if (isBoolean(val)) {
+            return val.equalsIgnoreCase("true");
+        } else if (isDouble(val)) {
+            return Double.parseDouble(val);
+        }
+        return val;
+
+    }
+
+    private boolean isDouble(String s) {
+        try {
+            Double.parseDouble(s);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private boolean isBoolean(String val) {
+        return val.equalsIgnoreCase("true") || val.equalsIgnoreCase("false");
     }
 }

@@ -2,10 +2,9 @@ name: ProperWeather
 description: Very powerful weather controlling plugin
 main: sk.tomsik68.pw.plugin.ProperWeather
 author: Tomsik68 <tomsik68@gmail.com>
-version: 0.95b
-load: STARTUP
+version: 1.0.3
 commands:
     pw:
-        description: Controls ProperWeather.
+        description: /pw for more info ;)
         usage: /pw <sub-command> <parameters>
         permission: pw.pw

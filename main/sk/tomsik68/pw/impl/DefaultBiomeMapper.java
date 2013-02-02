@@ -1,3 +1,17 @@
+/*    This file is part of ProperWeather.
+
+    ProperWeather is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    ProperWeather is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with ProperWeather.  If not, see <http://www.gnu.org/licenses/>.*/
 package sk.tomsik68.pw.impl;
 
 import java.util.ArrayList;
@@ -14,6 +28,13 @@ public class DefaultBiomeMapper implements BiomeMapper {
     private HashMap<Biome, ArrayList<Long>> blocks = new HashMap<Biome, ArrayList<Long>>();
     private HashSet<Long> scannedChunks = new HashSet<Long>();
 
+    public DefaultBiomeMapper() {
+        // prevents some nulls
+        for (Biome biome : Biome.values()) {
+            blocks.put(biome, new ArrayList<Long>());
+        }
+    }
+
     @Override
     public boolean isScanned(int x, int z) {
         return scannedChunks.contains(compress(x, z));
@@ -21,8 +42,10 @@ public class DefaultBiomeMapper implements BiomeMapper {
 
     @Override
     public void setScanned(int x, int z) {
-        if (!scannedChunks.contains(compress(x, z)))
-            scannedChunks.add(compress(x, z));
+        synchronized (scannedChunks) {
+            if (!scannedChunks.contains(compress(x, z)))
+                scannedChunks.add(compress(x, z));
+        }
     }
 
     @Override
@@ -35,7 +58,9 @@ public class DefaultBiomeMapper implements BiomeMapper {
                 int xx = 16 * chunk.getX() + x;
                 int zz = 16 * chunk.getZ() + z;
                 list.add(compress(xx, zz));
-                blocks.put(chunk.getBlock(x, z, 0).getBiome(), list);
+                synchronized (blocks) {
+                    blocks.put(chunk.getBlock(x, z, 0).getBiome(), list);
+                }
             }
         setScanned(chunk.getX(), chunk.getZ());
     }

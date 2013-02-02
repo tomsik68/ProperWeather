@@ -1,19 +1,38 @@
+/*    This file is part of ProperWeather.
+
+    ProperWeather is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    ProperWeather is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with ProperWeather.  If not, see <http://www.gnu.org/licenses/>.*/
 package sk.tomsik68.pw.command;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.libs.joptsimple.OptionParser;
+import org.bukkit.craftbukkit.libs.joptsimple.OptionSet;
 import org.bukkit.entity.Player;
+
 import sk.tomsik68.pw.plugin.ProperWeather;
 
 public class PWCommand implements CommandExecutor {
     private final Map<Pattern, CommandExecutor> executors = new HashMap<Pattern, CommandExecutor>();
 
     public PWCommand(final ICommandHandler handler) {
+        
         RunnableCommand help = new RunnableCommand() {
             @Override
             public void run() {
@@ -97,9 +116,21 @@ public class PWCommand implements CommandExecutor {
                 handler.setRegionType(sender, args[1], args[2]);
             }
         });
+        executors.put(Pattern.compile("conf\\s.*"), new RunnableCommand() {
+            @Override
+            public void run() {
+                if (args.length == 3) {
+                    sender.sendMessage("2 args");
+                    handler.inGameConfig(sender, args[1], args[2]);
+                } else if (args.length == 2) {
+                    handler.sendConfigProperty(sender, args[1]);
+                }
+            }
+        });
     }
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        
         StringBuilder sb = new StringBuilder();
         if ((args != null) && (args.length > 0)) {
             for (String arg : args) {
@@ -127,7 +158,7 @@ public class PWCommand implements CommandExecutor {
         sender.sendMessage(formMessage("pw stopat <weather> {world} - Changes weather and stops it in specified or player's world", console));
         sender.sendMessage(formMessage("pw run {world} - Starts changing weather in specified or player's world by ProperWeather's weather system.", console));
         sender.sendMessage(formMessage("pw v - Displays release information about this ProperWeather version.", console));
-        sender.sendMessage(formMessage("pw sit - Displays situation in all regions(fills up your chat window)", console));
+        sender.sendMessage(formMessage("pw sit - Displays situation in your region(player) or all regions(console)", console));
         sender.sendMessage(formMessage("pw rgt <world> <type> - Sets region type of specified world to type. You always have to type world. Possible types are: BIOME,WORLD", console));
         sender.sendMessage(formMessage("pw perms - Tells you what you can do.", console));
         sender.sendMessage(formMessage("pw im - Multi-Verse data import.", console));

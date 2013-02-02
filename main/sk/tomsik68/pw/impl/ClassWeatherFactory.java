@@ -1,8 +1,20 @@
+/*    This file is part of ProperWeather.
+
+    ProperWeather is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    ProperWeather is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with ProperWeather.  If not, see <http://www.gnu.org/licenses/>.*/
 package sk.tomsik68.pw.impl;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import sk.tomsik68.pw.Defaults;
+import sk.tomsik68.pw.Util;
 import sk.tomsik68.pw.api.Weather;
 import sk.tomsik68.pw.api.WeatherDefaults;
 import sk.tomsik68.pw.api.WeatherFactory;
@@ -19,7 +31,7 @@ public class ClassWeatherFactory<W extends Weather> implements WeatherFactory<W>
     public W create(Object[] args) {
         if ((args != null) && (args.length >= 1) && (args[0] != null) && ((args[0] instanceof Integer))) {
             try {
-                return (W) clazz.getConstructor(new Class[] { WeatherDescription.class, Integer.class }).newInstance(new Object[] { ProperWeather.instance().getWeatherDescription(clazz.getSimpleName().replace("Weather", "")), args[0] });
+                return clazz.getConstructor(new Class[] { WeatherDescription.class, Integer.class }).newInstance(new Object[] { ProperWeather.instance().getWeatherDescription(clazz.getSimpleName().replace("Weather", "")), args[0] });
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -28,26 +40,10 @@ public class ClassWeatherFactory<W extends Weather> implements WeatherFactory<W>
     }
 
     public WeatherDefaults getDefaults() {
-        Field[] fields = clazz.getDeclaredFields();
-        for (Field field : fields) {
-            if (field.isAnnotationPresent(Defaults.class)) {
-                field.setAccessible(true);
-                try {
-                    return (WeatherDefaults) field.get(clazz.getConstructor(new Class[] { WeatherDescription.class, Integer.class }).newInstance(new Object[] { null, Integer.valueOf(-1) }));
-                } catch (IllegalArgumentException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                } catch (InstantiationException e) {
-                    e.printStackTrace();
-                } catch (SecurityException e) {
-                    e.printStackTrace();
-                } catch (InvocationTargetException e) {
-                    e.printStackTrace();
-                } catch (NoSuchMethodException e) {
-                    e.printStackTrace();
-                }
-            }
+        try{
+            return Util.getWeatherDefaults(clazz);
+        }catch (Exception e) {
+            
         }
         return null;
     }

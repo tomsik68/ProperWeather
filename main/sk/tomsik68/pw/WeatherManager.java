@@ -1,3 +1,17 @@
+/*    This file is part of ProperWeather.
+
+    ProperWeather is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    ProperWeather is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with ProperWeather.  If not, see <http://www.gnu.org/licenses/>.*/
 package sk.tomsik68.pw;
 
 import java.util.ArrayList;
@@ -14,19 +28,23 @@ import sk.tomsik68.pw.impl.ClassWeatherFactory;
 import sk.tomsik68.pw.region.Region;
 import sk.tomsik68.pw.weather.WeatherArrowRain;
 import sk.tomsik68.pw.weather.WeatherClear;
+import sk.tomsik68.pw.weather.WeatherGodAnger;
 import sk.tomsik68.pw.weather.WeatherHot;
 import sk.tomsik68.pw.weather.WeatherItemRain;
 import sk.tomsik68.pw.weather.WeatherMeteorStorm;
 import sk.tomsik68.pw.weather.WeatherRain;
 import sk.tomsik68.pw.weather.WeatherSandStorm;
 import sk.tomsik68.pw.weather.WeatherStorm;
+import sk.tomsik68.pw.weather.WeatherWindy;
 
 public class WeatherManager {
     private static final Object lock = new Object();
     private static final HashMap<String, WeatherFactory<?>> factorys = new HashMap<String, WeatherFactory<?>>();
-
+    /** Registers weather with specified class to the system. Weather will be immediately made available to user.
+     * 
+     * @param clazz
+     */
     public static <T extends Weather> void register(Class<T> clazz) {
-        System.out.println("Registering "+clazz.getSimpleName());
         synchronized (lock) {
             if (!factorys.containsKey(clazz.getSimpleName().replace("Weather", "").toLowerCase()))
                 registerWeather(clazz.getSimpleName().replace("Weather", "").toLowerCase(), new ClassWeatherFactory<T>(clazz));
@@ -34,7 +52,7 @@ public class WeatherManager {
     }
 
     public static Weather getWeather(int id, int region) {
-        WeatherFactory<?> wf = (WeatherFactory<?>) new ArrayList<WeatherFactory<?>>(factorys.values()).get(id);
+        WeatherFactory<?> wf = new ArrayList<WeatherFactory<?>>(factorys.values()).get(id);
         return wf.create(new Object[] { Integer.valueOf(region) });
     }
 
@@ -57,7 +75,7 @@ public class WeatherManager {
     }
 
     public static String getWeatherName(int uid) {
-        return (String) factorys.keySet().toArray()[uid];
+        return factorys.keySet().toArray()[uid].toString().toLowerCase();
     }
 
     public static void init(WeatherInfoManager wim) {
@@ -70,10 +88,12 @@ public class WeatherManager {
         classes.add(WeatherItemRain.class);
         classes.add(WeatherArrowRain.class);
         classes.add(WeatherSandStorm.class);
+        classes.add(WeatherGodAnger.class);
+        classes.add(WeatherWindy.class);
         for (Class<? extends Weather> clazz : classes) {
             register(clazz);
             try {
-                wim.register(clazz.getSimpleName().replace("Weather", ""), (WeatherDefaults) clazz.getField("def").get(null));
+                wim.register(clazz.getSimpleName().replace("Weather", ""), Util.getWeatherDefaults(clazz));
             } catch (Exception e) {
                 System.out.println("[ProperWeather] Error: Weather registration failed.");
                 System.out.println("[ProperWeather] Weather Class: " + clazz.getSimpleName().replace("Weather", ""));

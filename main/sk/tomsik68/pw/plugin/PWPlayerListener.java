@@ -1,6 +1,19 @@
+/*    This file is part of ProperWeather.
+
+    ProperWeather is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    ProperWeather is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with ProperWeather.  If not, see <http://www.gnu.org/licenses/>.*/
 package sk.tomsik68.pw.plugin;
 
-import java.util.HashMap;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -8,29 +21,29 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.player.SkyManager;
 import org.getspout.spoutapi.player.SpoutPlayer;
+
 import sk.tomsik68.pw.api.WeatherController;
 import sk.tomsik68.pw.api.WeatherSystem;
 
 public class PWPlayerListener implements Listener {
     private final WeatherSystem weatherSystem;
-    static final HashMap<Integer, Long> playerMoveTimestamps = new HashMap<Integer, Long>();
-    static final HashMap<Integer, Integer> lastPlayerRegion = new HashMap<Integer, Integer>();
     private final int PLAYER_MOVE_CHECK_DELAY = 3000;
 
     public PWPlayerListener(WeatherSystem weatherSystem1) {
-        this.weatherSystem = weatherSystem1;
+        weatherSystem = weatherSystem1;
     }
 
     public void onPlayerChangedRegion(PlayerChangedWorldEvent event) {
-        this.weatherSystem.getWeatherController(this.weatherSystem.getRegionManager().getRegionAt(event.getPlayer().getLocation())).update(event.getPlayer());
+        weatherSystem.getWeatherController(weatherSystem.getRegionManager().getRegionAt(event.getPlayer().getLocation())).update(event.getPlayer());
         if (ProperWeather.isSpout) {
             SpoutPlayer player = SpoutManager.getPlayer(event.getPlayer());
             if (!player.isSpoutCraftEnabled())
                 return;
-            if ((this.weatherSystem.isHooked(event.getFrom())) && (event.getPlayer() != null) && (!this.weatherSystem.isHooked(event.getPlayer().getWorld())) && (player.isSpoutCraftEnabled())) {
+            if ((weatherSystem.isHooked(event.getFrom())) && (event.getPlayer() != null) && (!weatherSystem.isHooked(event.getPlayer().getWorld())) && (player.isSpoutCraftEnabled())) {
                 SkyManager sm = SpoutManager.getSkyManager();
                 sm.setCloudColor(player, new org.getspout.spoutapi.gui.Color(255, 255, 255));
                 sm.setFogColor(player, new org.getspout.spoutapi.gui.Color(255, 255, 255));
@@ -42,8 +55,8 @@ public class PWPlayerListener implements Listener {
                 sm.setCloudsVisible(player, true);
             }
 
-            if ((event.getPlayer() != null) && (this.weatherSystem.isHooked(event.getPlayer().getWorld())) && (player.isSpoutCraftEnabled())) {
-                WeatherController wc = this.weatherSystem.getWeatherController(this.weatherSystem.getRegionManager().getRegionAt(player.getLocation()));
+            if ((event.getPlayer() != null) && (weatherSystem.isHooked(event.getPlayer().getWorld())) && (player.isSpoutCraftEnabled())) {
+                WeatherController wc = weatherSystem.getWeatherController(weatherSystem.getRegionManager().getRegionAt(player.getLocation()));
                 wc.update(event.getPlayer());
                 if (!ProperWeather.isSpout)
                     return;
@@ -62,31 +75,29 @@ public class PWPlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(PlayerJoinEvent event) {
-        if (this.weatherSystem.isHooked(event.getPlayer().getWorld())) {
-            WeatherController c = this.weatherSystem.getWeatherController(this.weatherSystem.getRegionManager().getRegionAt(event.getPlayer().getLocation()));
+        if (weatherSystem.isHooked(event.getPlayer().getWorld())) {
+            WeatherController c = weatherSystem.getWeatherController(weatherSystem.getRegionManager().getRegionAt(event.getPlayer().getLocation()));
             c.update(event.getPlayer());
-            PWPlayerListener.playerMoveTimestamps.put(Integer.valueOf(event.getPlayer().getEntityId()), Long.valueOf(0L));
+            event.getPlayer().setMetadata("pw.moveTimestamp", new FixedMetadataValue(ProperWeather.instance(), 0L));
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerMove(final PlayerMoveEvent event) {
-        if (!this.weatherSystem.isHooked(event.getTo().getWorld()))
+        if (!weatherSystem.isHooked(event.getTo().getWorld()))
             return;
-        if (!PWPlayerListener.playerMoveTimestamps.containsKey(Integer.valueOf(event.getPlayer().getEntityId()))) {
-            PWPlayerListener.playerMoveTimestamps.put(Integer.valueOf(event.getPlayer().getEntityId()), Long.valueOf(0L));
+        if (!event.getPlayer().hasMetadata("pw.moveTimestamp")) {
+            event.getPlayer().setMetadata("pw.moveTimestamp", new FixedMetadataValue(ProperWeather.instance(), 0L));
         }
-        long lastCheck = ((Long) PWPlayerListener.playerMoveTimestamps.get(Integer.valueOf(event.getPlayer().getEntityId()))).longValue();
+        long lastCheck = event.getPlayer().getMetadata("pw.moveTimestamp").get(0).asLong();
         if (System.currentTimeMillis() - lastCheck >= PLAYER_MOVE_CHECK_DELAY) {
             Runnable runn = new Runnable() {
                 public void run() {
-                    if ((!weatherSystem.getRegionManager().getRegionAt(event.getFrom()).contains(event.getTo())) || (!PWPlayerListener.lastPlayerRegion.containsKey(Integer.valueOf(event.getPlayer().getEntityId()))) || (((Integer) PWPlayerListener.lastPlayerRegion.get(Integer.valueOf(event.getPlayer().getEntityId()))).intValue() != weatherSystem.getRegionManager().getRegionAt(event.getTo()).getUID())) {
+                    if (!weatherSystem.getRegionManager().getRegionAt(event.getFrom()).contains(event.getTo()) || !event.getPlayer().hasMetadata("pw.lastRegion") || event.getPlayer().getMetadata("pw.lastRegion").get(0).asInt() != weatherSystem.getRegionManager().getRegionAt(event.getTo()).getUID()) {
                         onPlayerChangedRegion(new PlayerChangedWorldEvent(event.getPlayer(), event.getFrom().getWorld()));
                     }
-                    synchronized (PWPlayerListener.playerMoveTimestamps) {
-                        PWPlayerListener.playerMoveTimestamps.put(Integer.valueOf(event.getPlayer().getEntityId()), Long.valueOf(System.currentTimeMillis()));
-                        PWPlayerListener.lastPlayerRegion.put(Integer.valueOf(event.getPlayer().getEntityId()), Integer.valueOf(weatherSystem.getRegionManager().getRegionAt(event.getPlayer().getLocation()).getUID()));
-                    }
+                    event.getPlayer().setMetadata("pw.moveTimestamp", new FixedMetadataValue(ProperWeather.instance(), System.currentTimeMillis()));
+                    event.getPlayer().setMetadata("pw.lastRegion", new FixedMetadataValue(ProperWeather.instance(),weatherSystem.getRegionManager().getRegionAt(event.getPlayer().getLocation()).getUID()));
                 }
             };
             Thread thread = new Thread(runn);
@@ -96,9 +107,8 @@ public class PWPlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
-        synchronized (PWPlayerListener.playerMoveTimestamps) {
-            PWPlayerListener.playerMoveTimestamps.remove(Integer.valueOf(event.getPlayer().getEntityId()));
-            PWPlayerListener.lastPlayerRegion.remove(Integer.valueOf(event.getPlayer().getEntityId()));
-        }
+        event.getPlayer().removeMetadata("pw.lastRegion", ProperWeather.instance());
+        event.getPlayer().removeMetadata("pw.moveTimestamp", ProperWeather.instance());
+        event.getPlayer().removeMetadata("pw.raining", ProperWeather.instance());
     }
 }

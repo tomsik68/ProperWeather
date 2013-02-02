@@ -1,22 +1,42 @@
+/*    This file is part of ProperWeather.
+
+    ProperWeather is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    ProperWeather is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with ProperWeather.  If not, see <http://www.gnu.org/licenses/>.*/
 package sk.tomsik68.pw.impl;
 
 import java.awt.Color;
-import net.minecraft.server.Packet70Bed;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LightningStrike;
+import org.bukkit.entity.Fireball;
 import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
+import org.bukkit.metadata.FixedMetadataValue;
+
+import sk.tomsik68.pw.Util;
+import sk.tomsik68.pw.api.BaseWeatherElement;
 import sk.tomsik68.pw.api.WeatherController;
+import sk.tomsik68.pw.plugin.ProjectileManager;
 import sk.tomsik68.pw.plugin.ProperWeather;
 import sk.tomsik68.pw.region.Region;
-
+//NOTBUKKIT
 public class DefaultWeatherController implements WeatherController {
     protected final Region region;
-    protected boolean thundersAllowed;
-    protected boolean thundering;
-    protected boolean rain;
+    protected boolean thundersAllowed = true;
+    protected boolean thundering = false;
+    protected boolean rain = false;
+    protected Set<BaseWeatherElement> elements = new HashSet<BaseWeatherElement>();
 
     public DefaultWeatherController(Region region1) {
         this.region = region1;
@@ -105,9 +125,8 @@ public class DefaultWeatherController implements WeatherController {
 
     public void setRaining(boolean b) {
         this.rain = b;
-        for (Player p : this.region.getPlayers()) {
-            CraftPlayer player = (CraftPlayer) p;
-            player.getHandle().netServerHandler.sendPacket(new Packet70Bed(this.rain ? 1 : 2, 0));
+        for(Player p : region.getPlayers()){
+            update(p);
         }
     }
 
@@ -124,7 +143,7 @@ public class DefaultWeatherController implements WeatherController {
     }
 
     public void strike(int x, int y, int z) {
-        this.region.getWorld().strikeLightning(new Location(region.getWorld(),x,y,z));
+        this.region.getWorld().strikeLightning(new Location(region.getWorld(), x, y, z));
     }
 
     public void strikeEntity(Entity entity) {
@@ -132,8 +151,28 @@ public class DefaultWeatherController implements WeatherController {
     }
 
     public void clear() {
+        //FIXME Kill all fireballs
+        ProjectileManager.killAll(Fireball.class);
+        //DEBUG System.out.println("Weather Init...");
         setRaining(false);
         denyThundering();
+        for(BaseWeatherElement elem : elements){
+            elem.deactivate(this);
+        }
+    }
+    @Override
+    public void finish(){
+        for(Player p : region.getPlayers()){
+            Util.setRaining(p, isRaining());
+            p.removeMetadata("pw.raining", ProperWeather.instance());
+            p.removeMetadata("pw.moveTimestamp", ProperWeather.instance());
+            p.removeMetadata("pw.lastRegion", ProperWeather.instance());
+        }
+        getRegion().getWorld();
+        denyThundering();
+        for(BaseWeatherElement elem : elements){
+            elem.deactivate(this);
+        }
     }
 
     public boolean isThunderingAllowed() {
@@ -172,12 +211,42 @@ public class DefaultWeatherController implements WeatherController {
     }
 
     public void update(Player p) {
-        CraftPlayer player = (CraftPlayer) p;
-        player.getHandle().netServerHandler.sendPacket(new Packet70Bed(isRaining() ? 1 : 2, 0));
+        if (!p.hasMetadata("pw.raining") || (p.getMetadata("pw.raining").get(0).asBoolean() != isRaining())) {
+            Util.setRaining(p, isRaining());
+            p.setMetadata("pw.raining", new FixedMetadataValue(ProperWeather.instance(), isRaining()));
+        }
     }
 
     @Override
     public void strike(Location location) {
         this.region.getWorld().strikeLightning(location);
+    }
+
+    @Override
+    public Set<BaseWeatherElement> getActiveElements() {
+        return elements;
+    }
+
+    @Override
+    public void activateElement(BaseWeatherElement element) {
+        element.activate(this);
+        elements.add(element);
+    }
+
+    @Override
+    public void deactivateElement(BaseWeatherElement element) {
+        element.deactivate(this);
+        elements.remove(element);
+    }
+
+    @Override
+    public void setSnowing(boolean snow) {
+        //sorry but this Controller is really stupid :/ check SpoutWeatherController for something better >:)
+        this.rain = snow;
+    }
+
+    @Override
+    public boolean isSnowing() {
+        return rain;
     }
 }

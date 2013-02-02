@@ -1,95 +1,131 @@
+/*    This file is part of ProperWeather.
+
+    ProperWeather is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    ProperWeather is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with ProperWeather.  If not, see <http://www.gnu.org/licenses/>.*/
 package sk.tomsik68.pw.api;
 
 import java.awt.Color;
+import java.util.Set;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+
 import sk.tomsik68.pw.region.Region;
 
-public abstract interface WeatherController
-{
-  public abstract Region getRegion();
+/**
+ * Represents a controller of weather, which can do various stuff with weather.
+ * 
+ * @author Tomsik68
+ * 
+ */
+public interface WeatherController {
+    public Set<BaseWeatherElement> getActiveElements();
 
-  public abstract void setSkyColor(Color paramColor);
+    public void activateElement(BaseWeatherElement element);
 
-  public abstract Color getSkyColor();
+    public void deactivateElement(BaseWeatherElement element);
 
-  public abstract void setFogColor(Color paramColor);
+    /**
+     * 
+     * @return Region this controller is controlling
+     */
+    public Region getRegion();
 
-  public abstract Color getFogColor();
+    public void setSkyColor(Color paramColor);
 
-  public abstract int getSunSize();
+    public Color getSkyColor();
 
-  public abstract void setSunSize(int sunSize);
+    public void setFogColor(Color paramColor);
 
-  public abstract void setStarFrequency(int starFreq);
+    public Color getFogColor();
 
-  public abstract void setMoonSize(int moonSize);
+    public int getSunSize();
 
-  public abstract int getMoonSize();
+    public void setSunSize(int sunSize);
 
-  public abstract int getStarFrequency();
+    public void setStarFrequency(int starFreq);
 
-  public abstract void hideMoon();
+    public void setMoonSize(int moonSize);
 
-  public abstract void showMoon();
+    public int getMoonSize();
 
-  public abstract void hideSun();
+    public int getStarFrequency();
 
-  public abstract void showSun();
+    public void hideMoon();
 
-  public abstract void hideStars();
+    public void showMoon();
 
-  public abstract void showStars();
+    public void hideSun();
 
-  public abstract boolean isStars();
+    public void showSun();
 
-  public abstract boolean isClouds();
+    public void hideStars();
 
-  public abstract void showClouds();
+    public void showStars();
 
-  public abstract void hideClouds();
+    public boolean isStars();
 
-  public abstract Color getCloudsColor();
+    public boolean isClouds();
 
-  public abstract void setCloudsColor(Color cloudColor);
+    public void showClouds();
 
-  public abstract void setCloudsHeight(int h);
+    public void hideClouds();
 
-  public abstract int getCloudsHeight();
+    public Color getCloudsColor();
 
-  public abstract void setRaining(boolean rain);
+    public void setCloudsColor(Color cloudColor);
 
-  public abstract boolean isRaining();
+    public void setCloudsHeight(int h);
 
-  public abstract boolean isThundering();
+    public int getCloudsHeight();
 
-  public abstract void setThundering(boolean thunder);
+    public void setRaining(boolean rain);
 
-  public abstract void strike(int x, int y, int z);
-  
-  public abstract void strike(Location location);
-  
-  public abstract void strikeEntity(Entity paramEntity);
+    public boolean isRaining();
 
-  public abstract void clear();
+    public boolean isThundering();
 
-  public abstract boolean isThunderingAllowed();
+    public void setThundering(boolean thunder);
 
-  public abstract void allowThundering();
+    public void strike(int x, int y, int z);
 
-  public abstract void denyThundering();
+    public void strike(Location location);
 
-  public abstract boolean isMoonVisible();
+    public void strikeEntity(Entity paramEntity);
 
-  public abstract boolean isSun();
+    public void clear();
 
-  public abstract void setFogDistance(int fogDist);
+    public boolean isThunderingAllowed();
 
-  public abstract int getFogDistance();
+    public void allowThundering();
 
-  public abstract void update();
+    public void denyThundering();
 
-  public abstract void update(Player player);
+    public boolean isMoonVisible();
+
+    public boolean isSun();
+
+    public void setFogDistance(int fogDist);
+
+    public int getFogDistance();
+
+    public void update();
+
+    public void update(Player player);
+
+    public void setSnowing(boolean snow);
+    public boolean isSnowing();
+
+    void finish();
 }

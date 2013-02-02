@@ -1,11 +1,27 @@
+/*    This file is part of ProperWeather.
+
+    ProperWeather is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    ProperWeather is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with ProperWeather.  If not, see <http://www.gnu.org/licenses/>.*/
 package sk.tomsik68.pw;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
+
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+
 import sk.tomsik68.pw.api.WeatherDefaults;
 import sk.tomsik68.pw.config.WeatherDefinition;
 import sk.tomsik68.pw.config.WeatherDescription;
@@ -18,13 +34,12 @@ public class WeatherInfoManager {
     public WeatherDescription getWeatherDescription(String weatherName) {
         weatherName = weatherName.toLowerCase();
         if (!weatherSettings.contains(weatherName)) {
-            WeatherDefaults wd = (WeatherDefaults) defaults.get(weatherName);
+            WeatherDefaults wd = defaults.get(weatherName);
             if (wd == null) {
                 wd = WeatherManager.getWeatherDefaults(weatherName);
                 if (wd == null)
                     throw new NullPointerException("No data about " + weatherName);
-                else
-                    defaults.put(weatherName, wd);
+                defaults.put(weatherName, wd);
             }
 
             weatherSettings.createSection(weatherName);
@@ -33,7 +48,7 @@ public class WeatherInfoManager {
             weatherSettings.set(weatherName + ".rand-time-probability", Integer.valueOf(wd.getDefRandomTimeProbability()));
             weatherSettings.set(weatherName + ".cant-be-after", Arrays.asList(wd.getDefCantBeAfter()));
             weatherSettings.set(weatherName + ".customs", null);
-
+            weatherSettings.set(weatherName + ".active-elements", wd.getDefElements());
             try {
                 weatherSettings.save(weatherSettingsFile);
             } catch (IOException e) {
@@ -56,6 +71,32 @@ public class WeatherInfoManager {
             WeatherDescription.generateDefaultWeathersConfig(weatherSettingsFile);
         weatherSettings = YamlConfiguration.loadConfiguration(weatherSettingsFile);
         defaults.clear();
+        for (String weatherName : WeatherManager.getRegisteredWeathers()) {
+            if (!weatherSettings.isConfigurationSection(weatherName)) {
+                if (!weatherSettings.contains(weatherName)) {
+                    WeatherDefaults wd = defaults.get(weatherName);
+                    if (wd == null) {
+                        wd = WeatherManager.getWeatherDefaults(weatherName);
+                        if (wd == null)
+                            throw new NullPointerException("No data about " + weatherName);
+                        defaults.put(weatherName, wd);
+                    }
+
+                    weatherSettings.createSection(weatherName);
+                    weatherSettings.set(weatherName + ".probability", Integer.valueOf(wd.getDefProbability()));
+                    weatherSettings.set(weatherName + ".max-duration", Integer.valueOf(wd.getDefMaxDuration()));
+                    weatherSettings.set(weatherName + ".rand-time-probability", Integer.valueOf(wd.getDefRandomTimeProbability()));
+                    weatherSettings.set(weatherName + ".cant-be-after", Arrays.asList(wd.getDefCantBeAfter()));
+                    weatherSettings.set(weatherName + ".customs", null);
+                    weatherSettings.set(weatherName + ".active-elements", wd.getDefElements());
+                    try {
+                        weatherSettings.save(weatherSettingsFile);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
     }
 
     public void register(String w, WeatherDefaults wd) {
@@ -63,6 +104,6 @@ public class WeatherInfoManager {
     }
 
     public WeatherDefaults getWeatherDefaults(String weather) {
-        return (WeatherDefaults) defaults.get(weather);
+        return defaults.get(weather);
     }
 }

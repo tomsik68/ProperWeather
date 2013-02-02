@@ -1,43 +1,38 @@
+/*    This file is part of ProperWeather.
+
+    ProperWeather is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    ProperWeather is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with ProperWeather.  If not, see <http://www.gnu.org/licenses/>.*/
 package sk.tomsik68.pw.impl;
 
-import java.lang.reflect.Field;
-import sk.tomsik68.pw.Defaults;
 import sk.tomsik68.pw.api.WeatherDefaults;
 import sk.tomsik68.pw.api.WeatherFactory;
 import sk.tomsik68.pw.plugin.ProperWeather;
 import sk.tomsik68.pw.weather.WeatherDefined;
 
 public class DefinedWeatherFactory implements WeatherFactory<WeatherDefined> {
-	private final String name;
+    private final String name;
 
-	public DefinedWeatherFactory(String weatherName) {
-		this.name = weatherName;
-	}
+    public DefinedWeatherFactory(String weatherName) {
+        this.name = weatherName;
+    }
 
-	public WeatherDefined create(Object[] args) {
-		WeatherDefined result = new WeatherDefined(ProperWeather.instance()
-				.getWeatherDescription(this.name), (Integer) args[0],
-				ProperWeather.instance().getWeatherDefinition(this.name));
-		return result;
-	}
+    public WeatherDefined create(Object[] args) {
+        WeatherDefined result = new WeatherDefined(ProperWeather.instance().getWeatherDescription(this.name), (Integer) args[0], ProperWeather.instance().getWeatherDefinition(this.name));
+        return result;
+    }
 
-	public WeatherDefaults getDefaults() {
-		Field[] fields = WeatherDefined.class.getDeclaredFields();
-		for (Field field : fields) {
-			if (field.isAnnotationPresent(Defaults.class)) {
-				field.setAccessible(true);
-				try {
-					return (WeatherDefaults) field.get(WeatherDefined.class
-							.newInstance());
-				} catch (IllegalArgumentException e) {
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-				} catch (InstantiationException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		return null;
-	}
+    public WeatherDefaults getDefaults() {
+        //defaults are not quite neccessary if weather is defined, since you have to put those fields into weathers.yml but whatever...
+        return WeatherDefined.def;
+    }
 }

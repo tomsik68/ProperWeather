@@ -1,12 +1,28 @@
+/*    This file is part of ProperWeather.
+
+    ProperWeather is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    ProperWeather is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with ProperWeather.  If not, see <http://www.gnu.org/licenses/>.*/
 package sk.tomsik68.pw.region;
 
-import java.awt.Rectangle;
 import java.util.Iterator;
 import java.util.UUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+
+import sk.tomsik68.pw.Util;
 import sk.tomsik68.pw.region.blockiter.WorldBlockIterator;
 
 public class WorldRegion extends BaseRegion {
@@ -25,7 +41,7 @@ public class WorldRegion extends BaseRegion {
             return new Player[0];
         }
         Player[] result = new Player[getWorld().getPlayers().size()];
-        result = Bukkit.getWorld(this.world).getPlayers().toArray(new Player[0]);
+        result = Util.getPlayers(getWorld()).toArray(new Player[0]);
         return result;
     }
 
@@ -33,10 +49,6 @@ public class WorldRegion extends BaseRegion {
         if (!isWorldLoaded())
             return false;
         return location.getWorld().getUID().equals(getWorld().getUID());
-    }
-
-    public Rectangle getBounds() {
-        return new Rectangle(0, 0, 0, 0);
     }
 
     public Iterator<Block> iterator() {
@@ -47,8 +59,4 @@ public class WorldRegion extends BaseRegion {
         return "World '" + Bukkit.getWorld(this.world).getName() + "'";
     }
 
-    @Override
-    public boolean isProbabilityOn() {
-        return true;
-    }
 }

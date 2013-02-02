@@ -1,12 +1,26 @@
+/*    This file is part of ProperWeather.
+
+    ProperWeather is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    ProperWeather is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with ProperWeather.  If not, see <http://www.gnu.org/licenses/>.*/
 package sk.tomsik68.pw.region;
 
-import java.awt.Rectangle;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.UUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -14,8 +28,10 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.util.Vector;
 
+import sk.tomsik68.pw.plugin.ProjectileManager;
 import sk.tomsik68.pw.plugin.ProperWeather;
 import sk.tomsik68.pw.struct.SpawnListEntry;
 import sk.tomsik68.pw.struct.WeatherData;
@@ -52,15 +68,13 @@ public abstract class BaseRegion implements Region {
 
     public abstract boolean contains(Location paramLocation);
 
-    public abstract Rectangle getBounds();
-
     public int compareTo(Region arg0) {
         if (arg0.getUID() > getUID())
             return -1;
         if (arg0.getUID() < getUID())
             return 1;
-        
-        throw new IllegalArgumentException("[ProperWeather] ERROR: {'"+arg0.getUID()+"'='"+getUID()+"'"+"}Region id not unique!");
+
+        throw new IllegalArgumentException("[ProperWeather] ERROR: {'" + arg0.getUID() + "'='" + getUID() + "'" + "}Region id not unique!");
     }
 
     protected boolean isWorldLoaded() {
@@ -79,7 +93,10 @@ public abstract class BaseRegion implements Region {
         synchronized (spawnList) {
             for (SpawnListEntry entry : spawnList) {
                 Entity entity = getWorld().spawn(entry.getLocation(), entry.getEntityClass());
-                entity.setVelocity(entry.getVelocity());
+                if(entry.getVelocity() != null)
+                    entity.setVelocity(entry.getVelocity());
+                if (entity instanceof Projectile)
+                    ProjectileManager.add(entity);
             }
             spawnList.clear();
         }
@@ -106,8 +123,9 @@ public abstract class BaseRegion implements Region {
             spawnList.add(new SpawnListEntry(location, entityClass, velocity));
         }
     }
+
     @Override
-    public WeatherData getWeatherData(){
+    public WeatherData getWeatherData() {
         return ProperWeather.instance().getWeatherSystem().getCurrentSituation(getUID());
     }
 }
