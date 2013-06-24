@@ -14,7 +14,6 @@
     along with ProperWeather.  If not, see <http://www.gnu.org/licenses/>.*/
 package sk.tomsik68.pw.weather;
 
-import java.util.Calendar;
 import java.util.Random;
 
 import org.bukkit.Bukkit;

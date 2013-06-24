@@ -52,7 +52,7 @@ public class DefaultWeatherSystem implements WeatherSystem {
         weatherData = new HashMap<Integer, WeatherData>();
         controllers = new HashMap<Integer, WeatherController>();
         cycles = new HashMap<Integer, WeatherCycle>();
-        
+
     }
 
     public void runWeather(String worldName) {
@@ -144,7 +144,7 @@ public class DefaultWeatherSystem implements WeatherSystem {
                         SaveStruct ss = (SaveStruct) s;
                         WeatherData wd = ss.toWeatherData();
                         weatherData.put(regionManager.getRegions(Bukkit.getWorld(ss.getWorldId())).get(0), wd);
-                        
+
                         stopAtWeather(Bukkit.getWorld(ss.getWorldId()).getName(), WeatherManager.getWeatherName(ss.getCurrentWeather().intValue()));
                         if (ss.isCanEverChange())
                             runWeather(Bukkit.getWorld(ss.getWorldId()).getName());
@@ -154,22 +154,21 @@ public class DefaultWeatherSystem implements WeatherSystem {
                     for (localIterator = toLoad.iterator(); localIterator.hasNext();) {
                         Object s = localIterator.next();
                         WeatherData wd = (WeatherData) s;
-                        if(wd != null){
+                        if (wd != null) {
                             try {
                                 regionManager.getRegion(Integer.valueOf(wd.getRegion())).getWorld();
                             } catch (Exception e) {
                                 continue;
                             }
-                            //TODO loading cycles
+                            // TODO loading cycles
                             cycles.put(wd.getRegion(), new RandomWeatherCycle(this));
                             weatherData.put(Integer.valueOf(wd.getRegion()), wd);
                             Weather w = wd.getCurrentWeather();
                             w.initWeather();
-//DEBUG                            System.out.println(wd.toString());
                         }
                     }
-                }else
-                    System.out.println("[ProperWeather] Detected corrupted/incompatible save file. Class="+toLoad.get(0).getClass());
+                } else
+                    System.out.println("[ProperWeather] Detected corrupted/incompatible save file. Class=" + toLoad.get(0).getClass());
             }
             if ((toLoad == null) && (mv)) {
                 System.out.println("[ProperWeather] Data file not found, but it looks like you've got multiverse installed.");
@@ -177,15 +176,16 @@ public class DefaultWeatherSystem implements WeatherSystem {
                 return;
             }
             DataManager.save(new ArrayList<WeatherData>());
-            //cancel raining, so minecraft server doesn't change it(raining is handled via packets...)
-            for(String w : getWorldList()){
+            // cancel raining, so minecraft server doesn't change it(raining is
+            // handled via packets...)
+            for (String w : getWorldList()) {
                 Bukkit.getWorld(w).setStorm(false);
             }
         } catch (Exception e) {
             System.out.println("[ProperWeather] Can't find any data source, creating file...");
             e.printStackTrace();
         }
-        
+
     }
 
     public WeatherData getRegionData(Region region) {
@@ -197,7 +197,7 @@ public class DefaultWeatherSystem implements WeatherSystem {
         for (Integer r : regions) {
             Region region = regionManager.getRegion(r);
             WeatherData wd = getRegionData(region);
-            if ((wd == null) || wd.getCurrentWeather() == null){
+            if ((wd == null) || wd.getCurrentWeather() == null) {
                 weatherData.put(Integer.valueOf(r), new WeatherData());
                 getRegionData(region).setCanEverChange(true);
                 Weather weather = WeatherManager.randomWeather(region);
@@ -216,7 +216,7 @@ public class DefaultWeatherSystem implements WeatherSystem {
                 setRegionData(region, wd);
                 continue;
             }
-            
+
             wd.setCurrentWeather(cycles.get(r).nextWeather(region));
             wd.setDuration(rand.nextInt(wd.getCurrentWeather().getMaxDuration()));
             wd.getCurrentWeather().initWeather();
@@ -233,14 +233,14 @@ public class DefaultWeatherSystem implements WeatherSystem {
             return;
         World world = Bukkit.getWorld(worldName);
         List<Integer> regions = regionManager.getRegions(world);
-        for(int r : regions){
+        for (int r : regions) {
             controllers.get(r).finish();
             weatherData.remove(r);
             controllers.remove(r);
             cycles.remove(r);
         }
         regionManager.unHook(world);
-        
+
     }
 
     public WeatherController getWeatherController(Region region) {
@@ -252,7 +252,7 @@ public class DefaultWeatherSystem implements WeatherSystem {
         if (!controllers.containsKey(Integer.valueOf(regionId))) {
             wc = ProperWeather.isSpout ? new SpoutWeatherController(regionManager.getRegion(Integer.valueOf(regionId))) : new DefaultWeatherController(regionManager.getRegion(Integer.valueOf(regionId)));
             controllers.put(Integer.valueOf(regionId), wc);
-        }else
+        } else
             wc = controllers.get(Integer.valueOf(regionId));
         return wc;
     }

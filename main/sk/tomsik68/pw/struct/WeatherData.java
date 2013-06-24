@@ -27,6 +27,7 @@ import sk.tomsik68.pw.plugin.ProperWeather;
 
 public class WeatherData implements Externalizable {
     private static final long serialVersionUID = -7099393484035l;
+
     private LinkedList<Integer> list;
     private Weather currentWeather;
     private int duration;

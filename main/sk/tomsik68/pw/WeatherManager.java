@@ -34,13 +34,17 @@ import sk.tomsik68.pw.weather.WeatherItemRain;
 import sk.tomsik68.pw.weather.WeatherMeteorStorm;
 import sk.tomsik68.pw.weather.WeatherRain;
 import sk.tomsik68.pw.weather.WeatherSandStorm;
+import sk.tomsik68.pw.weather.WeatherSnowStorm;
 import sk.tomsik68.pw.weather.WeatherStorm;
 import sk.tomsik68.pw.weather.WeatherWindy;
 
 public class WeatherManager {
     private static final Object lock = new Object();
     private static final HashMap<String, WeatherFactory<?>> factorys = new HashMap<String, WeatherFactory<?>>();
-    /** Registers weather with specified class to the system. Weather will be immediately made available to user.
+
+    /**
+     * Registers weather with specified class to the system. Weather will be
+     * immediately made available to user.
      * 
      * @param clazz
      */
@@ -90,6 +94,7 @@ public class WeatherManager {
         classes.add(WeatherSandStorm.class);
         classes.add(WeatherGodAnger.class);
         classes.add(WeatherWindy.class);
+        classes.add(WeatherSnowStorm.class);
         for (Class<? extends Weather> clazz : classes) {
             register(clazz);
             try {

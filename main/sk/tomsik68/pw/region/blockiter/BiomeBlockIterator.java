@@ -63,6 +63,5 @@ public class BiomeBlockIterator implements Iterator<Block> {
         int a1 = (int) (l & Integer.MAX_VALUE);
         int a2 = (int) (l >> 32);
         return new int[] { a2, a1 };
-
     }
 }
