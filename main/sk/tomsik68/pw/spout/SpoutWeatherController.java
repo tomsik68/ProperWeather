@@ -14,11 +14,9 @@
     along with ProperWeather.  If not, see <http://www.gnu.org/licenses/>.*/
 /*     */package sk.tomsik68.pw.spout;
 
-import org.bukkit.block.Biome;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.getspout.spoutapi.SpoutManager;
-import org.getspout.spoutapi.block.SpoutWeather;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
 import sk.tomsik68.pw.impl.DefaultWeatherController;
@@ -64,7 +62,7 @@ import sk.tomsik68.pw.region.Region;
         /* 47 */this(defaultWeatherController.getRegion());
         /*     */
         /* 49 */setRaining(defaultWeatherController.isRaining());
-                elements = defaultWeatherController.getActiveElements();
+        elements = defaultWeatherController.getActiveElements();
         /*     */}
 
     /*     */
@@ -369,20 +367,23 @@ import sk.tomsik68.pw.region.Region;
         /* 328 */setSun(sun);
         /* 329 */setSunSize(sunSize);
         /*     */}
+
     @Override
     public void update(Player p) {
         super.update(p);
         if (!p.hasMetadata("pw.snowing") || (p.getMetadata("pw.snowing").get(0).asBoolean() != isRaining())) {
             SpoutPlayer sp = SpoutManager.getPlayer(p);
             p.setMetadata("pw.snowing", new FixedMetadataValue(ProperWeather.instance(), isSnowing()));
-            
+
         }
-        
+
     }
+
     @Override
     public void setSnowing(boolean snow) {
         this.snowing = snow;
     }
+
     @Override
     public boolean isSnowing() {
         return snowing;

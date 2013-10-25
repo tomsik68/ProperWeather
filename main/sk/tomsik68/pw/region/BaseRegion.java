@@ -97,6 +97,8 @@ public abstract class BaseRegion implements Region {
                     entity.setVelocity(entry.getVelocity());
                 if (entity instanceof Projectile)
                     ProjectileManager.add(entity);
+                if(entry.getCustomizer() != null)
+                    entity = entry.getCustomizer().perform(entity);
             }
             spawnList.clear();
         }

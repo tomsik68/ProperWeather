@@ -20,6 +20,11 @@ import java.util.UUID;
 
 import sk.tomsik68.pw.WeatherManager;
 @Deprecated
+/** This is kept for old data save structure compatibility, use {@link WeatherData} instead
+ * 
+ * @author Tomsik68
+ *
+ */
 public class SaveStruct implements Serializable {
 	private static final long serialVersionUID = -9186915217675713495L;
 	private int duration;

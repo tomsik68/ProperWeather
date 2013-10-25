@@ -65,10 +65,13 @@ public class DefaultWeatherSystem implements WeatherSystem {
         for (Iterator<?> localIterator = regionManager.getRegions(Bukkit.getWorld(worldName)).iterator(); localIterator.hasNext();) {
             int r = ((Integer) localIterator.next()).intValue();
             Region region = regionManager.getRegion(Integer.valueOf(r));
-            cycles.put(r, new RandomWeatherCycle(this));
+            if(!cycles.containsKey(r))
+                cycles.put(r, new RandomWeatherCycle(this));
             weatherData.put(Integer.valueOf(r), new WeatherData());
+            
             getRegionData(region).setCanEverChange(true);
             Weather weather = cycles.get(r).nextWeather(region);
+            
             getRegionData(region).setCurrentWeather(weather);
             getRegionData(region).setDuration(rand.nextInt(getRegionData(region).getCurrentWeather().getMaxDuration()));
             weather.initWeather();

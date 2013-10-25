@@ -2,11 +2,8 @@ package sk.tomsik68.pw.plugin;
 
 import java.util.List;
 
-import org.bukkit.entity.Entity;
-
 import sk.tomsik68.bukkitbp.v1.ClassCriteria;
 import sk.tomsik68.bukkitbp.v1.PackageResolver;
-import sk.tomsik68.bukkitbp.v1.ReflectionUtils;
 
 /**
  * Hard-coded criteria for bukkit safeguard bypassing

@@ -16,7 +16,6 @@ package sk.tomsik68.pw.plugin;
 
 import java.awt.Color;
 import java.io.File;
-import java.lang.instrument.Instrumentation;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
@@ -46,22 +45,33 @@ import sk.tomsik68.pw.transl.Translator;
 
 public class ProperWeather extends JavaPlugin {
     public static boolean isSpout = true;
+    
     public static final Color defaultSkyColor = new Color(9742079, false);
+    
     public static final int TASK_PERIOD = 88;
+    
     private PWWeatherListener weatherListener;
     private WeatherSystem weatherSystem;
     private final PWServerListener serverListener;
-    public EPermissions permissions;
     private PWPlayerListener playerListener;
+    
+    public EPermissions permissions;
+    
     private SpoutModule sm;
+    
     private ConfigFile config;
     private FileConfiguration weatherSettings = null;
+    
     public static ChatColor factColor = ChatColor.GRAY;
     public static ChatColor color = ChatColor.GREEN;
+    
     private final WeatherInfoManager wim = new WeatherInfoManager();
+    
     private int weatherUpdateTask;
     private int regionUpdateTask;
+    
     private final BiomeMapperManager mapperManager = new DefaultBiomeMapperManager();
+
     public ProperWeather() {
         serverListener = new PWServerListener();
     }
@@ -86,7 +96,7 @@ public class ProperWeather extends JavaPlugin {
             CompatibilityChecker.test();
             System.out.println("[ProperWeather] Bukkit compatibility test done. ");
         } catch (Exception e) {
-            //DEBUG
+            // DEBUG
             e.printStackTrace();
             System.out.println("[ProperWeather] Incompatible CraftBukkit version. Plugin will now shutdown to prevent further issues.");
             System.out.println("[ProperWeather] Error: " + e.getMessage());
@@ -164,8 +174,8 @@ public class ProperWeather extends JavaPlugin {
         permissions = config.getPerms();
     }
 
-    public void setupSpout(boolean self, boolean enabled) {
-        if (self) {
+    public void setupSpout(boolean automatic, boolean enabled) {
+        if (automatic) {
             try {
                 Class.forName("org.getspout.spoutapi.SpoutManager");
                 System.out.println("[ProperWeather] Spout detected");
@@ -175,8 +185,6 @@ public class ProperWeather extends JavaPlugin {
                 sm.init();
             } catch (ClassNotFoundException cnfe) {
                 sm = null;
-                System.out.println("[ProperWeather] Spout not detected!");
-                // System.out.println("[ProperWeather] It's recommended that you install spout on your server if you're using custom weathers(all weathers except Rain,Storm and Clear). ALL CAN ALSO WORK WITHOUT SPOUT, BUT CERTAIN FEATURES WILL BE DISABLED.");
                 isSpout = false;
                 weatherSystem.changeControllers(isSpout);
             }
@@ -194,7 +202,6 @@ public class ProperWeather extends JavaPlugin {
 
     public void reload() {
         onDisable();
-
         onEnable();
     }
 

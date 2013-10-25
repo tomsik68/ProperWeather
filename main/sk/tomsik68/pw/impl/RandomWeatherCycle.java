@@ -14,6 +14,9 @@
     along with ProperWeather.  If not, see <http://www.gnu.org/licenses/>.*/
 package sk.tomsik68.pw.impl;
 
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.util.Random;
 
 import sk.tomsik68.pw.WeatherManager;
@@ -36,13 +39,21 @@ public class RandomWeatherCycle extends BaseWeatherCycle {
         Weather weather = WeatherManager.randomWeather(region);
         if (!weather.canBeStarted(wd.getPreviousWeather()))
             return nextWeather(region);
-        if ((WeatherManager.getUID(weather.getClass().getSimpleName()) != wd.getPreviousWeather().intValue()) && (!wd.wasWeather(weather)) && (rand.nextInt(100) <= weather.getProbability())) {
+        if ((WeatherManager.getUID(weather.getClass().getSimpleName()) != wd.getPreviousWeather().intValue()) && (!wd.wasWeather(weather)) && (rand.nextInt(100) < weather.getProbability())) {
             weather.initWeather();
             wd.setDuration(rand.nextInt(weather.getMaxDuration()));
             weatherSystem.setRegionData(region, wd);
             return weather;
         }
         return nextWeather(region);
+    }
+
+    @Override
+    public void readExternal(ObjectInput arg0) throws IOException, ClassNotFoundException {
+    }
+
+    @Override
+    public void writeExternal(ObjectOutput arg0) throws IOException {
     }
 
 }

@@ -26,17 +26,9 @@ import sk.tomsik68.pw.api.WeatherDefaults;
 import sk.tomsik68.pw.api.WeatherFactory;
 import sk.tomsik68.pw.impl.ClassWeatherFactory;
 import sk.tomsik68.pw.region.Region;
-import sk.tomsik68.pw.weather.WeatherArrowRain;
 import sk.tomsik68.pw.weather.WeatherClear;
-import sk.tomsik68.pw.weather.WeatherGodAnger;
-import sk.tomsik68.pw.weather.WeatherHot;
-import sk.tomsik68.pw.weather.WeatherItemRain;
-import sk.tomsik68.pw.weather.WeatherMeteorStorm;
 import sk.tomsik68.pw.weather.WeatherRain;
-import sk.tomsik68.pw.weather.WeatherSandStorm;
-import sk.tomsik68.pw.weather.WeatherSnowStorm;
 import sk.tomsik68.pw.weather.WeatherStorm;
-import sk.tomsik68.pw.weather.WeatherWindy;
 
 public class WeatherManager {
     private static final Object lock = new Object();
@@ -87,14 +79,6 @@ public class WeatherManager {
         classes.add(WeatherClear.class);
         classes.add(WeatherRain.class);
         classes.add(WeatherStorm.class);
-        classes.add(WeatherHot.class);
-        classes.add(WeatherMeteorStorm.class);
-        classes.add(WeatherItemRain.class);
-        classes.add(WeatherArrowRain.class);
-        classes.add(WeatherSandStorm.class);
-        classes.add(WeatherGodAnger.class);
-        classes.add(WeatherWindy.class);
-        classes.add(WeatherSnowStorm.class);
         for (Class<? extends Weather> clazz : classes) {
             register(clazz);
             try {

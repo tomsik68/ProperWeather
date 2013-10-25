@@ -14,9 +14,11 @@
     along with ProperWeather.  If not, see <http://www.gnu.org/licenses/>.*/
 package sk.tomsik68.pw.api;
 
+import java.io.Externalizable;
+
 import sk.tomsik68.pw.region.Region;
 
-public abstract interface WeatherCycle {
+public abstract interface WeatherCycle extends Externalizable {
     public abstract WeatherSystem getWeatherSystem();
 
     public abstract Weather nextWeather(Region region);
