@@ -34,7 +34,7 @@ import org.bukkit.util.Vector;
 import sk.tomsik68.pw.plugin.ProjectileManager;
 import sk.tomsik68.pw.plugin.ProperWeather;
 import sk.tomsik68.pw.struct.SpawnListEntry;
-import sk.tomsik68.pw.struct.WeatherData;
+import sk.tomsik68.pw.struct.WeatherDataExt;
 
 public abstract class BaseRegion implements Region {
     private static final long serialVersionUID = 3917523437018474830L;
@@ -127,7 +127,7 @@ public abstract class BaseRegion implements Region {
     }
 
     @Override
-    public WeatherData getWeatherData() {
-        return ProperWeather.instance().getWeatherSystem().getCurrentSituation(getUID());
+    public WeatherDataExt getWeatherData() {
+        return ProperWeather.instance().getWeatherSystem().getRegionData(this);
     }
 }

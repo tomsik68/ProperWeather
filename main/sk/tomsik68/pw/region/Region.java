@@ -26,6 +26,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import sk.tomsik68.pw.struct.WeatherData;
+import sk.tomsik68.pw.struct.WeatherDataExt;
 /** Represents a region
  * 
  * @author Tomsik68
@@ -81,7 +82,7 @@ public interface Region extends Comparable<Region>, Iterable<Block>, Externaliza
     public void spawnEntity(Class<? extends Entity> paramClass, Location paramLocation, Vector paramVector);
     /**
      * 
-     * @return WeatherData for this region from WeatherSystem
+     * @return WeatherDataExt for this region from WeatherSystem
      */
-    public WeatherData getWeatherData();
+    public WeatherDataExt getWeatherData();
 }

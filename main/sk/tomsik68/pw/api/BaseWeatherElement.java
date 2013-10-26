@@ -24,6 +24,7 @@ import sk.tomsik68.pw.RegionalEventExecutor;
 import sk.tomsik68.pw.plugin.ProperWeather;
 import sk.tomsik68.pw.region.Region;
 import sk.tomsik68.pw.struct.WeatherData;
+import sk.tomsik68.pw.struct.WeatherDataExt;
 /** Represents a weather element like wind. It'll soon be extended to plugins.
  * 
  * @author Tomsik68
@@ -74,7 +75,7 @@ public abstract class BaseWeatherElement implements Listener {
         //thanks bukkit for this :) saved me a lot of work
         HandlerList.unregisterAll(this);
     }
-    public final WeatherData getSituation(){
+    public final WeatherDataExt getSituation(){
         return region.getWeatherData();
     }
     public final Weather getCurrentWeather(){

@@ -17,6 +17,7 @@ package sk.tomsik68.pw.plugin;
 import java.awt.Color;
 import java.io.File;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -44,32 +45,33 @@ import sk.tomsik68.pw.spout.SpoutModule;
 import sk.tomsik68.pw.transl.Translator;
 
 public class ProperWeather extends JavaPlugin {
+    public static Logger log;
     public static boolean isSpout = true;
-    
+
     public static final Color defaultSkyColor = new Color(9742079, false);
-    
+
     public static final int TASK_PERIOD = 88;
-    
+
     private PWWeatherListener weatherListener;
     private WeatherSystem weatherSystem;
     private final PWServerListener serverListener;
     private PWPlayerListener playerListener;
-    
+
     public EPermissions permissions;
-    
+
     private SpoutModule sm;
-    
+
     private ConfigFile config;
     private FileConfiguration weatherSettings = null;
-    
+
     public static ChatColor factColor = ChatColor.GRAY;
     public static ChatColor color = ChatColor.GREEN;
-    
+
     private final WeatherInfoManager wim = new WeatherInfoManager();
-    
+
     private int weatherUpdateTask;
     private int regionUpdateTask;
-    
+
     private final BiomeMapperManager mapperManager = new DefaultBiomeMapperManager();
 
     public ProperWeather() {
@@ -91,6 +93,7 @@ public class ProperWeather extends JavaPlugin {
     }
 
     public void onEnable() {
+        log = getLogger();
         try {
             PackageResolver.init(Bukkit.class.getClassLoader());
             CompatibilityChecker.test();

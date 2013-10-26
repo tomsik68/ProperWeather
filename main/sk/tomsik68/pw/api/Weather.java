@@ -42,8 +42,9 @@ public abstract class Weather implements Cloneable {
      * @param previousID
      * @return Whether this weather can be started after previous one. This option is specified by weather's {@link WeatherDescription}. Devs can only make defaults. 
      */
-    public final boolean canBeStarted(Integer previousID) {
-        return this.wd.canBeAfter(previousID.intValue()) && ((!(getController().getRegion() instanceof BiomeRegion)) || (getController().getRegion() instanceof BiomeRegion && wd.getAllowedBiomes().contains(((BiomeRegion)getController().getRegion()).getBiome().name().toLowerCase())));
+    public final boolean canBeStarted(String previous) {
+        return this.wd.canBeAfter(previous);
+        //return this.wd.canBeAfter(previous) && ((!(getController().getRegion() instanceof BiomeRegion)) || (getController().getRegion() instanceof BiomeRegion && wd.getAllowedBiomes().contains(((BiomeRegion)getController().getRegion()).getBiome().name().toLowerCase())));
     }
     /**
      * 

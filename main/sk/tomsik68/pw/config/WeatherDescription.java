@@ -30,7 +30,7 @@ import sk.tomsik68.pw.plugin.ProperWeather;
 
 public class WeatherDescription {
     private ConfigurationSection cs;
-    public static final ArrayList<String> allBiomes = new ArrayList<String>();
+    public static final List<String> allBiomes = new ArrayList<String>();
     static{
         for(Biome biome : Biome.values()){
             allBiomes.add(biome.name().toLowerCase());
@@ -48,8 +48,8 @@ public class WeatherDescription {
         return cs.getInt("max-duration");
     }
 
-    public boolean canBeAfter(int previous) {
-        return !cs.getList("cant-be-after").contains(WeatherManager.getWeatherName(previous));
+    public boolean canBeAfter(String previous) {
+        return !cs.getList("cant-be-after").contains(previous);
     }
 
     public int getProbability() {
@@ -100,7 +100,7 @@ public class WeatherDescription {
         return cs.getStringList("customs").get(id);
     }
     public List<String> getAllowedBiomes(){
-        return (List<String>) cs.getList("biomes", allBiomes);
+        return cs.getStringList("biomes");
     }
     public List<String> getActiveElements(){
         return cs.getStringList("active-elements");

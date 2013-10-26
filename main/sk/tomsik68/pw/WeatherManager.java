@@ -20,11 +20,14 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import org.apache.commons.lang.NotImplementedException;
+
 import sk.tomsik68.pw.api.Weather;
 import sk.tomsik68.pw.api.WeatherController;
 import sk.tomsik68.pw.api.WeatherDefaults;
 import sk.tomsik68.pw.api.WeatherFactory;
 import sk.tomsik68.pw.impl.ClassWeatherFactory;
+import sk.tomsik68.pw.plugin.ProperWeather;
 import sk.tomsik68.pw.region.Region;
 import sk.tomsik68.pw.weather.WeatherClear;
 import sk.tomsik68.pw.weather.WeatherRain;
@@ -47,29 +50,50 @@ public class WeatherManager {
         }
     }
 
+    @Deprecated
     public static Weather getWeather(int id, int region) {
-        WeatherFactory<?> wf = new ArrayList<WeatherFactory<?>>(factorys.values()).get(id);
-        return wf.create(new Object[] { Integer.valueOf(region) });
+        Weather result;
+        switch (id) {
+        case 0:
+            result = factorys.get("clear").create(region);
+            break;
+        case 1:
+            result = factorys.get("rain").create(region);
+            break;
+        case 2:
+            result = factorys.get("storm").create(region);
+            break;
+        default:
+            ProperWeather.log.warning("The new version 1.1 removed some weather types which were included in the old 1.0.3. Please kill the server without saving PW weather data and read our ultimate migration guide if you want those weathers back.");
+            result = factorys.get("clear").create(new Object[] { region });
+            break;
+        }
+        return result;
     }
 
     public static Set<String> getRegisteredWeathers() {
         return factorys.keySet();
     }
 
+    @Deprecated
     public static Weather randomWeather(Region region) {
-        return getWeather(new Random().nextInt(factorys.size() - 1), region.getUID());
+        throw new NotImplementedException("This method is moving somewhere else!");
     }
 
     public static Weather getWeatherByName(String name, Region region) {
         if (region != null)
-            return ((WeatherFactory<?>) factorys.get(name.toLowerCase())).create(new Object[] { Integer.valueOf(region.getUID()) });
-        return ((WeatherFactory<?>) factorys.get(name.toLowerCase())).create(null);
+            getWeatherByName(name, region.getUID());
+        return getWeatherByName(name, -1);
     }
 
     public static Weather getWeatherByName(String name, WeatherController wc) {
         return getWeatherByName(name, wc.getRegion());
     }
 
+    @Deprecated
+    /**
+     * Should work in theory, but no guarantee... 
+     */
     public static String getWeatherName(int uid) {
         return factorys.keySet().toArray()[uid].toString().toLowerCase();
     }
@@ -94,7 +118,7 @@ public class WeatherManager {
     public static boolean isRegistered(String weatherName) {
         return factorys.containsKey(weatherName.toLowerCase());
     }
-
+    @Deprecated
     public static int getUID(String weatherName) {
         List<WeatherFactory<?>> list = new ArrayList<WeatherFactory<?>>(factorys.values());
         return list.indexOf(factorys.get(weatherName));
@@ -108,5 +132,11 @@ public class WeatherManager {
 
     public static WeatherDefaults getWeatherDefaults(String weatherName) {
         return ((WeatherFactory<?>) factorys.get(weatherName.toLowerCase())).getDefaults();
+    }
+
+    public static Weather getWeatherByName(String weather, int region) {
+        WeatherFactory<?> wf = factorys.get(weather.toLowerCase());
+        Weather result = wf.create(new Object[] { region });
+        return result;
     }
 }

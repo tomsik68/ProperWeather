@@ -24,7 +24,11 @@ import java.util.List;
 import sk.tomsik68.pw.WeatherManager;
 import sk.tomsik68.pw.api.Weather;
 import sk.tomsik68.pw.plugin.ProperWeather;
-
+/**
+ * Another old, deprecated data structure
+ *
+ */
+@Deprecated
 public class WeatherData implements Externalizable {
     private static final long serialVersionUID = -7099393484035l;
 

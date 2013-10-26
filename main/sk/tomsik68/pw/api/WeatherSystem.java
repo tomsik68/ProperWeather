@@ -20,7 +20,7 @@ import java.util.List;
 import org.bukkit.World;
 
 import sk.tomsik68.pw.region.Region;
-import sk.tomsik68.pw.struct.WeatherData;
+import sk.tomsik68.pw.struct.WeatherDataExt;
 
 public abstract interface WeatherSystem {
     public abstract void runWeather(String paramString);
@@ -49,8 +49,6 @@ public abstract interface WeatherSystem {
 
     public abstract void changeControllers(boolean paramBoolean);
 
-    public abstract WeatherData getCurrentSituation(int paramInt);
-
     public abstract void setWeatherController(Region paramRegion, WeatherController paramWeatherController);
 
     public abstract void setWeatherController(int paramInt, WeatherController paramWeatherController);
@@ -63,9 +61,9 @@ public abstract interface WeatherSystem {
 
     public abstract List<String> getWorldList();
 
-    public abstract void setRegionData(Region region, WeatherData wd);
+    public abstract void setRegionData(Region region, WeatherDataExt wd);
 
-    public abstract WeatherData getRegionData(Region region);
+    public abstract WeatherDataExt getRegionData(Region region);
     
     public abstract WeatherCycle getWeatherCycle(int region);
     

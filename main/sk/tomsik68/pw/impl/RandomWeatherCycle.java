@@ -24,7 +24,7 @@ import sk.tomsik68.pw.api.BaseWeatherCycle;
 import sk.tomsik68.pw.api.Weather;
 import sk.tomsik68.pw.api.WeatherSystem;
 import sk.tomsik68.pw.region.Region;
-import sk.tomsik68.pw.struct.WeatherData;
+import sk.tomsik68.pw.struct.WeatherDataExt;
 
 public class RandomWeatherCycle extends BaseWeatherCycle {
     private static final Random rand = new Random();
@@ -35,11 +35,13 @@ public class RandomWeatherCycle extends BaseWeatherCycle {
 
     @Override
     public Weather nextWeather(Region region) {
-        WeatherData wd = weatherSystem.getRegionData(region);
+        WeatherDataExt wd = weatherSystem.getRegionData(region);
+        // FIXME: Random weather pick
         Weather weather = WeatherManager.randomWeather(region);
+        
         if (!weather.canBeStarted(wd.getPreviousWeather()))
             return nextWeather(region);
-        if ((WeatherManager.getUID(weather.getClass().getSimpleName()) != wd.getPreviousWeather().intValue()) && (!wd.wasWeather(weather)) && (rand.nextInt(100) < weather.getProbability())) {
+        if (!weather.getName().equalsIgnoreCase(wd.getPreviousWeather()) && (!wd.wasWeather(weather)) && (rand.nextInt(100) < weather.getProbability())) {
             weather.initWeather();
             wd.setDuration(rand.nextInt(weather.getMaxDuration()));
             weatherSystem.setRegionData(region, wd);
