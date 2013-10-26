@@ -18,6 +18,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -92,5 +93,29 @@ public class Util {
             ProperWeather.log.severe("Raining set failed.");
             e.printStackTrace();
         }
+    }
+
+    @Deprecated
+    /**
+     * This is only used while converting OLD data structures, DO NOT USE!!!
+     */
+    public static HashMap<Integer, String> generateOLDIntWeatherLookupMap() {
+        HashMap<Integer, String> result = new HashMap<Integer, String>();
+        HashMap<String, Object> strings = new HashMap<String, Object>();
+        strings.put("clear", null);
+        strings.put("rain", null);
+        strings.put("storm", null);
+        strings.put("hot", null);
+        strings.put("meteorstorm", null);
+        strings.put("itemrain", null);
+        strings.put("arrowrain", null);
+        strings.put("sandstorm", null);
+        strings.put("godanger", null);
+        strings.put("windy", null);
+        ArrayList<String> stringList = new ArrayList<String>(strings.keySet());
+        for (int i = 0; i < stringList.size(); ++i) {
+            result.put(i, stringList.get(i));
+        }
+        return result;
     }
 }

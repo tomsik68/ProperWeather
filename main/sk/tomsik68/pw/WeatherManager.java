@@ -53,7 +53,7 @@ public class WeatherManager {
     @Deprecated
     public static Weather getWeather(int id, int region) {
         Weather result;
-        ProperWeather.log.info(""+id);
+        ProperWeather.log.info("" + id);
         switch (id) {
         case 0:
             result = factorys.get("clear").create(region);
@@ -65,7 +65,7 @@ public class WeatherManager {
             result = factorys.get("storm").create(region);
             break;
         default:
-            ProperWeather.log.warning("The new version 1.1 removed some weather types which were included in the old 1.0.3. Please kill the server without saving PW weather data and read our ultimate migration guide if you want those weathers back. [id="+id+"]");
+            ProperWeather.log.warning("The new version 1.1 removed some weather types which were included in the old 1.0.3. Please kill the server without saving PW weather data and read our ultimate migration guide if you want those weathers back. [id=" + id + "]");
             result = factorys.get("clear").create(new Object[] { region });
             break;
         }
@@ -74,11 +74,6 @@ public class WeatherManager {
 
     public static Set<String> getRegisteredWeathers() {
         return factorys.keySet();
-    }
-
-    @Deprecated
-    public static Weather randomWeather(Region region) {
-        throw new NotImplementedException("This method is moving somewhere else!");
     }
 
     public static Weather getWeatherByName(String name, Region region) {
@@ -115,6 +110,7 @@ public class WeatherManager {
     public static boolean isRegistered(String weatherName) {
         return factorys.containsKey(weatherName.toLowerCase());
     }
+
     @Deprecated
     public static int getUID(String weatherName) {
         List<WeatherFactory<?>> list = new ArrayList<WeatherFactory<?>>(factorys.values());
@@ -136,5 +132,15 @@ public class WeatherManager {
         WeatherFactory<?> wf = factorys.get(weather.toLowerCase());
         Weather result = wf.create(new Object[] { region });
         return result;
+    }
+
+    private static final Random random = new Random();
+
+    public static Weather randomWeather(Region region) {
+        ArrayList<String> keyList = new ArrayList<String>(getRegisteredWeathers());
+        String name = keyList.get(random.nextInt(keyList.size()));
+        WeatherFactory<?> wf = factorys.get(name);
+        Weather weather = wf.create(region.getUID());
+        return weather;
     }
 }

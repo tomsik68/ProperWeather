@@ -34,6 +34,7 @@ public class WeatherData implements Externalizable {
 
     private LinkedList<Integer> list;
     private Weather currentWeather;
+    private int numberOfWeather;
     private int duration;
     private int region;
     private boolean canEverChange;
@@ -94,10 +95,7 @@ public class WeatherData implements Externalizable {
         canEverChange = in.readBoolean();
         duration = in.readInt();
         region = in.readInt();
-        int weatherUID = in.readInt();
-        currentWeather = WeatherManager.getWeather(weatherUID, region);
-        if (currentWeather == null)
-            System.out.println("Invalid data for region #" + region + ". Weather = null !");
+        numberOfWeather = in.readInt();
         list = ((LinkedList<Integer>) in.readObject());
     }
 
@@ -119,6 +117,14 @@ public class WeatherData implements Externalizable {
 
     @Override
     public String toString() {
-        return "WeatherData[region=" + region + " weather=" + currentWeather.getName() + " canEverChange=" + canEverChange + " duration=" + duration + "]";
+        return "WeatherData[region=" + region + " weatherNO=" + numberOfWeather + " canEverChange=" + canEverChange + " duration=" + duration + "]";
+    }
+
+    public int getNumberOfWeather() {
+        return numberOfWeather;
+    }
+
+    public void setNumberOfWeather(int numberOfWeather) {
+        this.numberOfWeather = numberOfWeather;
     }
 }

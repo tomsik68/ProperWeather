@@ -36,7 +36,6 @@ public class RandomWeatherCycle extends BaseWeatherCycle {
     @Override
     public Weather nextWeather(Region region) {
         WeatherDataExt wd = weatherSystem.getRegionData(region);
-        // FIXME: Random weather pick
         Weather weather = WeatherManager.randomWeather(region);
         
         if (!weather.canBeStarted(wd.getPreviousWeather()))

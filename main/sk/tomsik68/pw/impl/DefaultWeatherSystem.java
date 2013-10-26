@@ -28,6 +28,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 
 import sk.tomsik68.pw.DataManager;
+import sk.tomsik68.pw.Util;
 import sk.tomsik68.pw.WeatherManager;
 import sk.tomsik68.pw.api.RegionManager;
 import sk.tomsik68.pw.api.Weather;
@@ -141,35 +142,53 @@ public class DefaultWeatherSystem implements WeatherSystem {
         try {
             List<?> toLoad = DataManager.load();
             if ((toLoad != null) && (toLoad.size() > 0)) {
-                Iterator<?> localIterator;
                 if ((toLoad.get(0) instanceof SaveStruct)) {
-                    ProperWeather.log.fine("Detected old data file. Converting...");
-                    for (localIterator = toLoad.iterator(); localIterator.hasNext();) {
-                        Object s = localIterator.next();
-                        SaveStruct ss = (SaveStruct) s;
+                    HashMap<Integer, String> oldWeatherMap = Util.generateOLDIntWeatherLookupMap();
+                    ProperWeather.log.fine("Detected v1 data file. Converting...");
+                    for (Object obj : toLoad) {
+                        SaveStruct ss = (SaveStruct) obj;
                         WeatherData wd = ss.toWeatherData();
+
+                        cycles.put(wd.getRegion(), new RandomWeatherCycle(this));
+                        WeatherDataExt newData = new WeatherDataExt();
+                        newData.setCanEverChange(wd.canEverChange());
+                        newData.setDuration(wd.getDuration());
+                        newData.setRegion(wd.getRegion());
+                        Weather weather = WeatherManager.getWeatherByName(oldWeatherMap.get(wd.getNumberOfWeather()), newData.getRegion());
+                        weather.initWeather();
+                        newData.setCurrentWeather(weather);
+
                         weatherData.put(regionManager.getRegions(Bukkit.getWorld(ss.getWorldId())).get(0), new WeatherDataExt(wd));
-                        // FIXME weather access by ID
-                        stopAtWeather(Bukkit.getWorld(ss.getWorldId()).getName(), WeatherManager.getWeatherName(ss.getCurrentWeather().intValue()));
+
+                        stopAtWeather(Bukkit.getWorld(ss.getWorldId()).getName(), oldWeatherMap.get(wd.getNumberOfWeather()));
                         if (ss.isCanEverChange())
                             runWeather(Bukkit.getWorld(ss.getWorldId()).getName());
                     }
                     ProperWeather.log.fine("Conversion finished.");
                 } else if ((toLoad.get(0) instanceof WeatherData)) {
-                    ProperWeather.log.fine("Detected old data file. Converting...");
-                    for (localIterator = toLoad.iterator(); localIterator.hasNext();) {
-                        Object s = localIterator.next();
-                        WeatherData wd = (WeatherData) s;
+                    ProperWeather.log.fine("Detected v2 data file. Converting...");
+                    HashMap<Integer, String> oldWeatherMap = Util.generateOLDIntWeatherLookupMap();
+                    for (Object obj : toLoad) {
+                        WeatherData wd = (WeatherData) obj;
                         if (wd != null) {
                             try {
                                 regionManager.getRegion(Integer.valueOf(wd.getRegion())).getWorld();
                             } catch (Exception e) {
+                                e.printStackTrace();
                                 continue;
                             }
                             cycles.put(wd.getRegion(), new RandomWeatherCycle(this));
-                            weatherData.put(Integer.valueOf(wd.getRegion()), new WeatherDataExt(wd));
-                            Weather w = wd.getCurrentWeather();
-                            w.initWeather();
+                            WeatherDataExt newData = new WeatherDataExt();
+                            newData.setCanEverChange(wd.canEverChange());
+                            newData.setDuration(wd.getDuration());
+                            newData.setRegion(wd.getRegion());
+                            Weather weather = WeatherManager.getWeatherByName(oldWeatherMap.get(wd.getNumberOfWeather()), newData.getRegion());
+                            weather.initWeather();
+                            newData.setCurrentWeather(weather);
+                            ProperWeather.log.finest(String.format("Loaded: %s, converted to %s", wd.toString(), newData.toString()));
+                            weatherData.put(Integer.valueOf(wd.getRegion()), newData);
+                        } else {
+                            ProperWeather.log.finest("Got a null data!!!");
                         }
                     }
                     ProperWeather.log.fine("Conversion finished.");
@@ -182,12 +201,12 @@ public class DefaultWeatherSystem implements WeatherSystem {
                             } catch (Exception e) {
                                 continue;
                             }
-                            
-                            cycles.put(wd.getRegion(), new RandomWeatherCycle(this));
-                            weatherData.put(wd.getRegion(), wd);
-                            
                             Weather w = wd.getCurrentWeather();
                             w.initWeather();
+
+                            cycles.put(wd.getRegion(), new RandomWeatherCycle(this));
+                            weatherData.put(wd.getRegion(), wd);
+
                         }
                     }
                 } else
