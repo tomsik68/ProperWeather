@@ -19,6 +19,8 @@ import java.util.List;
 
 import org.bukkit.configuration.ConfigurationSection;
 
+import sk.tomsik68.pw.plugin.ProperWeather;
+
 public class WeatherDefinition {
     private final ConfigurationSection cs;
 
@@ -67,7 +69,7 @@ public class WeatherDefinition {
                 if (result == null)
                     throw new NullPointerException();
             } catch (Exception e) {
-                System.out.println("[ProperWeather] Invalid WeatherDefinition color: " + this.cs.getString(key));
+                ProperWeather.log.severe("[ProperWeather] Invalid WeatherDefinition color: " + this.cs.getString(key));
             }
         }
         return result;

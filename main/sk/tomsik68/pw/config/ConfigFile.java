@@ -45,8 +45,8 @@ public class ConfigFile {
     public EPermissions getPerms() {
         try {
             return EPermissions.valueOf(this.config.getString("default-permissions", "OP").toUpperCase());
-        } catch (Exception e) {
-            System.out.println("[ProperWeather] I don't know permission system called '" + config.getString(NODE_PERMISSION_SYSTEM) + "', but I think you're trying to setup Super-Perms. Setting up for you :)");
+        } catch (IllegalArgumentException iae) {
+            ProperWeather.log.severe("I don't know permission system called '" + config.getString(NODE_PERMISSION_SYSTEM) + "', but I think you're trying to setup Super-Perms. Setting up for you :)");
             return EPermissions.SP;
         }
     }
@@ -54,7 +54,7 @@ public class ConfigFile {
     public static void generateDefaultConfig(File file) {
         try {
             file.createNewFile();
-            System.out.println("[ProperWeather] Couldn't find configuration file. Creating a new one...");
+            ProperWeather.log.fine("[ProperWeather] Couldn't find configuration file. Creating a new one...");
             PrintWriter pw = new PrintWriter(new FileWriter(file));
             pw.println("# ProperWeather default configuration file");
             pw.println("# PW version: " + ProperWeather.getVersionInfo()[0]);
@@ -93,9 +93,9 @@ public class ConfigFile {
             }
             pw.flush();
             pw.close();
-            System.out.println("[ProperWeather] Configuration file created at: " + file.getAbsolutePath());
+            ProperWeather.log.fine("Configuration file created at: " + file.getAbsolutePath());
         } catch (Exception e) {
-            System.out.println("[ProperWeather] Configuration file creation error: ");
+            ProperWeather.log.severe("Configuration file creation error: ");
             e.printStackTrace();
         }
     }
@@ -126,7 +126,6 @@ public class ConfigFile {
 
     public RegionType getRegionType(String worldName) {
         if (!this.config.contains("region-type." + worldName)) {
-            System.out.println("[ProperWeather] Please setup region type for world '" + worldName + "'. Defaulting to world-specific region.");
             this.config.set("region-type." + worldName, "WORLD");
             try {
                 this.config.save(new File(ProperWeather.instance().getDataFolder(), "config.yml"));

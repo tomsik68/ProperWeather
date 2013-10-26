@@ -28,6 +28,7 @@ import sk.tomsik68.bukkitbp.v1.PackageResolver;
 import sk.tomsik68.bukkitbp.v1.ReflectionUtils;
 import sk.tomsik68.pw.api.Weather;
 import sk.tomsik68.pw.api.WeatherDefaults;
+import sk.tomsik68.pw.plugin.ProperWeather;
 
 //NOTBUKKIT > All the ugly reflection goes here...
 public class Util {
@@ -88,7 +89,7 @@ public class Util {
             Object packet = PackageResolver.getMinecraftClass("Packet70Bed").getConstructor(Integer.TYPE, Integer.TYPE).newInstance(isRaining ? 1 : 2, 0);
             ReflectionUtils.call(connection, "sendPacket", packet);
         } catch (Exception e) {
-            System.out.println("Raining set failed.");
+            ProperWeather.log.severe("Raining set failed.");
             e.printStackTrace();
         }
     }

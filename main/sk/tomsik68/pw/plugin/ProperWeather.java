@@ -81,14 +81,14 @@ public class ProperWeather extends JavaPlugin {
     public void onDisable() {
         // maybe we're disabling because of an error.
         if (weatherSystem != null) {
-            System.out.println("[ProperWeather] Killing bad projectiles...");
+            log.fine("Killing bad projectiles...");
             int c = ProjectileManager.size();
             ProjectileManager.killAll();
-            System.out.println("[ProperWeather] Killed " + c + " projectiles ;)");
+            log.fine("Killed " + c + " projectiles ;)");
             weatherSystem.deInit();
             getServer().getScheduler().cancelTask(weatherUpdateTask);
             getServer().getScheduler().cancelTask(regionUpdateTask);
-            System.out.println("ProperWeather disabled");
+            log.info("ProperWeather disabled");
         }
     }
 
@@ -97,17 +97,17 @@ public class ProperWeather extends JavaPlugin {
         try {
             PackageResolver.init(Bukkit.class.getClassLoader());
             CompatibilityChecker.test();
-            System.out.println("[ProperWeather] Bukkit compatibility test done. ");
+            log.fine("Bukkit compatibility test done. ");
         } catch (Exception e) {
             // DEBUG
             e.printStackTrace();
-            System.out.println("[ProperWeather] Incompatible CraftBukkit version. Plugin will now shutdown to prevent further issues.");
-            System.out.println("[ProperWeather] Error: " + e.getMessage());
+            log.severe("Incompatible CraftBukkit version. Plugin will now shutdown to prevent further issues.");
+            log.severe("Error: " + e.getMessage());
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
         File dataFolder = new File("plugins", getDescription().getName());
-        System.out.println("Enabling ProperWeather...");
+        log.info("Enabling ProperWeather...");
         if (!dataFolder.exists())
             dataFolder.mkdir();
         wim.init(dataFolder);
@@ -136,15 +136,17 @@ public class ProperWeather extends JavaPlugin {
         weatherUpdateTask = getServer().getScheduler().runTaskTimerAsynchronously(this, new WeatherUpdateTask(weatherSystem), 88L, TASK_PERIOD).getTaskId();
         regionUpdateTask = getServer().getScheduler().scheduleSyncRepeatingTask(this, new RegionUpdateTask(weatherSystem.getRegionManager()), 88L, 88L);
         if ((weatherUpdateTask == -1) || (regionUpdateTask == -1)) {
-            System.out.println(ChatColor.GREEN + "[ProperWeather] FATAL ERROR: Task scheduling failed! Plugin will now shut down itself");
+            log.severe(ChatColor.GREEN + "FATAL ERROR: Task scheduling failed! Plugin will now shut down itself");
             getServer().getPluginManager().disablePlugin(this);
         }
-        System.out.println("[ProperWeather] Permissions system: " + permissions.toString());
+        log.fine("Permissions system: " + permissions.toString());
         Set<String> keys = weatherSettings.getKeys(false);
 
         for (String weather : keys) {
-            if (!WeatherManager.isRegistered(weather))
+            if (!WeatherManager.isRegistered(weather)) {
+                log.finest("Registering new weather: " + weather);
                 WeatherManager.registerWeather(weather, new DefinedWeatherFactory(weather));
+            }
         }
         try {
             Translator.init(config.getTranslationFilePath());
@@ -158,7 +160,7 @@ public class ProperWeather extends JavaPlugin {
             mapperManager.completeScan();
             getServer().getPluginManager().registerEvents(mapperManager, this);
         }
-        System.out.println("ProperWeather " + getDescription().getVersion() + " is enabled");
+        log.info(getDescription().getVersion() + " is enabled");
     }
 
     public static ProperWeather instance() {
@@ -181,7 +183,7 @@ public class ProperWeather extends JavaPlugin {
         if (automatic) {
             try {
                 Class.forName("org.getspout.spoutapi.SpoutManager");
-                System.out.println("[ProperWeather] Spout detected");
+                log.info("Spout detected");
                 isSpout = true;
                 weatherSystem.changeControllers(isSpout);
                 sm = new SpoutModule(this);

@@ -22,6 +22,8 @@ import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
 
+import sk.tomsik68.pw.plugin.ProperWeather;
+
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.Core;
 import com.onarandombox.MultiverseCore.api.MVWorldManager;
@@ -39,8 +41,7 @@ public class MVInteraction {
 					.getPlugin("Multiverse-Core");
 			if ((test != null) && ((test instanceof Core))) {
 				this.man = ((Core) test).getMVWorldManager();
-				System.out
-						.println("[ProperWeather] Successfully hooked into Multiverse");
+				ProperWeather.log.info("Successfully hooked into Multiverse");
 				((MultiverseCore) test).incrementPluginCount();
 				return true;
 			}
@@ -55,7 +56,7 @@ public class MVInteraction {
 		Plugin test = server.getPluginManager().getPlugin("Multiverse-Core");
 		if ((test != null) && ((test instanceof Core))) {
 			this.man = ((Core) test).getMVWorldManager();
-			System.out.println("[ProperWeather] unhooked from Multiverse");
+			ProperWeather.log.info("unhooked from Multiverse");
 			((MultiverseCore) test).decrementPluginCount();
 		}
 	}

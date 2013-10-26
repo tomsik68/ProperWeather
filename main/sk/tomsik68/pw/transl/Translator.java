@@ -39,11 +39,11 @@ public class Translator {
         try {
             properties.load(new FileInputStream(path));
         } catch (FileNotFoundException e) {
-            System.out.println("[ProperWeather] Localisation file not found. Defaulting to built-in");
+            ProperWeather.log.info("Localisation file not found. Defaulting to built-in");
             try {
                 properties.load(Translator.class.getResourceAsStream("en.txt"));
                 try {
-                    System.out.println("[ProperWeather] Extracting built-in localisation file...");
+                    ProperWeather.log.fine("Extracting built-in localisation file...");
                     InputStream is = Translator.class.getResourceAsStream("en.txt");
                     File dest = new File(ProperWeather.instance().getDataFolder(), "en.txt");
                     byte[] bytes = new byte[is.available()];
@@ -53,13 +53,13 @@ public class Translator {
                     fos.write(bytes);
                     fos.flush();
                     fos.close();
-                    System.out.println("[ProperWeather] Extracting complete.");
+                    ProperWeather.log.fine("Extracting complete.");
                 } catch (Exception e2) {
-                    System.out.println("[ProperWeather] Extraction error:");
+                    ProperWeather.log.severe("Extraction error:");
                     e2.printStackTrace();
                 }
             } catch (Exception e1) {
-                System.out.println("[ProperWeather] FATAL ERROR: Can't find built-in localisation file. No messages... :(");
+                ProperWeather.log.severe("FATAL ERROR: Can't find built-in localisation file. No messages... :(");
                 e1.printStackTrace();
             }
         } catch (IOException e) {

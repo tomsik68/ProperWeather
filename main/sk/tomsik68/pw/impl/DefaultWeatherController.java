@@ -30,6 +30,7 @@ import sk.tomsik68.pw.api.WeatherController;
 import sk.tomsik68.pw.plugin.ProjectileManager;
 import sk.tomsik68.pw.plugin.ProperWeather;
 import sk.tomsik68.pw.region.Region;
+
 //NOTBUKKIT
 public class DefaultWeatherController implements WeatherController {
     protected final Region region;
@@ -40,6 +41,8 @@ public class DefaultWeatherController implements WeatherController {
 
     public DefaultWeatherController(Region region1) {
         this.region = region1;
+        if (region == null)
+            throw new NullPointerException("I'll not construct with NULL region!");
     }
 
     public void setSkyColor(Color color) {
@@ -125,7 +128,7 @@ public class DefaultWeatherController implements WeatherController {
 
     public void setRaining(boolean b) {
         this.rain = b;
-        for(Player p : region.getPlayers()){
+        for (Player p : region.getPlayers()) {
             update(p);
         }
     }
@@ -151,18 +154,19 @@ public class DefaultWeatherController implements WeatherController {
     }
 
     public void clear() {
-        //FIXME Kill all fireballs
+        // FIXME Kill all fireballs
         ProjectileManager.killAll(Fireball.class);
-        //DEBUG System.out.println("Weather Init...");
+        // DEBUG System.out.println("Weather Init...");
         setRaining(false);
         denyThundering();
-        for(BaseWeatherElement elem : elements){
+        for (BaseWeatherElement elem : elements) {
             elem.deactivate(this);
         }
     }
+
     @Override
-    public void finish(){
-        for(Player p : region.getPlayers()){
+    public void finish() {
+        for (Player p : region.getPlayers()) {
             Util.setRaining(p, isRaining());
             p.removeMetadata("pw.raining", ProperWeather.instance());
             p.removeMetadata("pw.moveTimestamp", ProperWeather.instance());
@@ -170,7 +174,7 @@ public class DefaultWeatherController implements WeatherController {
         }
         getRegion().getWorld();
         denyThundering();
-        for(BaseWeatherElement elem : elements){
+        for (BaseWeatherElement elem : elements) {
             elem.deactivate(this);
         }
     }
@@ -241,7 +245,8 @@ public class DefaultWeatherController implements WeatherController {
 
     @Override
     public void setSnowing(boolean snow) {
-        //sorry but this Controller is really stupid :/ check SpoutWeatherController for something better >:)
+        // sorry but this Controller is really stupid :/ check
+        // SpoutWeatherController for something better >:)
         this.rain = snow;
     }
 

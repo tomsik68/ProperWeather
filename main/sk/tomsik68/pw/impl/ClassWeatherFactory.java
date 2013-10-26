@@ -28,7 +28,7 @@ public class ClassWeatherFactory<W extends Weather> implements WeatherFactory<W>
         this.clazz = clazz1;
     }
 
-    public W create(Object[] args) {
+    public W create(Object... args) {
         if ((args != null) && (args.length >= 1) && (args[0] != null) && ((args[0] instanceof Integer))) {
             try {
                 return clazz.getConstructor(new Class[] { WeatherDescription.class, Integer.class }).newInstance(new Object[] { ProperWeather.instance().getWeatherDescription(clazz.getSimpleName().replace("Weather", "")), args[0] });

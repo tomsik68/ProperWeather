@@ -35,7 +35,7 @@ public class DataManager {
             oos.flush();
             oos.close();
         } catch (Exception e) {
-            System.out.println(Translator.translateString("error.save"));
+            ProperWeather.log.severe(Translator.translateString("error.save"));
             e.printStackTrace();
         }
     }
@@ -51,7 +51,7 @@ public class DataManager {
             ois.close();
             return (T) result;
         } catch (Exception e) {
-            System.out.println(Translator.translateString("error.load"));
+            ProperWeather.log.severe(Translator.translateString("error.load"));
             e.printStackTrace();
         }
         return (T) result;

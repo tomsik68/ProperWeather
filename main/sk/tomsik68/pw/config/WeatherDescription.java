@@ -85,9 +85,9 @@ public class WeatherDescription {
                 config.set(weather + ".biomes", allBiomes);
             }
             config.save(file);
-            System.out.println("[ProperWeather]Weather description file created at: " + file.getAbsolutePath());
+            ProperWeather.log.fine("[ProperWeather]Weather description file created at: " + file.getAbsolutePath());
         } catch (Exception e) {
-            System.out.println("[ProperWeather] Weather description file creation error: ");
+            ProperWeather.log.severe("[ProperWeather] Weather description file creation error: ");
             e.printStackTrace();
         }
     }

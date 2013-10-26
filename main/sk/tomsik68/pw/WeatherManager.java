@@ -53,6 +53,7 @@ public class WeatherManager {
     @Deprecated
     public static Weather getWeather(int id, int region) {
         Weather result;
+        ProperWeather.log.info(""+id);
         switch (id) {
         case 0:
             result = factorys.get("clear").create(region);
@@ -60,11 +61,11 @@ public class WeatherManager {
         case 1:
             result = factorys.get("rain").create(region);
             break;
-        case 2:
+        case 7:
             result = factorys.get("storm").create(region);
             break;
         default:
-            ProperWeather.log.warning("The new version 1.1 removed some weather types which were included in the old 1.0.3. Please kill the server without saving PW weather data and read our ultimate migration guide if you want those weathers back.");
+            ProperWeather.log.warning("The new version 1.1 removed some weather types which were included in the old 1.0.3. Please kill the server without saving PW weather data and read our ultimate migration guide if you want those weathers back. [id="+id+"]");
             result = factorys.get("clear").create(new Object[] { region });
             break;
         }
@@ -86,10 +87,6 @@ public class WeatherManager {
         return getWeatherByName(name, -1);
     }
 
-    public static Weather getWeatherByName(String name, WeatherController wc) {
-        return getWeatherByName(name, wc.getRegion());
-    }
-
     @Deprecated
     /**
      * Should work in theory, but no guarantee... 
@@ -108,8 +105,8 @@ public class WeatherManager {
             try {
                 wim.register(clazz.getSimpleName().replace("Weather", ""), Util.getWeatherDefaults(clazz));
             } catch (Exception e) {
-                System.out.println("[ProperWeather] Error: Weather registration failed.");
-                System.out.println("[ProperWeather] Weather Class: " + clazz.getSimpleName().replace("Weather", ""));
+                ProperWeather.log.severe("Error: Weather registration failed.");
+                ProperWeather.log.severe("Weather Class: " + clazz.getSimpleName().replace("Weather", ""));
                 e.printStackTrace();
             }
         }
@@ -127,6 +124,7 @@ public class WeatherManager {
     public static void registerWeather(String name, WeatherFactory<?> wf) {
         synchronized (lock) {
             factorys.put(name.toLowerCase(), wf);
+            ProperWeather.log.finest(String.format("Registering '%s' with factory '%s'", name, wf.getClass().getName()));
         }
     }
 

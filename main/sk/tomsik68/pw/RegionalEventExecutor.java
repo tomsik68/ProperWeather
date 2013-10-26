@@ -32,6 +32,7 @@ import org.bukkit.event.world.WorldEvent;
 import org.bukkit.plugin.EventExecutor;
 
 import sk.tomsik68.pw.api.BaseWeatherElement;
+import sk.tomsik68.pw.plugin.ProperWeather;
 import sk.tomsik68.pw.region.Region;
 
 public class RegionalEventExecutor implements EventExecutor {
@@ -91,7 +92,7 @@ public class RegionalEventExecutor implements EventExecutor {
         try {
             m.invoke(arg0, event);
         } catch (Exception e) {
-            System.out.println("[ProperWeather-RegionalEventExecutor] Method invocation error for :'" + arg0.getClass().getName() + "'");
+            ProperWeather.log.severe("(RegionalEventExecutor) Method invocation error for :'" + arg0.getClass().getName() + "'");
             e.printStackTrace();
         }
     }
