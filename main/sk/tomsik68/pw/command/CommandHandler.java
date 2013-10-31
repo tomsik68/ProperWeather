@@ -16,6 +16,7 @@ package sk.tomsik68.pw.command;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -24,7 +25,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import sk.tomsik68.pw.RegionType;
-import sk.tomsik68.pw.WeatherManager;
 import sk.tomsik68.pw.api.WeatherSystem;
 import sk.tomsik68.pw.mv.MVInteraction;
 import sk.tomsik68.pw.plugin.ProperWeather;
@@ -43,16 +43,17 @@ public class CommandHandler implements ICommandHandler {
             sender.sendMessage("[ProperWeather]" + Translator.translateString("notify.noperm"));
             return;
         }
-        if (!WeatherManager.isRegistered(weatherName)) {
-            sender.sendMessage(ChatColor.RED + "[ProperWeather]" + Translator.translateString("error.nofound.weather", new Object[] { weatherName }));
-            return;
-        }
         if (Bukkit.getServer().getWorld(worldName) == null) {
             sender.sendMessage(ChatColor.RED + "[ProperWeather]" + Translator.translateString("error.nofound.world", new Object[] { worldName }));
             return;
         }
-        weatherSystem.stopAtWeather(worldName, weatherName);
-        sender.sendMessage(ProperWeather.color + "[ProperWeather]" + Translator.translateString("notify.stopped", new Object[] { weatherName, worldName }));
+        try {
+            weatherSystem.stopAtWeather(worldName, weatherName);
+            sender.sendMessage(ProperWeather.color + "[ProperWeather]" + Translator.translateString("notify.stopped", new Object[] { weatherName, worldName }));
+        } catch (NoSuchElementException nsee) {
+            sender.sendMessage(ChatColor.RED + "[ProperWeather]" + Translator.translateString("error.nofound.weather", new Object[] { weatherName }));
+        }
+
     }
 
     public void run(CommandSender sender, String worldName) {
@@ -93,7 +94,7 @@ public class CommandHandler implements ICommandHandler {
             sender.sendMessage(ChatColor.RED + "[ProperWeather]" + Translator.translateString("notify.noperm"));
             return;
         }
-        Collection<String> weathers = weatherSystem.getWeatherList();
+        Collection<String> weathers = getRegisteredWeathers();
         if ((weathers == null) || (weathers.isEmpty())) {
             sender.sendMessage(ProperWeather.color + "[ProperWeather]" + Translator.translateString("notify.noweathers"));
         } else {
@@ -106,6 +107,10 @@ public class CommandHandler implements ICommandHandler {
             sender.sendMessage(ProperWeather.color + "[ProperWeather]" + Translator.translateString("notify.weathers"));
             sender.sendMessage(sb.deleteCharAt(sb.length() - 1).toString());
         }
+    }
+
+    private Collection<String> getRegisteredWeathers() {
+        return ProperWeather.instance().getWeathers().getRegistered();
     }
 
     public void disable(CommandSender sender, String worldName) {

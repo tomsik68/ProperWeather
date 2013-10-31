@@ -17,12 +17,13 @@ package sk.tomsik68.pw.impl;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.util.ArrayList;
 import java.util.Random;
 
-import sk.tomsik68.pw.WeatherManager;
 import sk.tomsik68.pw.api.BaseWeatherCycle;
 import sk.tomsik68.pw.api.Weather;
 import sk.tomsik68.pw.api.WeatherSystem;
+import sk.tomsik68.pw.plugin.ProperWeather;
 import sk.tomsik68.pw.region.Region;
 import sk.tomsik68.pw.struct.WeatherDataExt;
 
@@ -36,8 +37,10 @@ public class RandomWeatherCycle extends BaseWeatherCycle {
     @Override
     public Weather nextWeather(Region region) {
         WeatherDataExt wd = weatherSystem.getRegionData(region);
-        Weather weather = WeatherManager.randomWeather(region);
-        
+
+        ArrayList<String> weathers = new ArrayList<String>(ProperWeather.instance().getWeathers().getRegistered());
+        Weather weather = ProperWeather.instance().getWeathers().createWeather(weathers.get(rand.nextInt(weathers.size())), region.getUID());
+
         if (!weather.canBeStarted(wd.getPreviousWeather()))
             return nextWeather(region);
         if (!weather.getName().equalsIgnoreCase(wd.getPreviousWeather()) && (!wd.wasWeather(weather)) && (rand.nextInt(100) < weather.getProbability())) {
@@ -55,6 +58,11 @@ public class RandomWeatherCycle extends BaseWeatherCycle {
 
     @Override
     public void writeExternal(ObjectOutput arg0) throws IOException {
+    }
+
+    @Override
+    public String getName() {
+        return "~";
     }
 
 }

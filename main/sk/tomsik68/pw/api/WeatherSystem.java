@@ -14,7 +14,6 @@
     along with ProperWeather.  If not, see <http://www.gnu.org/licenses/>.*/
 package sk.tomsik68.pw.api;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.bukkit.World;
@@ -24,8 +23,6 @@ import sk.tomsik68.pw.struct.WeatherDataExt;
 
 public abstract interface WeatherSystem {
     public abstract void runWeather(String paramString);
-
-    public abstract Collection<String> getWeatherList();
 
     public abstract void stopAtWeather(String paramString1, String paramString2);
 

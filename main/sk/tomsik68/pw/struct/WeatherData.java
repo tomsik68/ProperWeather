@@ -21,19 +21,19 @@ import java.io.ObjectOutput;
 import java.util.LinkedList;
 import java.util.List;
 
-import sk.tomsik68.pw.WeatherManager;
-import sk.tomsik68.pw.api.Weather;
+import org.apache.commons.lang.NotImplementedException;
+
 import sk.tomsik68.pw.plugin.ProperWeather;
+
 /**
  * Another old, deprecated data structure
- *
+ * 
  */
 @Deprecated
 public class WeatherData implements Externalizable {
     private static final long serialVersionUID = -7099393484035l;
 
     private LinkedList<Integer> list;
-    private Weather currentWeather;
     private int numberOfWeather;
     private int duration;
     private int region;
@@ -41,23 +41,6 @@ public class WeatherData implements Externalizable {
 
     public WeatherData() {
         list = new LinkedList<Integer>();
-    }
-
-    public boolean wasWeather(Weather weather) {
-        return list.contains(Integer.valueOf(WeatherManager.getUID(weather.getClass().getSimpleName())));
-    }
-
-    public void setCurrentWeather(Weather currentWeather1) {
-        if (list == null)
-            list = new LinkedList<Integer>();
-        list.add(Integer.valueOf(WeatherManager.getUID(currentWeather1.getName())));
-        if (list.size() > 5)
-            list.removeFirst();
-        this.currentWeather = currentWeather1;
-    }
-
-    public Weather getCurrentWeather() {
-        return currentWeather;
     }
 
     public void setDuration(int duration1) {
@@ -100,11 +83,7 @@ public class WeatherData implements Externalizable {
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeBoolean(canEverChange);
-        out.writeInt(duration);
-        out.writeInt(region);
-        out.writeInt(WeatherManager.getUID(currentWeather.getName()));
-        out.writeObject(list);
+        throw new NotImplementedException("Don't dare to write the old format!!!");
     }
 
     public int getRegion() {

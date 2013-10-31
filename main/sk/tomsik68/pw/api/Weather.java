@@ -16,13 +16,14 @@ package sk.tomsik68.pw.api;
 
 import sk.tomsik68.pw.config.WeatherDescription;
 import sk.tomsik68.pw.plugin.ProperWeather;
-import sk.tomsik68.pw.region.BiomeRegion;
-/** The weather.
+
+/**
+ * The weather.
  * 
  * @author Tomsik68
- *
+ * 
  */
-public abstract class Weather implements Cloneable {
+public abstract class Weather {
     private int regionID;
     protected WeatherDescription wd;
 
@@ -30,6 +31,7 @@ public abstract class Weather implements Cloneable {
         this.regionID = region.intValue();
         this.wd = wd1;
     }
+
     /**
      * 
      * @return {@link WeatherController} to be used by the weather.
@@ -37,15 +39,22 @@ public abstract class Weather implements Cloneable {
     public final WeatherController getController() {
         return ProperWeather.instance().getWeatherSystem().getWeatherController(regionID);
     }
+
     /**
      * 
      * @param previousID
-     * @return Whether this weather can be started after previous one. This option is specified by weather's {@link WeatherDescription}. Devs can only make defaults. 
+     * @return Whether this weather can be started after previous one. This
+     *         option is specified by weather's {@link WeatherDescription}. Devs
+     *         can only make defaults.
      */
     public final boolean canBeStarted(String previous) {
         return this.wd.canBeAfter(previous);
-        //return this.wd.canBeAfter(previous) && ((!(getController().getRegion() instanceof BiomeRegion)) || (getController().getRegion() instanceof BiomeRegion && wd.getAllowedBiomes().contains(((BiomeRegion)getController().getRegion()).getBiome().name().toLowerCase())));
+        // return this.wd.canBeAfter(previous) &&
+        // ((!(getController().getRegion() instanceof BiomeRegion)) ||
+        // (getController().getRegion() instanceof BiomeRegion &&
+        // wd.getAllowedBiomes().contains(((BiomeRegion)getController().getRegion()).getBiome().name().toLowerCase())));
     }
+
     /**
      * 
      * @return Random time probability.
@@ -55,6 +64,7 @@ public abstract class Weather implements Cloneable {
             this.wd = ProperWeather.instance().getWeatherDescription(getClass().getSimpleName().replace("Weather", ""));
         return this.wd.getRandomTimeProbability();
     }
+
     /**
      * 
      * @return Probability of this weather.
@@ -62,12 +72,16 @@ public abstract class Weather implements Cloneable {
     public final int getProbability() {
         return this.wd.getProbability();
     }
-    /** Inits weather (clear sky, start raining etc.)
+
+    /**
+     * Inits weather (clear sky, start raining etc.)
      * 
      */
     public abstract void initWeather();
-    /** What happens on random time of the weather
-     *  (if nothing, random time probability should be 0.
+
+    /**
+     * What happens on random time of the weather (if nothing, random time
+     * probability should be 0.
      */
     public void onRandomTime() {
     }
@@ -75,7 +89,7 @@ public abstract class Weather implements Cloneable {
     public final int getMaxDuration() {
         return this.wd.getMaxDuration();
     }
-    
+
     public final String getName() {
         return this.wd.getName();
     }

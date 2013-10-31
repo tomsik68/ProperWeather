@@ -14,6 +14,7 @@
     along with ProperWeather.  If not, see <http://www.gnu.org/licenses/>.*/
 package sk.tomsik68.pw;
 
+import java.io.InvalidObjectException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -79,8 +80,7 @@ public class Util {
                 return (WeatherDefaults) f.get(null);
             }
         }
-
-        return null;
+        throw new InvalidObjectException(wClazz.getName()+" is invalid! No @WeatherDefaults annotation found!");
     }
 
     public static void setRaining(Player p, boolean isRaining) {

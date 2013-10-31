@@ -17,8 +17,10 @@ package sk.tomsik68.pw;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -35,12 +37,13 @@ public class WeatherInfoManager {
         weatherName = weatherName.toLowerCase();
         if (!weatherSettings.contains(weatherName)) {
             WeatherDefaults wd = defaults.get(weatherName);
-            if (wd == null) {
-                wd = WeatherManager.getWeatherDefaults(weatherName);
-                if (wd == null)
-                    throw new NullPointerException("No data about " + weatherName);
-                defaults.put(weatherName, wd);
-            }
+            Validate.notNull(wd);
+            /*
+             * if (wd == null) { wd =
+             * WeatherManager.getWeatherDefaults(weatherName); if (wd == null)
+             * throw new NullPointerException("No data about " + weatherName);
+             * defaults.put(weatherName, wd); }
+             */
 
             weatherSettings.createSection(weatherName);
             weatherSettings.set(weatherName + ".probability", Integer.valueOf(wd.getDefProbability()));
@@ -63,24 +66,24 @@ public class WeatherInfoManager {
         return new WeatherDefinition(weatherSettings.getConfigurationSection(weatherName));
     }
 
-    public void init(File dataFolder) {
-        WeatherManager.init(this);
+    public void init(File dataFolder, Collection<String> registeredWeathers) {
         if (weatherSettingsFile == null)
             weatherSettingsFile = new File(dataFolder, "weathers.yml");
         if (!weatherSettingsFile.exists() || (weatherSettingsFile.exists() && weatherSettingsFile.length() == 0))
-            WeatherDescription.generateDefaultWeathersConfig(weatherSettingsFile);
+            WeatherDescription.generateDefaultWeathersConfig(weatherSettingsFile, registeredWeathers);
         weatherSettings = YamlConfiguration.loadConfiguration(weatherSettingsFile);
         defaults.clear();
-        for (String weatherName : WeatherManager.getRegisteredWeathers()) {
+        for (String weatherName : registeredWeathers) {
             if (!weatherSettings.isConfigurationSection(weatherName)) {
                 if (!weatherSettings.contains(weatherName)) {
                     WeatherDefaults wd = defaults.get(weatherName);
-                    if (wd == null) {
-                        wd = WeatherManager.getWeatherDefaults(weatherName);
-                        if (wd == null)
-                            throw new NullPointerException("No data about " + weatherName);
-                        defaults.put(weatherName, wd);
-                    }
+                    Validate.notNull(wd);
+                    /*
+                     * if (wd == null) { wd =
+                     * WeatherManager.getWeatherDefaults(weatherName); if (wd ==
+                     * null) throw new NullPointerException("No data about " +
+                     * weatherName); defaults.put(weatherName, wd); }
+                     */
 
                     weatherSettings.createSection(weatherName);
                     weatherSettings.set(weatherName + ".probability", Integer.valueOf(wd.getDefProbability()));

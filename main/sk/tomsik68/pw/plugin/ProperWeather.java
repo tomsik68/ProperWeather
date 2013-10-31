@@ -16,8 +16,11 @@ package sk.tomsik68.pw.plugin;
 
 import java.awt.Color;
 import java.io.File;
+import java.io.IOException;
 import java.util.Set;
 import java.util.logging.Logger;
+
+import javax.naming.NameAlreadyBoundException;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -29,7 +32,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import sk.tomsik68.bukkitbp.v1.PackageResolver;
 import sk.tomsik68.permsguru.EPermissions;
 import sk.tomsik68.pw.WeatherInfoManager;
-import sk.tomsik68.pw.WeatherManager;
 import sk.tomsik68.pw.api.BiomeMapperManager;
 import sk.tomsik68.pw.api.WeatherDefaults;
 import sk.tomsik68.pw.api.WeatherSystem;
@@ -41,7 +43,7 @@ import sk.tomsik68.pw.config.WeatherDescription;
 import sk.tomsik68.pw.impl.DefaultBiomeMapperManager;
 import sk.tomsik68.pw.impl.DefaultWeatherSystem;
 import sk.tomsik68.pw.impl.DefinedWeatherFactory;
-import sk.tomsik68.pw.spout.SpoutModule;
+import sk.tomsik68.pw.impl.registry.weather.WeatherFactoryRegistry;
 import sk.tomsik68.pw.transl.Translator;
 
 public class ProperWeather extends JavaPlugin {
@@ -59,20 +61,19 @@ public class ProperWeather extends JavaPlugin {
 
     public EPermissions permissions;
 
-    private SpoutModule sm;
-
     private ConfigFile config;
     private FileConfiguration weatherSettings = null;
 
     public static ChatColor factColor = ChatColor.GRAY;
     public static ChatColor color = ChatColor.GREEN;
 
-    private final WeatherInfoManager wim = new WeatherInfoManager();
+    private WeatherInfoManager wim = new WeatherInfoManager();
 
     private int weatherUpdateTask;
     private int regionUpdateTask;
 
     private final BiomeMapperManager mapperManager = new DefaultBiomeMapperManager();
+    private WeatherFactoryRegistry weatherFactoryRegistry;
 
     public ProperWeather() {
         serverListener = new PWServerListener();
@@ -110,7 +111,14 @@ public class ProperWeather extends JavaPlugin {
         log.info("Enabling ProperWeather...");
         if (!dataFolder.exists())
             dataFolder.mkdir();
-        wim.init(dataFolder);
+        weatherFactoryRegistry = new WeatherFactoryRegistry(wim = new WeatherInfoManager());
+        try {
+            weatherFactoryRegistry.load(dataFolder);
+        } catch (IOException e1) {
+            log.severe("ERROR: Failed to load");
+            e1.printStackTrace();
+        }
+
         if (!new File(dataFolder, "config.yml").exists()) {
             ConfigFile.generateDefaultConfig(new File(getDataFolder(), "config.yml"));
         }
@@ -118,7 +126,7 @@ public class ProperWeather extends JavaPlugin {
         permissions = config.getPerms();
         color = config.getColorTheme()[0];
         factColor = config.getColorTheme()[1];
-        weatherSystem = new DefaultWeatherSystem();
+        weatherSystem = new DefaultWeatherSystem(weatherFactoryRegistry);
 
         weatherSettings = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "weathers.yml"));
         weatherListener = new PWWeatherListener(weatherSystem);
@@ -140,12 +148,17 @@ public class ProperWeather extends JavaPlugin {
             getServer().getPluginManager().disablePlugin(this);
         }
         log.fine("Permissions system: " + permissions.toString());
+
         Set<String> keys = weatherSettings.getKeys(false);
 
         for (String weather : keys) {
-            if (!WeatherManager.isRegistered(weather)) {
+            if (!weatherFactoryRegistry.isRegistered(weather)) {
                 log.finest("Registering new weather: " + weather);
-                WeatherManager.registerWeather(weather, new DefinedWeatherFactory(weather));
+                try {
+                    weatherFactoryRegistry.register(weather, new DefinedWeatherFactory(weather));
+                } catch (NameAlreadyBoundException e) {
+                    e.printStackTrace();
+                }
             }
         }
         try {
@@ -186,10 +199,7 @@ public class ProperWeather extends JavaPlugin {
                 log.info("Spout detected");
                 isSpout = true;
                 weatherSystem.changeControllers(isSpout);
-                sm = new SpoutModule(this);
-                sm.init();
             } catch (ClassNotFoundException cnfe) {
-                sm = null;
                 isSpout = false;
                 weatherSystem.changeControllers(isSpout);
             }
@@ -197,12 +207,6 @@ public class ProperWeather extends JavaPlugin {
         }
         isSpout = enabled;
         weatherSystem.changeControllers(isSpout);
-        if (isSpout) {
-            sm = new SpoutModule(this);
-            sm.init();
-        } else {
-            sm = null;
-        }
     }
 
     public void reload() {
@@ -232,5 +236,9 @@ public class ProperWeather extends JavaPlugin {
 
     public BiomeMapperManager getMapperManager() {
         return mapperManager;
+    }
+
+    public WeatherFactoryRegistry getWeathers() {
+        return weatherFactoryRegistry;
     }
 }

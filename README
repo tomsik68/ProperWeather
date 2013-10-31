@@ -3,3 +3,4 @@ Source is split up into 3 folders for better viewing:
 main - Contains plugin source and API
 ext - Contains extensions which hook into the main API
 test - Contains JUnit tests of some things I believe need testing
+depr - Deprecated stuff for backup

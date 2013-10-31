@@ -15,8 +15,6 @@
 package sk.tomsik68.pw.impl;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -29,17 +27,16 @@ import org.bukkit.World;
 
 import sk.tomsik68.pw.DataManager;
 import sk.tomsik68.pw.Util;
-import sk.tomsik68.pw.WeatherManager;
 import sk.tomsik68.pw.api.RegionManager;
 import sk.tomsik68.pw.api.Weather;
 import sk.tomsik68.pw.api.WeatherController;
 import sk.tomsik68.pw.api.WeatherCycle;
 import sk.tomsik68.pw.api.WeatherSystem;
+import sk.tomsik68.pw.impl.registry.weather.WeatherFactoryRegistry;
 import sk.tomsik68.pw.mv.MVInteraction;
 import sk.tomsik68.pw.plugin.ProperWeather;
 import sk.tomsik68.pw.region.Region;
 import sk.tomsik68.pw.spout.SpoutWeatherController;
-import sk.tomsik68.pw.struct.SaveStruct;
 import sk.tomsik68.pw.struct.WeatherData;
 import sk.tomsik68.pw.struct.WeatherDataExt;
 
@@ -49,11 +46,13 @@ public class DefaultWeatherSystem implements WeatherSystem {
     private Map<Integer, WeatherCycle> cycles;
     private RegionManager regionManager = new SimpleRegionManager();
     private Random rand = new Random();
+    private final WeatherFactoryRegistry weathers;
 
-    public DefaultWeatherSystem() {
+    public DefaultWeatherSystem(WeatherFactoryRegistry weathers) {
         weatherData = new HashMap<Integer, WeatherDataExt>();
         controllers = new HashMap<Integer, WeatherController>();
         cycles = new HashMap<Integer, WeatherCycle>();
+        this.weathers = weathers;
 
     }
 
@@ -85,13 +84,6 @@ public class DefaultWeatherSystem implements WeatherSystem {
             MVInteraction.getInstance().notifyChange(region, b);
     }
 
-    public Collection<String> getWeatherList() {
-        ArrayList<String> list = new ArrayList<String>();
-        list.addAll(WeatherManager.getRegisteredWeathers());
-        Collections.sort(list);
-        return list;
-    }
-
     public void stopAtWeather(String worldName, String weatherName) {
         List<Integer> reg = regionManager.getRegions(Bukkit.getWorld(worldName));
         if (reg == null) {
@@ -118,7 +110,7 @@ public class DefaultWeatherSystem implements WeatherSystem {
         if (!controllers.containsKey(reg.getUID()))
             controllers.put(reg.getUID(), ProperWeather.isSpout ? new SpoutWeatherController(reg) : new DefaultWeatherController(reg));
         setRegionData(reg, wd);
-        Weather w = WeatherManager.getWeatherByName(weatherName, region);
+        Weather w = weathers.createWeather(weatherName, region);
         w.initWeather();
         getRegionData(reg).setCurrentWeather(w);
         getRegionData(reg).setCanEverChange(false);
@@ -142,30 +134,7 @@ public class DefaultWeatherSystem implements WeatherSystem {
         try {
             List<?> toLoad = DataManager.load();
             if ((toLoad != null) && (toLoad.size() > 0)) {
-                if ((toLoad.get(0) instanceof SaveStruct)) {
-                    HashMap<Integer, String> oldWeatherMap = Util.generateOLDIntWeatherLookupMap();
-                    ProperWeather.log.fine("Detected v1 data file. Converting...");
-                    for (Object obj : toLoad) {
-                        SaveStruct ss = (SaveStruct) obj;
-                        WeatherData wd = ss.toWeatherData();
-
-                        cycles.put(wd.getRegion(), new RandomWeatherCycle(this));
-                        WeatherDataExt newData = new WeatherDataExt();
-                        newData.setCanEverChange(wd.canEverChange());
-                        newData.setDuration(wd.getDuration());
-                        newData.setRegion(wd.getRegion());
-                        Weather weather = WeatherManager.getWeatherByName(oldWeatherMap.get(wd.getNumberOfWeather()), newData.getRegion());
-                        weather.initWeather();
-                        newData.setCurrentWeather(weather);
-
-                        weatherData.put(regionManager.getRegions(Bukkit.getWorld(ss.getWorldId())).get(0), new WeatherDataExt(wd));
-
-                        stopAtWeather(Bukkit.getWorld(ss.getWorldId()).getName(), oldWeatherMap.get(wd.getNumberOfWeather()));
-                        if (ss.isCanEverChange())
-                            runWeather(Bukkit.getWorld(ss.getWorldId()).getName());
-                    }
-                    ProperWeather.log.fine("Conversion finished.");
-                } else if ((toLoad.get(0) instanceof WeatherData)) {
+                if ((toLoad.get(0) instanceof WeatherData)) {
                     ProperWeather.log.fine("Detected v2 data file. Converting...");
                     HashMap<Integer, String> oldWeatherMap = Util.generateOLDIntWeatherLookupMap();
                     for (Object obj : toLoad) {
@@ -182,7 +151,7 @@ public class DefaultWeatherSystem implements WeatherSystem {
                             newData.setCanEverChange(wd.canEverChange());
                             newData.setDuration(wd.getDuration());
                             newData.setRegion(wd.getRegion());
-                            Weather weather = WeatherManager.getWeatherByName(oldWeatherMap.get(wd.getNumberOfWeather()), newData.getRegion());
+                            Weather weather = weathers.createWeather(oldWeatherMap.get(wd.getNumberOfWeather()), newData.getRegion());
                             weather.initWeather();
                             newData.setCurrentWeather(weather);
                             ProperWeather.log.finest(String.format("Loaded: %s, converted to %s", wd.toString(), newData.toString()));
@@ -193,6 +162,7 @@ public class DefaultWeatherSystem implements WeatherSystem {
                     }
                     ProperWeather.log.fine("Conversion finished.");
                 } else if (toLoad.get(0) instanceof WeatherDataExt) {
+                    ProperWeather.log.fine("Hell yeah! Regular save file! Loading...");
                     for (Object obj : toLoad) {
                         WeatherDataExt wd = (WeatherDataExt) obj;
                         if (wd != null) {
@@ -209,6 +179,7 @@ public class DefaultWeatherSystem implements WeatherSystem {
 
                         }
                     }
+                    ProperWeather.log.fine("Loading finished.");
                 } else
                     ProperWeather.log.severe("Detected corrupted/incompatible save file. Class=" + toLoad.get(0).getClass());
             }
@@ -217,9 +188,9 @@ public class DefaultWeatherSystem implements WeatherSystem {
                 ProperWeather.log.info("You can use /pw im to import weather settings from multiverse.");
                 return;
             }
-            DataManager.save(new ArrayList<WeatherData>());
+            DataManager.save(new ArrayList<WeatherDataExt>());
             // cancel raining, so minecraft server doesn't change it(raining is
-            // handled via packets...)
+            // handled via packets in Util class)
             for (String w : getWorldList()) {
                 Bukkit.getWorld(w).setStorm(false);
             }
@@ -242,7 +213,7 @@ public class DefaultWeatherSystem implements WeatherSystem {
                 if (cycles.containsKey(r))
                     weather = cycles.get(r).nextWeather(region);
                 else
-                    weather = WeatherManager.getWeatherByName("clear", r);
+                    weather = weathers.createWeather("clear", r);
                 wd.setCurrentWeather(weather);
                 wd.setDuration(weather.getMaxDuration());
                 weather.initWeather();

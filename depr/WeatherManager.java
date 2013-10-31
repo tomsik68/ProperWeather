@@ -20,10 +20,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-import org.apache.commons.lang.NotImplementedException;
-
 import sk.tomsik68.pw.api.Weather;
-import sk.tomsik68.pw.api.WeatherController;
 import sk.tomsik68.pw.api.WeatherDefaults;
 import sk.tomsik68.pw.api.WeatherFactory;
 import sk.tomsik68.pw.impl.ClassWeatherFactory;

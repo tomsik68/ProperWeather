@@ -17,14 +17,13 @@ package sk.tomsik68.pw.config;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import org.bukkit.block.Biome;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import sk.tomsik68.pw.WeatherManager;
 import sk.tomsik68.pw.api.WeatherDefaults;
 import sk.tomsik68.pw.plugin.ProperWeather;
 
@@ -56,9 +55,8 @@ public class WeatherDescription {
         return cs.getInt("probability");
     }
 
-    public static void generateDefaultWeathersConfig(File file) {
+    public static void generateDefaultWeathersConfig(File file, Collection<String> weathers) {
         try {
-            Set<String> weathers = WeatherManager.getRegisteredWeathers();
             file.createNewFile();
             YamlConfiguration config = new YamlConfiguration();
             StringBuilder sb = new StringBuilder();
@@ -85,9 +83,9 @@ public class WeatherDescription {
                 config.set(weather + ".biomes", allBiomes);
             }
             config.save(file);
-            ProperWeather.log.fine("[ProperWeather]Weather description file created at: " + file.getAbsolutePath());
+            ProperWeather.log.fine("Weather description file created at: " + file.getAbsolutePath());
         } catch (Exception e) {
-            ProperWeather.log.severe("[ProperWeather] Weather description file creation error: ");
+            ProperWeather.log.severe("Weather description file creation error: ");
             e.printStackTrace();
         }
     }

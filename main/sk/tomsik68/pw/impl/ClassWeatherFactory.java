@@ -40,11 +40,10 @@ public class ClassWeatherFactory<W extends Weather> implements WeatherFactory<W>
     }
 
     public WeatherDefaults getDefaults() {
-        try{
+        try {
             return Util.getWeatherDefaults(clazz);
-        }catch (Exception e) {
-            
+        } catch (Exception e) {
+            throw new RuntimeException("Couldn't get WeatherDefaults from " + clazz.getName(), e);
         }
-        return null;
     }
 }
