@@ -18,15 +18,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import sk.tomsik68.pw.RegionType;
 import sk.tomsik68.pw.api.WeatherSystem;
-import sk.tomsik68.pw.mv.MVInteraction;
 import sk.tomsik68.pw.plugin.ProperWeather;
 import sk.tomsik68.pw.region.Region;
 import sk.tomsik68.pw.transl.Translator;
@@ -35,6 +34,7 @@ public class CommandHandler implements ICommandHandler {
     private final WeatherSystem weatherSystem;
 
     public CommandHandler(WeatherSystem ws) {
+        Validate.notNull(ws);
         weatherSystem = ws;
     }
 
@@ -48,10 +48,12 @@ public class CommandHandler implements ICommandHandler {
             return;
         }
         try {
-            weatherSystem.stopAtWeather(worldName, weatherName);
+            weatherSystem.startCycle("stop", worldName, weatherName);
             sender.sendMessage(ProperWeather.color + "[ProperWeather]" + Translator.translateString("notify.stopped", new Object[] { weatherName, worldName }));
         } catch (NoSuchElementException nsee) {
             sender.sendMessage(ChatColor.RED + "[ProperWeather]" + Translator.translateString("error.nofound.weather", new Object[] { weatherName }));
+        } catch (NullPointerException npe) {
+            sender.sendMessage(ChatColor.RED + "[ProperWeather] " + npe.getMessage());
         }
 
     }
@@ -65,7 +67,7 @@ public class CommandHandler implements ICommandHandler {
             sender.sendMessage(ChatColor.RED + "[ProperWeather]" + Translator.translateString("error.nofound.world", new Object[] { worldName }));
             return;
         }
-        weatherSystem.runWeather(worldName);
+        weatherSystem.startCycle("random", worldName, "");
         sender.sendMessage(ProperWeather.color + "[ProperWeather]" + Translator.translateString("notify.running", new Object[] { worldName }));
     }
 
@@ -164,26 +166,6 @@ public class CommandHandler implements ICommandHandler {
         }
     }
 
-    public void im(CommandSender sender) {
-        if (!verifyPermission(sender, "pw.im")) {
-            sender.sendMessage(ChatColor.RED + "[ProperWeather]" + Translator.translateString("notify.noperm"));
-            return;
-        }
-        MVInteraction mv = MVInteraction.getInstance();
-        if (mv.setup(sender.getServer())) {
-            sender.sendMessage(ProperWeather.color + "[ProperWeather]" + Translator.translateString("notify.mv.import"));
-            List<World> worlds = MVInteraction.getInstance().getControlledWorlds();
-            for (World world : worlds) {
-                boolean canEverChange = mv.isWeatherOn(world.getName());
-                if (!canEverChange)
-                    weatherSystem.stopAtWeather(world.getName(), "clear");
-            }
-            sender.sendMessage(ProperWeather.color + "[ProperWeather]" + Translator.translateString("notify.mv.import.finish"));
-        } else {
-            sender.sendMessage(ProperWeather.color + "[ProperWeather]" + Translator.translateString("error.mv"));
-        }
-    }
-
     public void sendSitutation(CommandSender sender) {
         if (!verifyPermission(sender, "pw.sit")) {
             sender.sendMessage(ChatColor.RED + "[ProperWeather]" + Translator.translateString("notify.noperm"));
@@ -231,7 +213,7 @@ public class CommandHandler implements ICommandHandler {
             sender.sendMessage(ChatColor.RED + "[ProperWeather]" + Translator.translateString("notify.noperm"));
             return;
         }
-        sender.sendMessage(ProperWeather.color + "[ProperWeather-config] '" + prop + "': '" + ProperWeather.instance().getConfig().getString(prop) + "'");
+        sender.sendMessage(ProperWeather.color + "[ProperWeather] '" + prop + "': '" + ProperWeather.instance().getConfig().getString(prop) + "'");
     }
 
     @Override
@@ -246,7 +228,7 @@ public class CommandHandler implements ICommandHandler {
         Object obj = parse(val);
         ProperWeather.instance().getConfig().set(prop, obj);
         ProperWeather.instance().saveConfig();
-        sender.sendMessage(ProperWeather.color + "[ProperWeather-config] '" + prop + "' = '" + val + "'");
+        sender.sendMessage(ProperWeather.color + "[ProperWeather] '" + prop + "' = '" + val + "'");
     }
 
     private Object parse(String val) {
@@ -270,5 +252,19 @@ public class CommandHandler implements ICommandHandler {
 
     private boolean isBoolean(String val) {
         return val.equalsIgnoreCase("true") || val.equalsIgnoreCase("false");
+    }
+
+    @Override
+    public void start(CommandSender sender, String worldName, String cycle) {
+        if ((!verifyPermission(sender, "pw.run")) && (!verifyPermission(sender, "pw.enable"))) {
+            sender.sendMessage(ChatColor.RED + "[ProperWeather]" + Translator.translateString("notify.noperm"));
+            return;
+        }
+        if (Bukkit.getServer().getWorld(worldName) == null) {
+            sender.sendMessage(ChatColor.RED + "[ProperWeather]" + Translator.translateString("error.nofound.world", new Object[] { worldName }));
+            return;
+        }
+        weatherSystem.startCycle(cycle, worldName, "");
+        sender.sendMessage(ProperWeather.color + "[ProperWeather]" + Translator.translateString("notify.cycle.started", new Object[] { worldName, cycle }));
     }
 }

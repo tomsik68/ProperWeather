@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -73,14 +74,16 @@ public class Util {
     }
 
     public static WeatherDefaults getWeatherDefaults(Class<? extends Weather> wClazz) throws Exception {
-        Field[] fields = wClazz.getDeclaredFields();
+        Field[] fields = wClazz.getFields();
         for (Field f : fields) {
             f.setAccessible(true);
-            if (f.getType().isAssignableFrom(WeatherDefaults.class) || WeatherDefaults.class.isAssignableFrom(f.getType())) {
-                return (WeatherDefaults) f.get(null);
+            if (f.getType().isAssignableFrom(WeatherDefaults.class)) {
+                Object obj = f.get(null);
+                Validate.notNull(obj,wClazz.getName() +" is invalid! WeatherDefaults are null!");
+                return (WeatherDefaults) obj;
             }
         }
-        throw new InvalidObjectException(wClazz.getName()+" is invalid! No @WeatherDefaults annotation found!");
+        throw new InvalidObjectException(wClazz.getName() + " is invalid! No WeatherDefaults found!");
     }
 
     public static void setRaining(Player p, boolean isRaining) {

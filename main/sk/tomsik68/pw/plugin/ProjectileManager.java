@@ -17,7 +17,6 @@ package sk.tomsik68.pw.plugin;
 import java.util.ArrayList;
 
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Fireball;
 import org.bukkit.entity.Projectile;
 
 /**

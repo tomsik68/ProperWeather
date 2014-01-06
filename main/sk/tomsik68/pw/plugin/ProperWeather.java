@@ -42,8 +42,9 @@ import sk.tomsik68.pw.config.WeatherDefinition;
 import sk.tomsik68.pw.config.WeatherDescription;
 import sk.tomsik68.pw.impl.DefaultBiomeMapperManager;
 import sk.tomsik68.pw.impl.DefaultWeatherSystem;
-import sk.tomsik68.pw.impl.DefinedWeatherFactory;
-import sk.tomsik68.pw.impl.registry.weather.WeatherFactoryRegistry;
+import sk.tomsik68.pw.impl.factory.DefinedWeatherFactory;
+import sk.tomsik68.pw.impl.registry.WeatherCycleFactoryRegistry;
+import sk.tomsik68.pw.impl.registry.WeatherFactoryRegistry;
 import sk.tomsik68.pw.transl.Translator;
 
 public class ProperWeather extends JavaPlugin {
@@ -73,7 +74,9 @@ public class ProperWeather extends JavaPlugin {
     private int regionUpdateTask;
 
     private final BiomeMapperManager mapperManager = new DefaultBiomeMapperManager();
+
     private WeatherFactoryRegistry weatherFactoryRegistry;
+    private WeatherCycleFactoryRegistry weatherCycleFactoryRegistry;
 
     public ProperWeather() {
         serverListener = new PWServerListener();
@@ -112,8 +115,10 @@ public class ProperWeather extends JavaPlugin {
         if (!dataFolder.exists())
             dataFolder.mkdir();
         weatherFactoryRegistry = new WeatherFactoryRegistry(wim = new WeatherInfoManager());
+        weatherCycleFactoryRegistry = new WeatherCycleFactoryRegistry();
         try {
             weatherFactoryRegistry.load(dataFolder);
+            weatherCycleFactoryRegistry.load(dataFolder);
         } catch (IOException e1) {
             log.severe("ERROR: Failed to load");
             e1.printStackTrace();
@@ -128,7 +133,6 @@ public class ProperWeather extends JavaPlugin {
         factColor = config.getColorTheme()[1];
         weatherSystem = new DefaultWeatherSystem(weatherFactoryRegistry);
 
-        weatherSettings = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "weathers.yml"));
         weatherListener = new PWWeatherListener(weatherSystem);
         playerListener = new PWPlayerListener(weatherSystem);
         if (!getDataFolder().exists())
@@ -138,6 +142,22 @@ public class ProperWeather extends JavaPlugin {
         getCommand("pw").setExecutor(new PWCommand(new CommandHandler(weatherSystem)));
         setupSpout(true, true);
 
+        registerTasks();
+        log.fine("Permissions system: " + permissions.toString());
+        
+        loadWeatherSettings();
+        initTranslations();
+
+        weatherSystem.init();
+        if (config.shouldMapBiomes()) {
+            // initiate a complete scan...
+            mapperManager.completeScan();
+            getServer().getPluginManager().registerEvents(mapperManager, this);
+        }
+        log.info(getDescription().getVersion() + " is enabled");
+    }
+
+    private void registerTasks() {
         registerAllEvents(PWPlayerListener.class, playerListener);
         registerAllEvents(PWServerListener.class, serverListener);
         registerAllEvents(PWWeatherListener.class, weatherListener);
@@ -147,8 +167,10 @@ public class ProperWeather extends JavaPlugin {
             log.severe(ChatColor.GREEN + "FATAL ERROR: Task scheduling failed! Plugin will now shut down itself");
             getServer().getPluginManager().disablePlugin(this);
         }
-        log.fine("Permissions system: " + permissions.toString());
+    }
 
+    private void loadWeatherSettings() {
+        weatherSettings = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "weathers.yml"));
         Set<String> keys = weatherSettings.getKeys(false);
 
         for (String weather : keys) {
@@ -161,19 +183,14 @@ public class ProperWeather extends JavaPlugin {
                 }
             }
         }
+    }
+
+    private void initTranslations() {
         try {
             Translator.init(config.getTranslationFilePath());
         } catch (Exception e) {
-            Translator.init(new File(dataFolder, config.getTranslationFilePath()).getAbsolutePath());
+            Translator.init(new File(getDataFolder(), config.getTranslationFilePath()).getAbsolutePath());
         }
-
-        weatherSystem.init();
-        if (config.shouldMapBiomes()) {
-            // initiate a complete scan...
-            mapperManager.completeScan();
-            getServer().getPluginManager().registerEvents(mapperManager, this);
-        }
-        log.info(getDescription().getVersion() + " is enabled");
     }
 
     public static ProperWeather instance() {
@@ -240,5 +257,9 @@ public class ProperWeather extends JavaPlugin {
 
     public WeatherFactoryRegistry getWeathers() {
         return weatherFactoryRegistry;
+    }
+
+    public WeatherCycleFactoryRegistry getCycles() {
+        return weatherCycleFactoryRegistry;
     }
 }

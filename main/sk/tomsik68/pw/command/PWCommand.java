@@ -30,7 +30,7 @@ public class PWCommand implements CommandExecutor {
     private final Map<Pattern, CommandExecutor> executors = new HashMap<Pattern, CommandExecutor>();
 
     public PWCommand(final ICommandHandler handler) {
-        
+
         RunnableCommand help = new RunnableCommand() {
             @Override
             public void run() {
@@ -88,6 +88,16 @@ public class PWCommand implements CommandExecutor {
                 handler.stopAt(sender, args[2], args[1]);
             }
         });
+        executors.put(Pattern.compile("start\\s\\w*"), new RunnableCommand() {
+            public void run() {
+                handler.start(sender, ((Player) sender).getWorld().getName(), args[1]);
+            }
+        });
+        executors.put(Pattern.compile("start\\s\\w*\\s\\w*"), new RunnableCommand() {
+            public void run() {
+                handler.start(sender, args[2], args[1]);
+            }
+        });
         executors.put(Pattern.compile("stopat\\s\\w*"), new RunnableCommand() {
             public void run() {
                 handler.stopAt(sender, ((Player) sender).getWorld().getName(), args[1]);
@@ -96,11 +106,6 @@ public class PWCommand implements CommandExecutor {
         executors.put(Pattern.compile("reload"), new RunnableCommand() {
             public void run() {
                 handler.reload(sender);
-            }
-        });
-        executors.put(Pattern.compile("im"), new RunnableCommand() {
-            public void run() {
-                handler.im(sender);
             }
         });
         executors.put(Pattern.compile("sit"), new RunnableCommand() {
@@ -128,7 +133,7 @@ public class PWCommand implements CommandExecutor {
     }
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        
+
         StringBuilder sb = new StringBuilder();
         if ((args != null) && (args.length > 0)) {
             for (String arg : args) {
@@ -140,7 +145,6 @@ public class PWCommand implements CommandExecutor {
                     return executors.get(ptr).onCommand(sender, command, label, args);
                 }
             }
-            return false;
         }
         sendHelp(sender, ProperWeather.color);
         return true;
@@ -159,7 +163,7 @@ public class PWCommand implements CommandExecutor {
         sender.sendMessage(formMessage("pw sit - Displays situation in your region(player) or all regions(console)", console));
         sender.sendMessage(formMessage("pw rgt <world> <type> - Sets region type of specified world to type. You always have to type world. Possible types are: BIOME,WORLD", console));
         sender.sendMessage(formMessage("pw perms - Tells you what you can do.", console));
-        sender.sendMessage(formMessage("pw im - Multi-Verse data import.", console));
+        sender.sendMessage(formMessage("pw start <cycle> {world} - Starts selected cycle in specified world.", console));
         sender.sendMessage(formMessage("pw reload - Reloads plugin", console));
     }
 

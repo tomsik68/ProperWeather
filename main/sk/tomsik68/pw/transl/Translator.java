@@ -25,7 +25,8 @@ import java.util.Properties;
 import sk.tomsik68.pw.plugin.ProperWeather;
 
 public class Translator {
-    private final Properties properties;
+    private final Properties file, defaultFile;
+    
     private static Translator instance;
 
     public static void init(String s) {
@@ -35,13 +36,15 @@ public class Translator {
     private Translator(String path) {
         if (instance == null)
             instance = this;
-        properties = new Properties();
+        file = new Properties();
+        defaultFile = new Properties();
         try {
-            properties.load(new FileInputStream(path));
+            file.load(new FileInputStream(path));
+            defaultFile.load(Translator.class.getResourceAsStream("en.txt"));
         } catch (FileNotFoundException e) {
             ProperWeather.log.info("Localisation file not found. Defaulting to built-in");
             try {
-                properties.load(Translator.class.getResourceAsStream("en.txt"));
+                file.load(Translator.class.getResourceAsStream("en.txt"));
                 try {
                     ProperWeather.log.fine("Extracting built-in localisation file...");
                     InputStream is = Translator.class.getResourceAsStream("en.txt");
@@ -72,7 +75,12 @@ public class Translator {
     }
 
     public String translate(String key, Object[] params) {
-        String result = properties.getProperty(key);
+        String result = "";
+        if(file.containsKey(key)){
+            result = file.getProperty(key);
+        }else
+            result = defaultFile.getProperty(key);
+        
         if (params != null) {
             int len = params.length;
             for (int i = 0; i < len; i++) {

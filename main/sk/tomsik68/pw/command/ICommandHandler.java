@@ -33,13 +33,13 @@ public abstract interface ICommandHandler {
 
     public abstract void reload(CommandSender sender);
 
-    public abstract void im(CommandSender sender);
-
     public abstract void sendSitutation(CommandSender sender);
 
     public abstract void setRegionType(CommandSender sender, String world, String type);
 
     public abstract void sendConfigProperty(CommandSender sender, String string);
 
-    public abstract void inGameConfig(CommandSender sender, String string, String string2);
+    public abstract void inGameConfig(CommandSender sender, String key, String value);
+
+    public abstract void start(CommandSender sender, String world, String cycle);
 }

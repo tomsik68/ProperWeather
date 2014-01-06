@@ -20,7 +20,6 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 
-import sk.tomsik68.pw.Defaults;
 import sk.tomsik68.pw.api.Weather;
 import sk.tomsik68.pw.api.WeatherController;
 import sk.tomsik68.pw.api.WeatherDefaults;
@@ -29,8 +28,7 @@ import sk.tomsik68.pw.impl.BasicWeatherDefaults;
 import sk.tomsik68.pw.region.Region;
 
 public class WeatherStorm extends Weather {
-    @Defaults
-    public static final WeatherDefaults def = new BasicWeatherDefaults(24000, 45, 45, new String[] { "meteorstorm", "storm", "itemrain" });
+    public static final WeatherDefaults def = new BasicWeatherDefaults(3000, 24000, 45, 45, new String[] { "meteorstorm", "storm", "itemrain" });
 
     public WeatherStorm(WeatherDescription wd1, Integer uid) {
         super(wd1, uid);

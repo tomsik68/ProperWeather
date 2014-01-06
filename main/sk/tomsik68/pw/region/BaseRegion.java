@@ -31,10 +31,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.util.Vector;
 
+import sk.tomsik68.pw.api.IWeatherData;
 import sk.tomsik68.pw.plugin.ProjectileManager;
 import sk.tomsik68.pw.plugin.ProperWeather;
 import sk.tomsik68.pw.struct.SpawnListEntry;
-import sk.tomsik68.pw.struct.WeatherDataExt;
 
 public abstract class BaseRegion implements Region {
     private static final long serialVersionUID = 3917523437018474830L;
@@ -93,11 +93,11 @@ public abstract class BaseRegion implements Region {
         synchronized (spawnList) {
             for (SpawnListEntry entry : spawnList) {
                 Entity entity = getWorld().spawn(entry.getLocation(), entry.getEntityClass());
-                if(entry.getVelocity() != null)
+                if (entry.getVelocity() != null)
                     entity.setVelocity(entry.getVelocity());
                 if (entity instanceof Projectile)
                     ProjectileManager.add(entity);
-                if(entry.getCustomizer() != null)
+                if (entry.getCustomizer() != null)
                     entity = entry.getCustomizer().perform(entity);
             }
             spawnList.clear();
@@ -127,7 +127,7 @@ public abstract class BaseRegion implements Region {
     }
 
     @Override
-    public WeatherDataExt getWeatherData() {
+    public IWeatherData getWeatherData() {
         return ProperWeather.instance().getWeatherSystem().getRegionData(this);
     }
 }

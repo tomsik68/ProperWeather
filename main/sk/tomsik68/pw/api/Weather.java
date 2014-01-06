@@ -97,4 +97,8 @@ public abstract class Weather {
     public String toString() {
         return getName();
     }
+
+    public int getMinDuration() {
+        return wd.getMinDuration();
+    }
 }

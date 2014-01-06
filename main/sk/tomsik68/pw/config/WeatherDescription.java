@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.block.Biome;
 import org.bukkit.configuration.ConfigurationSection;
@@ -30,11 +31,12 @@ import sk.tomsik68.pw.plugin.ProperWeather;
 public class WeatherDescription {
     private ConfigurationSection cs;
     public static final List<String> allBiomes = new ArrayList<String>();
-    static{
-        for(Biome biome : Biome.values()){
+    static {
+        for (Biome biome : Biome.values()) {
             allBiomes.add(biome.name().toLowerCase());
         }
     }
+
     public WeatherDescription(ConfigurationSection s) {
         cs = s;
     }
@@ -67,20 +69,22 @@ public class WeatherDescription {
             config.options().header("Weathers: " + sb.toString());
             WeatherDefaults instance = null;
             List<String> allBiomes = new ArrayList<String>();
-            for(Biome biome : Biome.values()){
+            for (Biome biome : Biome.values()) {
                 allBiomes.add(biome.name().toLowerCase());
             }
             for (String weather : weathers) {
-                instance = ProperWeather.instance().getWeatherDefaults(weather);
+                instance = ProperWeather.instance().getWeathers().get(weather).getDefaults();
                 if (instance == null)
-                    throw new NullPointerException("Weather not found.");
+                    throw new NullPointerException("WeatherDefaults for `"+weather+"` not found.");
                 config.set(weather + ".probability", Integer.valueOf(instance.getDefProbability()));
                 config.set(weather + ".max-duration", Integer.valueOf(instance.getDefMaxDuration()));
+                config.set(weather + ".min-duration", instance.getMinDuration());
                 config.set(weather + ".rand-time-probability", Integer.valueOf(instance.getDefRandomTimeProbability()));
                 config.set(weather + ".cant-be-after", Arrays.asList(instance.getDefCantBeAfter()));
-                config.set(weather + ".customs", null);
+                config.set(weather + ".customs", instance.getCustomNodes());
                 config.set(weather + ".active-elements", instance.getDefElements());
                 config.set(weather + ".biomes", allBiomes);
+                
             }
             config.save(file);
             ProperWeather.log.fine("Weather description file created at: " + file.getAbsolutePath());
@@ -94,13 +98,19 @@ public class WeatherDescription {
         return cs.getName();
     }
 
-    public String getCustomNode(int id) {
-        return cs.getStringList("customs").get(id);
+    public Map<String, Object> getCustomNodes() {
+        return cs.getConfigurationSection("customs").getValues(true);
     }
-    public List<String> getAllowedBiomes(){
+
+    public List<String> getAllowedBiomes() {
         return cs.getStringList("biomes");
     }
-    public List<String> getActiveElements(){
+
+    public List<String> getActiveElements() {
         return cs.getStringList("active-elements");
+    }
+
+    public int getMinDuration() {
+        return cs.getInt("min-duration",0);
     }
 }

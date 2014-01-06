@@ -18,51 +18,76 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Random;
 
-import sk.tomsik68.pw.api.BaseWeatherCycle;
+import sk.tomsik68.pw.api.IWeatherData;
+import sk.tomsik68.pw.api.WeatherCycle;
 import sk.tomsik68.pw.api.Weather;
 import sk.tomsik68.pw.api.WeatherSystem;
 import sk.tomsik68.pw.plugin.ProperWeather;
-import sk.tomsik68.pw.region.Region;
-import sk.tomsik68.pw.struct.WeatherDataExt;
 
-public class RandomWeatherCycle extends BaseWeatherCycle {
+public class RandomWeatherCycle extends WeatherCycle {
     private static final Random rand = new Random();
+    private LinkedList<String> previousWeathers = new LinkedList<String>();
 
     public RandomWeatherCycle(WeatherSystem ws) {
         super(ws);
     }
 
     @Override
-    public Weather nextWeather(Region region) {
-        WeatherDataExt wd = weatherSystem.getRegionData(region);
-
-        ArrayList<String> weathers = new ArrayList<String>(ProperWeather.instance().getWeathers().getRegistered());
-        Weather weather = ProperWeather.instance().getWeathers().createWeather(weathers.get(rand.nextInt(weathers.size())), region.getUID());
-
-        if (!weather.canBeStarted(wd.getPreviousWeather()))
-            return nextWeather(region);
-        if (!weather.getName().equalsIgnoreCase(wd.getPreviousWeather()) && (!wd.wasWeather(weather)) && (rand.nextInt(100) < weather.getProbability())) {
-            weather.initWeather();
-            wd.setDuration(rand.nextInt(weather.getMaxDuration()));
-            weatherSystem.setRegionData(region, wd);
-            return weather;
-        }
-        return nextWeather(region);
-    }
-
-    @Override
-    public void readExternal(ObjectInput arg0) throws IOException, ClassNotFoundException {
-    }
-
-    @Override
-    public void writeExternal(ObjectOutput arg0) throws IOException {
-    }
-
-    @Override
     public String getName() {
-        return "~";
+        return "random";
+    }
+
+    @Override
+    public IWeatherData nextWeatherData(IWeatherData wd) {
+        if (wd.decrementDuration() <= 0) {
+            ArrayList<String> weathers = new ArrayList<String>(ProperWeather.instance().getWeathers().getRegistered());
+            // recursity was removed, using while instead...
+            boolean done = false;
+            while (!done) {
+                Weather weather = ProperWeather.instance().getWeathers().createWeather(weathers.get(rand.nextInt(weathers.size())), wd.getRegion());
+                if (weather.canBeStarted(getPreviousWeather()) && !weather.getName().equalsIgnoreCase(getPreviousWeather()) && (!wasWeather(weather)) && (rand.nextInt(100) < weather.getProbability())) {
+                    addPrevWeather(weather.getName());
+                    wd.setCurrentWeather(weather);
+                    weather.initWeather();
+                    wd.setDuration(weather.getMinDuration() + rand.nextInt(weather.getMaxDuration() - weather.getMinDuration()));
+                    done = true;
+                }
+            }
+        }
+        return wd;
+    }
+
+    private void addPrevWeather(String name) {
+        previousWeathers.add(name);
+        if (previousWeathers.size() < 3) {
+            previousWeathers.removeFirst();
+        }
+        
+    }
+
+    private boolean wasWeather(Weather weather) {
+        return previousWeathers.contains(weather.getName());
+    }
+
+    private String getPreviousWeather() {
+        if (previousWeathers.size() == 0)
+            return "";
+        else
+            return previousWeathers.get(previousWeathers.size() - 1);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void loadState(ObjectInput in) throws IOException, ClassNotFoundException {
+        previousWeathers = (LinkedList<String>) in.readObject();
+    }
+
+    @Override
+    public void saveState(ObjectOutput out) throws IOException {
+        out.writeObject(previousWeathers);
     }
 
 }

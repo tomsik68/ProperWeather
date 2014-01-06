@@ -14,9 +14,10 @@
     along with ProperWeather.  If not, see <http://www.gnu.org/licenses/>.*/
 package sk.tomsik68.pw.api;
 
+import java.util.HashMap;
 import java.util.Set;
 
-public abstract interface WeatherDefaults{
+public abstract interface WeatherDefaults {
     public abstract int getDefMaxDuration();
 
     public abstract String[] getDefCantBeAfter();
@@ -26,6 +27,10 @@ public abstract interface WeatherDefaults{
     public abstract int getDefProbability();
 
     public abstract String[] getDefElements();
-    
+
     public abstract Set<String> getAllowedBiomes();
+
+    public HashMap<String, Object> getCustomNodes();
+
+    public abstract int getMinDuration();
 }

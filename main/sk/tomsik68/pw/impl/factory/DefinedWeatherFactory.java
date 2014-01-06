@@ -12,7 +12,7 @@
 
     You should have received a copy of the GNU General Public License
     along with ProperWeather.  If not, see <http://www.gnu.org/licenses/>.*/
-package sk.tomsik68.pw.impl;
+package sk.tomsik68.pw.impl.factory;
 
 import sk.tomsik68.pw.api.WeatherDefaults;
 import sk.tomsik68.pw.api.WeatherFactory;
@@ -26,13 +26,14 @@ public class DefinedWeatherFactory implements WeatherFactory<WeatherDefined> {
         this.name = weatherName;
     }
 
-    public WeatherDefined create(Object[] args) {
-        WeatherDefined result = new WeatherDefined(ProperWeather.instance().getWeatherDescription(this.name), (Integer) args[0], ProperWeather.instance().getWeatherDefinition(this.name));
+    public WeatherDefined create(int region) {
+        WeatherDefined result = new WeatherDefined(ProperWeather.instance().getWeatherDescription(this.name), region, ProperWeather.instance().getWeatherDefinition(this.name));
         return result;
     }
 
     public WeatherDefaults getDefaults() {
-        //defaults are not quite neccessary if weather is defined, since you have to put those fields into weathers.yml but whatever...
+        // defaults are not quite neccessary if weather is defined, since you
+        // have to put those fields into weathers.yml but whatever...
         return WeatherDefined.def;
     }
 }

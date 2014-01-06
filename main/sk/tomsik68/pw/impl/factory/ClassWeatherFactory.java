@@ -12,7 +12,7 @@
 
     You should have received a copy of the GNU General Public License
     along with ProperWeather.  If not, see <http://www.gnu.org/licenses/>.*/
-package sk.tomsik68.pw.impl;
+package sk.tomsik68.pw.impl.factory;
 
 import sk.tomsik68.pw.Util;
 import sk.tomsik68.pw.api.Weather;
@@ -28,13 +28,11 @@ public class ClassWeatherFactory<W extends Weather> implements WeatherFactory<W>
         this.clazz = clazz1;
     }
 
-    public W create(Object... args) {
-        if ((args != null) && (args.length >= 1) && (args[0] != null) && ((args[0] instanceof Integer))) {
-            try {
-                return clazz.getConstructor(new Class[] { WeatherDescription.class, Integer.class }).newInstance(new Object[] { ProperWeather.instance().getWeatherDescription(clazz.getSimpleName().replace("Weather", "")), args[0] });
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+    public W create(int region) {
+        try {
+            return clazz.getConstructor(new Class[] { WeatherDescription.class, Integer.class }).newInstance(new Object[] { ProperWeather.instance().getWeatherDescription(clazz.getSimpleName().replace("Weather", "")), region });
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return null;
     }

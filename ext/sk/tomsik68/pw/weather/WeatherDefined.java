@@ -14,7 +14,6 @@
     along with ProperWeather.  If not, see <http://www.gnu.org/licenses/>.*/
 package sk.tomsik68.pw.weather;
 
-import sk.tomsik68.pw.Defaults;
 import sk.tomsik68.pw.api.Weather;
 import sk.tomsik68.pw.api.WeatherController;
 import sk.tomsik68.pw.api.WeatherDefaults;
@@ -24,8 +23,7 @@ import sk.tomsik68.pw.impl.BasicWeatherDefaults;
 
 public class WeatherDefined extends Weather {
     private final WeatherDefinition defi;
-    @Defaults
-    public static final WeatherDefaults def = new BasicWeatherDefaults(0, 0, 0, new String[] { "" });
+    public static final WeatherDefaults def = new BasicWeatherDefaults(0, 0, 0, 0, new String[] { "" });
 
     public WeatherDefined(WeatherDescription wd1, Integer reg, WeatherDefinition d) {
         super(wd1, reg);

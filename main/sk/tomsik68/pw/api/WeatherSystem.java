@@ -19,26 +19,15 @@ import java.util.List;
 import org.bukkit.World;
 
 import sk.tomsik68.pw.region.Region;
-import sk.tomsik68.pw.struct.WeatherDataExt;
 
 public abstract interface WeatherSystem {
-    public abstract void runWeather(String paramString);
-
-    public abstract void stopAtWeather(String paramString1, String paramString2);
-
+    public abstract void startCycle(String cycle, String world, String startWeather);
+    
     public abstract void deInit();
 
     public abstract void init();
 
-    public abstract boolean isHooked(World paramWorld);
-
     public abstract void update(World paramWorld);
-
-    public abstract void unHook(String paramString);
-
-    public abstract void hook(World paramWorld);
-
-    public abstract void hook(String paramString);
 
     public abstract WeatherController getWeatherController(Region paramRegion);
 
@@ -58,11 +47,13 @@ public abstract interface WeatherSystem {
 
     public abstract List<String> getWorldList();
 
-    public abstract void setRegionData(Region region, WeatherDataExt wd);
+    public abstract void setRegionData(Region region, IWeatherData wd);
 
-    public abstract WeatherDataExt getRegionData(Region region);
+    public abstract IWeatherData getRegionData(Region region);
     
-    public abstract WeatherCycle getWeatherCycle(int region);
-    
-    public abstract void setWeatherCycle(int region, WeatherCycle wc);
+    public abstract void startCycleInRegion(String cycleName, int region, String startWeather);
+
+    public abstract void unHook(String worldName);
+
+    public abstract boolean isHooked(World world);
 }

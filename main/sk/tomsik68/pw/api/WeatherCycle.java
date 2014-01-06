@@ -14,12 +14,25 @@
     along with ProperWeather.  If not, see <http://www.gnu.org/licenses/>.*/
 package sk.tomsik68.pw.api;
 
-import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 
-import sk.tomsik68.pw.region.Region;
+import sk.tomsik68.pw.struct.WeatherDataExt;
+import sk.tomsik68.pw.struct.WeatherDatav4;
 
-public abstract interface WeatherCycle extends Externalizable {
-    public abstract WeatherSystem getWeatherSystem();
+public abstract class WeatherCycle {
+    protected final WeatherSystem weatherSystem;
 
-    public abstract Weather nextWeather(Region region);
+    public WeatherCycle(WeatherSystem ws) {
+        this.weatherSystem = ws;
+    }
+
+    public abstract String getName();
+
+    public abstract IWeatherData nextWeatherData(IWeatherData current);
+    
+    public abstract void loadState(ObjectInput in) throws IOException, ClassNotFoundException;
+    
+    public abstract void saveState(ObjectOutput out) throws IOException;
 }

@@ -31,7 +31,6 @@ import sk.tomsik68.pw.plugin.ProjectileManager;
 import sk.tomsik68.pw.plugin.ProperWeather;
 import sk.tomsik68.pw.region.Region;
 
-//NOTBUKKIT
 public class DefaultWeatherController implements WeatherController {
     protected final Region region;
     protected boolean thundersAllowed = true;
@@ -154,7 +153,6 @@ public class DefaultWeatherController implements WeatherController {
     }
 
     public void clear() {
-        // FIXME Kill all fireballs
         ProjectileManager.killAll(Fireball.class);
         // DEBUG System.out.println("Weather Init...");
         setRaining(false);
@@ -167,7 +165,7 @@ public class DefaultWeatherController implements WeatherController {
     @Override
     public void finish() {
         for (Player p : region.getPlayers()) {
-            Util.setRaining(p, isRaining());
+            Util.setRaining(p, rain);
             p.removeMetadata("pw.raining", ProperWeather.instance());
             p.removeMetadata("pw.moveTimestamp", ProperWeather.instance());
             p.removeMetadata("pw.lastRegion", ProperWeather.instance());
@@ -211,13 +209,13 @@ public class DefaultWeatherController implements WeatherController {
     }
 
     public void update() {
-        setRaining(this.rain);
+        setRaining(isRaining());
     }
 
     public void update(Player p) {
-        if (!p.hasMetadata("pw.raining") || (p.getMetadata("pw.raining").get(0).asBoolean() != isRaining())) {
-            Util.setRaining(p, isRaining());
-            p.setMetadata("pw.raining", new FixedMetadataValue(ProperWeather.instance(), isRaining()));
+        if (!p.hasMetadata("pw.raining") || (p.getMetadata("pw.raining").get(0).asBoolean() ^ rain)) {
+            Util.setRaining(p, rain);
+            p.setMetadata("pw.raining", new FixedMetadataValue(ProperWeather.instance(), rain));
         }
     }
 
