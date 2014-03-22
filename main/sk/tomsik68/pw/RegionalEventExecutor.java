@@ -48,7 +48,7 @@ public class RegionalEventExecutor implements EventExecutor {
             }
         }
         if (m == null)
-            throw new NullPointerException("[ProperWeather-RegionalEventExecutor] No suitable method found for '" + eventClass.getName() + "' in '" + elem.getClass().getName() + "'. Make sure the method's first parameter is '" + eventClass.getName() + "' and annotation '" + EventHandler.class.getName() + "' is present.");
+            throw new NullPointerException("[ProperWeather] No suitable method found for '" + eventClass.getName() + "' in '" + elem.getClass().getName() + "'. Make sure the method's first parameter is '" + eventClass.getName() + "' and annotation '" + EventHandler.class.getName() + "' is present.");
         region = elem.getRegion();
     }
 

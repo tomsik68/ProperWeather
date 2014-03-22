@@ -32,8 +32,7 @@ public class WeatherRain extends Weather {
         super(wd1, uid);
     }
 
-    public void initWeather() {
-        getController().clear();
+    public void doInitWeather() {
         getController().setRaining(true);
     }
 

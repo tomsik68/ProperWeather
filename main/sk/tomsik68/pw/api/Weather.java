@@ -14,6 +14,8 @@
     along with ProperWeather.  If not, see <http://www.gnu.org/licenses/>.*/
 package sk.tomsik68.pw.api;
 
+import java.util.List;
+
 import sk.tomsik68.pw.config.WeatherDescription;
 import sk.tomsik68.pw.plugin.ProperWeather;
 
@@ -74,10 +76,19 @@ public abstract class Weather {
     }
 
     /**
-     * Inits weather (clear sky, start raining etc.)
+     * Inits weather (start raining etc.)
      * 
      */
-    public abstract void initWeather();
+    public abstract void doInitWeather();
+
+    public final void initWeather() {
+        List<String> elements = wd.getActiveElements();
+        for(String elem : elements){
+            BaseWeatherElement element = ProperWeather.instance().getWeatherElementFactories().get(elem).create(getController());
+            getController().activateElement(element);
+        }
+        doInitWeather();
+    }
 
     /**
      * What happens on random time of the weather (if nothing, random time

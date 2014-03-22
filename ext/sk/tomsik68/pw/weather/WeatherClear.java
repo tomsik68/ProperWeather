@@ -29,7 +29,10 @@ public class WeatherClear extends Weather {
     public void onRandomTime() {
     }
 
-    public void initWeather() {
-        getController().clear();
+    @Override
+    public void doInitWeather() {
+        // TODO Auto-generated method stub
+        
     }
+
 }

@@ -31,7 +31,6 @@ import sk.tomsik68.bukkitbp.v1.PackageResolver;
 import sk.tomsik68.bukkitbp.v1.ReflectionUtils;
 import sk.tomsik68.pw.api.Weather;
 import sk.tomsik68.pw.api.WeatherDefaults;
-import sk.tomsik68.pw.plugin.ProperWeather;
 
 //NOTBUKKIT > All the ugly reflection goes here...
 public class Util {
@@ -42,7 +41,8 @@ public class Util {
             @SuppressWarnings("unchecked")
             // List<Entity> entities = new
             // ArrayList<Entity>(world.getHandle().entityList);
-            List<Object> entities = new ArrayList<Object>((Collection<Object>) ReflectionUtils.get(ReflectionUtils.call(PackageResolver.getBukkitClass("CraftWorld").cast(world), "getHandle"), "entityList"));
+            List<Object> entities = new ArrayList<Object>((Collection<Object>) ReflectionUtils.get(
+                    ReflectionUtils.call(PackageResolver.getBukkitClass("CraftWorld").cast(world), "getHandle"), "entityList"));
             for (Object e : entities) {
 
                 if (e != null && ReflectionUtils.call(e, "getBukkitEntity") != null && ReflectionUtils.call(e, "getBukkitEntity") instanceof Player) {
@@ -58,10 +58,12 @@ public class Util {
 
     public static boolean hasPlayers(World world) {
         try {
-            if (ReflectionUtils.get(ReflectionUtils.call(world, "getHandle"), "entityList") == null || ((List) ReflectionUtils.get(ReflectionUtils.call(world, "getHandle"), "entityList")).isEmpty())
+            if (ReflectionUtils.get(ReflectionUtils.call(world, "getHandle"), "entityList") == null
+                    || ((List) ReflectionUtils.get(ReflectionUtils.call(world, "getHandle"), "entityList")).isEmpty())
                 return false;
             @SuppressWarnings("unchecked")
-            List<Object> entities = new ArrayList<Object>((Collection<Object>) ReflectionUtils.get(ReflectionUtils.call(world, "getHandle"), "entityList"));
+            List<Object> entities = new ArrayList<Object>((Collection<Object>) ReflectionUtils.get(ReflectionUtils.call(world, "getHandle"),
+                    "entityList"));
             for (Object e : entities) {
                 if (e != null && ReflectionUtils.call(e, "getBukkitEntity") != null && ReflectionUtils.call(e, "getBukkitEntity") instanceof Player) {
                     return true;
@@ -79,24 +81,30 @@ public class Util {
             f.setAccessible(true);
             if (f.getType().isAssignableFrom(WeatherDefaults.class)) {
                 Object obj = f.get(null);
-                Validate.notNull(obj,wClazz.getName() +" is invalid! WeatherDefaults are null!");
+                Validate.notNull(obj, wClazz.getName() + " is invalid! WeatherDefaults are null!");
                 return (WeatherDefaults) obj;
             }
         }
         throw new InvalidObjectException(wClazz.getName() + " is invalid! No WeatherDefaults found!");
     }
 
-    public static void setRaining(Player p, boolean isRaining) {
-        try {
-            Object mcPlayer = ReflectionUtils.call(PackageResolver.getBukkitClass("entity.CraftPlayer").cast(p), "getHandle");
-            Object connection = ReflectionUtils.get(mcPlayer, "playerConnection");
-            Object packet = PackageResolver.getMinecraftClass("Packet70Bed").getConstructor(Integer.TYPE, Integer.TYPE).newInstance(isRaining ? 1 : 2, 0);
-            ReflectionUtils.call(connection, "sendPacket", packet);
-        } catch (Exception e) {
-            ProperWeather.log.severe("Raining set failed.");
-            e.printStackTrace();
-        }
-    }
+    /*
+     * public static void setRaining(Player p, boolean isRaining) {
+     * try {
+     * Object mcPlayer =
+     * ReflectionUtils.call(PackageResolver.getBukkitClass("entity.CraftPlayer"
+     * ).cast(p), "getHandle");
+     * Object connection = ReflectionUtils.get(mcPlayer, "playerConnection");
+     * Object packet =
+     * PackageResolver.getMinecraftClass("Packet70Bed").getConstructor
+     * (Integer.TYPE, Integer.TYPE).newInstance(isRaining ? 1 : 2, 0);
+     * ReflectionUtils.call(connection, "sendPacket", packet);
+     * } catch (Exception e) {
+     * ProperWeather.log.severe("Raining set failed.");
+     * e.printStackTrace();
+     * }
+     * }
+     */
 
     @Deprecated
     /**
@@ -120,5 +128,27 @@ public class Util {
             result.put(i, stringList.get(i));
         }
         return result;
+    }
+
+    public static String dumpArray(Object... objects) {
+        StringBuilder result = new StringBuilder();
+        for (Object obj : objects) {
+            result = result.append(obj).append(',');
+        }
+        if (result.length() > 0) {
+            result = result.deleteCharAt(result.length() - 1);
+        }
+        return result.toString();
+    }
+
+    public static String dumpCollection(Iterable<Object> collection) {
+        StringBuilder result = new StringBuilder();
+        for (Object obj : collection) {
+            result = result.append(obj).append(',');
+        }
+        if (result.length() > 0) {
+            result = result.deleteCharAt(result.length() - 1);
+        }
+        return result.toString();
     }
 }

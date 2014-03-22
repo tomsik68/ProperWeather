@@ -62,25 +62,17 @@ public interface WeatherController {
 
     public int getStarFrequency();
 
-    public void hideMoon();
+    public void setMoon(boolean moon);
 
-    public void showMoon();
+    public void setSun(boolean sun);
 
-    public void hideSun();
-
-    public void showSun();
-
-    public void hideStars();
-
-    public void showStars();
+    public void setStars(boolean stars);
 
     public boolean isStars();
 
     public boolean isClouds();
 
-    public void showClouds();
-
-    public void hideClouds();
+    public void setClouds(boolean c);
 
     public Color getCloudsColor();
 
@@ -108,10 +100,6 @@ public interface WeatherController {
 
     public boolean isThunderingAllowed();
 
-    public void allowThundering();
-
-    public void denyThundering();
-
     public boolean isMoonVisible();
 
     public boolean isSun();
@@ -125,6 +113,7 @@ public interface WeatherController {
     public void update(Player player);
 
     public void setSnowing(boolean snow);
+
     public boolean isSnowing();
 
     void finish();

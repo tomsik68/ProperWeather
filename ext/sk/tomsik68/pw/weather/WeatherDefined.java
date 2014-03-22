@@ -30,7 +30,7 @@ public class WeatherDefined extends Weather {
         this.defi = d;
     }
 
-    public void initWeather() {
+    public void doInitWeather() {
         WeatherController wc = getController();
         wc.setCloudsColor(this.defi.getCloudsColor());
         wc.setCloudsHeight(this.defi.getCloudsHeight());
@@ -40,26 +40,11 @@ public class WeatherDefined extends Weather {
         wc.setSkyColor(this.defi.getSkyColor());
         wc.setStarFrequency(this.defi.getStarFrequency());
         wc.setSunSize(this.defi.getSunSize());
-        if (this.defi.isCloudsVisible())
-            wc.showClouds();
-        else
-            wc.hideClouds();
-        if (this.defi.isMoonVisible())
-            wc.showMoon();
-        else
-            wc.hideMoon();
-        if (this.defi.isStars())
-            wc.showStars();
-        else
-            wc.hideStars();
-        if (this.defi.isSunVisible())
-            wc.showSun();
-        else
-            wc.hideSun();
-        if (this.defi.isThunderingAllowed())
-            wc.allowThundering();
-        else
-            wc.denyThundering();
+        wc.setClouds(defi.isCloudsVisible());
+        wc.setMoon(defi.isMoonVisible());
+        wc.setStars(defi.isStars());
+        wc.setSun(defi.isSunVisible());
+        wc.setThundering(defi.isThunderingAllowed());
     }
 
     public void onRandomTime() {

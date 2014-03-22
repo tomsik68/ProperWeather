@@ -29,10 +29,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import sk.tomsik68.bukkitbp.v1.PackageResolver;
 import sk.tomsik68.permsguru.EPermissions;
 import sk.tomsik68.pw.WeatherInfoManager;
 import sk.tomsik68.pw.api.BiomeMapperManager;
+import sk.tomsik68.pw.api.IServerBackend;
 import sk.tomsik68.pw.api.WeatherDefaults;
 import sk.tomsik68.pw.api.WeatherSystem;
 import sk.tomsik68.pw.command.CommandHandler;
@@ -43,7 +43,9 @@ import sk.tomsik68.pw.config.WeatherDescription;
 import sk.tomsik68.pw.impl.DefaultBiomeMapperManager;
 import sk.tomsik68.pw.impl.DefaultWeatherSystem;
 import sk.tomsik68.pw.impl.factory.DefinedWeatherFactory;
+import sk.tomsik68.pw.impl.registry.ServerBackendMatcherRegistry;
 import sk.tomsik68.pw.impl.registry.WeatherCycleFactoryRegistry;
+import sk.tomsik68.pw.impl.registry.WeatherElementFactoryRegistry;
 import sk.tomsik68.pw.impl.registry.WeatherFactoryRegistry;
 import sk.tomsik68.pw.transl.Translator;
 
@@ -57,7 +59,6 @@ public class ProperWeather extends JavaPlugin {
 
     private PWWeatherListener weatherListener;
     private WeatherSystem weatherSystem;
-    private final PWServerListener serverListener;
     private PWPlayerListener playerListener;
 
     public EPermissions permissions;
@@ -77,9 +78,11 @@ public class ProperWeather extends JavaPlugin {
 
     private WeatherFactoryRegistry weatherFactoryRegistry;
     private WeatherCycleFactoryRegistry weatherCycleFactoryRegistry;
+    private WeatherElementFactoryRegistry weatherElementFactoryRegistry;
+    private ServerBackendMatcherRegistry serverBackendMatcherRegistry;
+    private IServerBackend backend;
 
     public ProperWeather() {
-        serverListener = new PWServerListener();
     }
 
     public void onDisable() {
@@ -98,31 +101,32 @@ public class ProperWeather extends JavaPlugin {
 
     public void onEnable() {
         log = getLogger();
+        /*
         try {
             PackageResolver.init(Bukkit.class.getClassLoader());
             CompatibilityChecker.test();
             log.fine("Bukkit compatibility test done. ");
         } catch (Exception e) {
-            // DEBUG
-            e.printStackTrace();
             log.severe("Incompatible CraftBukkit version. Plugin will now shutdown to prevent further issues.");
             log.severe("Error: " + e.getMessage());
+            e.printStackTrace();
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
+        */
         File dataFolder = new File("plugins", getDescription().getName());
         log.info("Enabling ProperWeather...");
         if (!dataFolder.exists())
             dataFolder.mkdir();
-        weatherFactoryRegistry = new WeatherFactoryRegistry(wim = new WeatherInfoManager());
-        weatherCycleFactoryRegistry = new WeatherCycleFactoryRegistry();
+        log.info("Looking for suitable backend...");
+        serverBackendMatcherRegistry = new ServerBackendMatcherRegistry();
         try {
-            weatherFactoryRegistry.load(dataFolder);
-            weatherCycleFactoryRegistry.load(dataFolder);
-        } catch (IOException e1) {
-            log.severe("ERROR: Failed to load");
-            e1.printStackTrace();
+            serverBackendMatcherRegistry.load(dataFolder);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        backend = serverBackendMatcherRegistry.getBackend(getServer());
+        initFactories();
 
         if (!new File(dataFolder, "config.yml").exists()) {
             ConfigFile.generateDefaultConfig(new File(getDataFolder(), "config.yml"));
@@ -131,7 +135,7 @@ public class ProperWeather extends JavaPlugin {
         permissions = config.getPerms();
         color = config.getColorTheme()[0];
         factColor = config.getColorTheme()[1];
-        weatherSystem = new DefaultWeatherSystem(weatherFactoryRegistry);
+        weatherSystem = new DefaultWeatherSystem(weatherFactoryRegistry, backend);
 
         weatherListener = new PWWeatherListener(weatherSystem);
         playerListener = new PWPlayerListener(weatherSystem);
@@ -140,11 +144,10 @@ public class ProperWeather extends JavaPlugin {
         if (permissions == null)
             permissions = EPermissions.OP;
         getCommand("pw").setExecutor(new PWCommand(new CommandHandler(weatherSystem)));
-        setupSpout(true, true);
 
         registerTasks();
         log.fine("Permissions system: " + permissions.toString());
-        
+
         loadWeatherSettings();
         initTranslations();
 
@@ -157,9 +160,22 @@ public class ProperWeather extends JavaPlugin {
         log.info(getDescription().getVersion() + " is enabled");
     }
 
+    private void initFactories() {
+        weatherFactoryRegistry = new WeatherFactoryRegistry(wim = new WeatherInfoManager());
+        weatherCycleFactoryRegistry = new WeatherCycleFactoryRegistry();
+        weatherElementFactoryRegistry = new WeatherElementFactoryRegistry();
+        try {
+            weatherFactoryRegistry.load(getDataFolder());
+            weatherCycleFactoryRegistry.load(getDataFolder());
+            weatherElementFactoryRegistry.load(getDataFolder());
+        } catch (IOException e1) {
+            log.severe("ERROR: Failed to load");
+            e1.printStackTrace();
+        }
+    }
+
     private void registerTasks() {
         registerAllEvents(PWPlayerListener.class, playerListener);
-        registerAllEvents(PWServerListener.class, serverListener);
         registerAllEvents(PWWeatherListener.class, weatherListener);
         weatherUpdateTask = getServer().getScheduler().runTaskTimerAsynchronously(this, new WeatherUpdateTask(weatherSystem), 88L, TASK_PERIOD).getTaskId();
         regionUpdateTask = getServer().getScheduler().scheduleSyncRepeatingTask(this, new RegionUpdateTask(weatherSystem.getRegionManager()), 88L, 88L);
@@ -172,7 +188,6 @@ public class ProperWeather extends JavaPlugin {
     private void loadWeatherSettings() {
         weatherSettings = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "weathers.yml"));
         Set<String> keys = weatherSettings.getKeys(false);
-
         for (String weather : keys) {
             if (!weatherFactoryRegistry.isRegistered(weather)) {
                 log.finest("Registering new weather: " + weather);
@@ -209,22 +224,6 @@ public class ProperWeather extends JavaPlugin {
         permissions = config.getPerms();
     }
 
-    public void setupSpout(boolean automatic, boolean enabled) {
-        if (automatic) {
-            try {
-                Class.forName("org.getspout.spoutapi.SpoutManager");
-                log.info("Spout detected");
-                isSpout = true;
-                weatherSystem.changeControllers(isSpout);
-            } catch (ClassNotFoundException cnfe) {
-                isSpout = false;
-                weatherSystem.changeControllers(isSpout);
-            }
-            return;
-        }
-        isSpout = enabled;
-        weatherSystem.changeControllers(isSpout);
-    }
 
     public void reload() {
         onDisable();
@@ -261,5 +260,9 @@ public class ProperWeather extends JavaPlugin {
 
     public WeatherCycleFactoryRegistry getCycles() {
         return weatherCycleFactoryRegistry;
+    }
+
+    public WeatherElementFactoryRegistry getWeatherElementFactories() {
+        return weatherElementFactoryRegistry;
     }
 }

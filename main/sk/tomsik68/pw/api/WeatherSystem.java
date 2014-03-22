@@ -22,7 +22,7 @@ import sk.tomsik68.pw.region.Region;
 
 public abstract interface WeatherSystem {
     public abstract void startCycle(String cycle, String world, String startWeather);
-    
+
     public abstract void deInit();
 
     public abstract void init();
@@ -32,8 +32,6 @@ public abstract interface WeatherSystem {
     public abstract WeatherController getWeatherController(Region paramRegion);
 
     public abstract boolean canNowBeLightning(Region paramRegion);
-
-    public abstract void changeControllers(boolean paramBoolean);
 
     public abstract void setWeatherController(Region paramRegion, WeatherController paramWeatherController);
 
@@ -50,7 +48,7 @@ public abstract interface WeatherSystem {
     public abstract void setRegionData(Region region, IWeatherData wd);
 
     public abstract IWeatherData getRegionData(Region region);
-    
+
     public abstract void startCycleInRegion(String cycleName, int region, String startWeather);
 
     public abstract void unHook(String worldName);

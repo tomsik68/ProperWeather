@@ -27,6 +27,7 @@ import org.bukkit.World;
 
 import sk.tomsik68.pw.DataManager;
 import sk.tomsik68.pw.Util;
+import sk.tomsik68.pw.api.IServerBackend;
 import sk.tomsik68.pw.api.IWeatherData;
 import sk.tomsik68.pw.api.RegionManager;
 import sk.tomsik68.pw.api.Weather;
@@ -47,18 +48,19 @@ public class DefaultWeatherSystem implements WeatherSystem {
     private RegionManager regionManager = new SimpleRegionManager();
     private Random rand = new Random();
     private final WeatherFactoryRegistry weathers;
+    private final IServerBackend backend;
 
-    public DefaultWeatherSystem(WeatherFactoryRegistry weathers) {
+    public DefaultWeatherSystem(WeatherFactoryRegistry weathers, IServerBackend backend) {
         weatherData = new HashMap<Integer, IWeatherData>();
         controllers = new HashMap<Integer, WeatherController>();
         this.weathers = weathers;
+        this.backend = backend;
 
     }
 
     public void runWeather(String worldName) {
         startCycle("random", worldName, "");
     }
-
 
     public void stopAtWeather(String worldName, String weatherName) {
         startCycle("stop", worldName, weatherName);
@@ -100,10 +102,10 @@ public class DefaultWeatherSystem implements WeatherSystem {
 
         WeatherCycle cycle = ProperWeather.instance().getCycles().get(cycleName).create(this);
         wd.setCycle(cycle);
-        if (startWeather != null && !startWeather.isEmpty()){
+        if (startWeather != null && !startWeather.isEmpty()) {
             wd.setCurrentWeather(ProperWeather.instance().getWeathers().get(startWeather).create(r));
             wd.getCurrentWeather().initWeather();
-        }else {
+        } else {
             wd = cycle.nextWeatherData(wd);
         }
         weatherData.put(r, wd);
@@ -119,7 +121,9 @@ public class DefaultWeatherSystem implements WeatherSystem {
         DataManager.save(toSave);
     }
 
-    @SuppressWarnings(value = { "deprecation" })
+    @SuppressWarnings(value = {
+        "deprecation"
+    })
     public void init() {
         boolean mv = false;
         regionManager.loadRegions();
@@ -198,9 +202,10 @@ public class DefaultWeatherSystem implements WeatherSystem {
                 ProperWeather.log.info("You can use /pw im to import weather settings from multiverse.");
                 return;
             }
-            DataManager.save(new ArrayList<WeatherDataExt>());
+            DataManager.save(new ArrayList<WeatherDatav4>());
             // cancel raining, so minecraft server doesn't change it(raining is
-            // handled via packets in Util class)
+            // handled by WeatherControllers, which send packets directly to
+            // players)
             for (String w : getWorldList()) {
                 Bukkit.getWorld(w).setStorm(false);
             }
@@ -216,17 +221,7 @@ public class DefaultWeatherSystem implements WeatherSystem {
         for (Integer r : regions) {
             Region region = regionManager.getRegion(r);
             IWeatherData wd = getRegionData(region);
-            if (wd == null) {
-                /*
-                 * wd = new WeatherDataExt();
-                 * wd.setCanEverChange(true);
-                 * Weather weather;
-                 * weather = weathers.createWeather("clear", r);
-                 * wd.setCurrentWeather(weather);
-                 * wd.setDuration(weather.getMaxDuration());
-                 * weather.initWeather();
-                 */
-            } else {
+            if (wd != null) {
                 try {
                     wd = wd.getCycle().nextWeatherData(wd);
                     // avoid null WeatherData
@@ -251,7 +246,7 @@ public class DefaultWeatherSystem implements WeatherSystem {
     public WeatherController getWeatherController(int regionId) {
         WeatherController wc;
         if (!controllers.containsKey(Integer.valueOf(regionId))) {
-            wc = ProperWeather.isSpout ? new SpoutWeatherController(regionManager.getRegion(Integer.valueOf(regionId))) : new DefaultWeatherController(regionManager.getRegion(regionId));
+            wc = new DefaultWeatherController(regionManager.getRegion(regionId), backend);
             controllers.put(Integer.valueOf(regionId), wc);
         } else
             wc = controllers.get(Integer.valueOf(regionId));
@@ -261,21 +256,6 @@ public class DefaultWeatherSystem implements WeatherSystem {
     public boolean canNowBeLightning(Region region) {
         Validate.notNull(region);
         return controllers.get(Integer.valueOf(region.getUID())).isThunderingAllowed();
-    }
-
-    public void changeControllers(boolean spout) {
-        synchronized (controllers) {
-            for (Map.Entry<Integer, WeatherController> entry : controllers.entrySet())
-                if (((entry.getValue() instanceof DefaultWeatherController)) || ((entry.getValue() instanceof SpoutWeatherController))) {
-                    WeatherController temp = spout ? new SpoutWeatherController(entry.getValue().getRegion()) : new DefaultWeatherController(entry.getValue().getRegion());
-                    temp.setRaining(entry.getValue().isRaining());
-                    if (entry.getValue().isThunderingAllowed())
-                        temp.allowThundering();
-                    else
-                        temp.denyThundering();
-                    setWeatherController(entry.getKey().intValue(), temp);
-                }
-        }
     }
 
     public void setWeatherController(int regionID, WeatherController wc) {
@@ -298,7 +278,6 @@ public class DefaultWeatherSystem implements WeatherSystem {
         wd.setDuration(-1);
         return wd;
     }
-
 
     public List<String> getWorldList() {
         return regionManager.getWorlds();
@@ -325,7 +304,7 @@ public class DefaultWeatherSystem implements WeatherSystem {
     @Override
     public void unHook(String worldName) {
         List<Integer> regions = regionManager.getRegions(Bukkit.getWorld(worldName));
-        for(int r : regions){
+        for (int r : regions) {
             Region region = regionManager.getRegion(r);
             getWeatherController(region).finish();
             controllers.remove(r);

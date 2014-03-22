@@ -34,10 +34,9 @@ public class WeatherStorm extends Weather {
         super(wd1, uid);
     }
 
-    public void initWeather() {
-        getController().clear();
+    public void doInitWeather() {
         getController().setRaining(true);
-        getController().allowThundering();
+        getController().setThundering(true);
     }
 
     public void onRandomTime() {
