@@ -27,7 +27,6 @@ import org.bukkit.entity.Player;
 import sk.tomsik68.pw.api.Weather;
 import sk.tomsik68.pw.api.WeatherDefaults;
 
-//NOTBUKKIT > All the ugly reflection goes here...
 public class Util {
 
     public static List<Player> getPlayers(World world) {

@@ -75,7 +75,7 @@ public class Translator {
     }
 
     public String translate(String key, Object[] params) {
-        String result = "";
+        String result = key;
         if(file.containsKey(key)){
             result = file.getProperty(key);
         }else

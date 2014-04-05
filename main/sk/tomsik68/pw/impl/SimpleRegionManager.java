@@ -95,7 +95,7 @@ public class SimpleRegionManager implements RegionManager {
         for (int i = 0; i < j; i++) {
             int r = arrayOfInteger1[i].intValue();
             Region region = getRegion(Integer.valueOf(r));
-            if (region.getWorld().equals(world)) {
+            if (region.getWorld().getUID().equals(world.getUID())) {
                 regions.remove(Integer.valueOf(region.getUID()));
             }
         }
@@ -139,13 +139,14 @@ public class SimpleRegionManager implements RegionManager {
         ProperWeather.log.fine("Saving region data...");
         try {
             RegionSaveStructure save = new RegionSaveStructure(new ArrayList<Region>(regions.values()));
+            ProperWeather.log.info("Region save structure size: " + save.getRegions().size());
             dataFile.saveData(save);
         } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
     public void loadRegions() {
-
         ProperWeather.log.fine("Loading region data(automatically dropping broken regions)...");
         dataFile = new RegionsDataFile(new File(ProperWeather.instance().getDataFolder(), "regions.dat"));
         regions.clear();

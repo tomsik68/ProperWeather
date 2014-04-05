@@ -31,7 +31,6 @@ public class WeatherClear extends Weather {
 
     @Override
     public void doInitWeather() {
-        // TODO Auto-generated method stub
         
     }
 

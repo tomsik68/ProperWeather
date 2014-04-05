@@ -17,7 +17,7 @@ public class ClassWeatherCycleFactory extends WeatherCycleFactory {
     @Override
     public WeatherCycle create(WeatherSystem ws) {
         try {
-            return clazz.getConstructor(WeatherSystem.class).newInstance(ws, name);
+            return clazz.getConstructor(WeatherSystem.class, String.class).newInstance(ws, name);
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {

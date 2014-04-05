@@ -53,6 +53,7 @@ public class CommandHandler implements ICommandHandler {
         } catch (NoSuchElementException nsee) {
             sender.sendMessage(ChatColor.RED + "[ProperWeather]" + Translator.translateString("error.nofound.weather", new Object[] { weatherName }));
         } catch (NullPointerException npe) {
+            npe.printStackTrace();
             sender.sendMessage(ChatColor.RED + "[ProperWeather] " + npe.getMessage());
         }
 

@@ -26,6 +26,9 @@ import org.apache.commons.lang.NotImplementedException;
 import sk.tomsik68.pw.Util;
 import sk.tomsik68.pw.files.api.IDataIO;
 import sk.tomsik68.pw.plugin.ProperWeather;
+import sk.tomsik68.pw.struct.WeatherData;
+import sk.tomsik68.pw.struct.WeatherDataExt;
+import sk.tomsik68.pw.struct.WeatherDatav4;
 
 public class Weather103IO implements IDataIO<WeatherFileFormat> {
 

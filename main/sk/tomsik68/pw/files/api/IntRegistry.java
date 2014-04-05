@@ -36,13 +36,10 @@ public abstract class IntRegistry<R> {
     }
 
     public R get(int key) {
-        R result;
+
         synchronized (lock) {
-            if (!elements.containsKey(key))
-                throw new NoSuchElementException("Element '" + key + "' doesn't exist!");
-            result = elements.get(key);
+            return elements.get(key);
         }
-        return result;
     }
 
     public void register(int key, R element) throws NameAlreadyBoundException {

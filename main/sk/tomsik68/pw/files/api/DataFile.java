@@ -15,6 +15,7 @@
 package sk.tomsik68.pw.files.api;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -66,12 +67,16 @@ public abstract class DataFile<D extends IData> extends IntRegistry<IDataIO<D>> 
     public void saveData(D data) throws Exception {
         if (!file.exists()) {
             file.getParentFile().mkdirs();
-            file.createNewFile();
+        } else {
+            file.delete();
         }
+        file.createNewFile();
         int version = getDefaultIO();
         IDataIO<D> io = get(version);
         Validate.notNull(io);
-        FileOutputStream fos = new FileOutputStream(file);
+        FileOutputStream fos = new FileOutputStream(file, false);
+        DataOutputStream dos = new DataOutputStream(fos);
+        dos.writeInt(version);
         io.save(fos, data);
         fos.flush();
         fos.close();

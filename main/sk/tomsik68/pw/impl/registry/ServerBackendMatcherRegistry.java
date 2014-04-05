@@ -5,12 +5,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.naming.NameAlreadyBoundException;
+
 import org.bukkit.Server;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import sk.tomsik68.pw.api.IServerBackend;
 import sk.tomsik68.pw.api.IServerBackendMatcher;
 import sk.tomsik68.pw.api.registry.BaseRegistry;
+import sk.tomsik68.pw.impl.backend.CB16BackendMatcher;
 import sk.tomsik68.pw.plugin.ProperWeather;
 
 public class ServerBackendMatcherRegistry extends BaseRegistry<IServerBackendMatcher> {
@@ -19,6 +22,10 @@ public class ServerBackendMatcherRegistry extends BaseRegistry<IServerBackendMat
 
     @Override
     public void load(File pluginFolder) throws IOException {
+        try {
+            register("CraftBukkit-pre1.7", new CB16BackendMatcher());
+        } catch (NameAlreadyBoundException ignore) {
+        }
         File cfgFile = new File(pluginFolder, "backend.yml");
         YamlConfiguration cfg;
         if (!cfgFile.exists()) {

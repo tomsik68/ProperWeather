@@ -165,7 +165,6 @@ public class ProperWeather extends JavaPlugin {
         try {
             weatherSystem.init();
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         if (config.shouldMapBiomes()) {
@@ -198,7 +197,7 @@ public class ProperWeather extends JavaPlugin {
         regionUpdateTask = getServer().getScheduler().scheduleSyncRepeatingTask(this, new RegionUpdateTask(weatherSystem.getRegionManager()), 88L,
                 88L);
         if ((weatherUpdateTask == -1) || (regionUpdateTask == -1)) {
-            log.severe(ChatColor.GREEN + "FATAL ERROR: Task scheduling failed! Plugin will now shut down itself");
+            log.severe(ChatColor.RED + "FATAL ERROR: Task scheduling failed! Plugin will now shut down itself");
             getServer().getPluginManager().disablePlugin(this);
         }
     }
@@ -222,7 +221,12 @@ public class ProperWeather extends JavaPlugin {
         try {
             Translator.init(config.getTranslationFilePath());
         } catch (Exception e) {
-            Translator.init(new File(getDataFolder(), config.getTranslationFilePath()).getAbsolutePath());
+            e.printStackTrace();
+            try {
+                Translator.init(new File(getDataFolder(), config.getTranslationFilePath()).getAbsolutePath());
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
         }
     }
 

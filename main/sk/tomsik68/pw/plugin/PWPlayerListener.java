@@ -39,7 +39,7 @@ public class PWPlayerListener implements Listener {
 
     public void onPlayerChangedRegion(PlayerChangedWorldEvent event) {
         weatherSystem.getWeatherController(weatherSystem.getRegionManager().getRegionAt(event.getPlayer().getLocation())).update(event.getPlayer());
-        if (ProperWeather.isSpout) {
+        /*if (false) {
             SpoutPlayer player = SpoutManager.getPlayer(event.getPlayer());
             if (!player.isSpoutCraftEnabled())
                 return;
@@ -70,7 +70,7 @@ public class PWPlayerListener implements Listener {
                 sm.setSunVisible(player, wc.isSun());
                 sm.setCloudsVisible(player, wc.isClouds());
             }
-        }
+        }*/
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

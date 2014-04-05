@@ -127,7 +127,7 @@ public class WeatherController {
             p.removeMetadata("pw.lastRegion", ProperWeather.instance());
         }
         getRegion().getWorld();
-        setThundering(false);
+        setThundering(true);
         for (BaseWeatherElement elem : elements) {
             elem.deactivate(this);
         }
