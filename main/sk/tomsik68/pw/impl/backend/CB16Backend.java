@@ -62,4 +62,8 @@ public class CB16Backend implements IServerBackend {
     public void setSunSize(Player p, int sunSize) {
     }
 
+    @Override
+    public void reset(Player player) {
+    }
+
 }

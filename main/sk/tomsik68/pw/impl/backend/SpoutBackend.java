@@ -9,15 +9,13 @@ import org.getspout.spoutapi.player.SpoutPlayer;
 import sk.tomsik68.pw.api.IServerBackend;
 
 public class SpoutBackend implements IServerBackend {
-    private final SpoutManager spout;
 
     public SpoutBackend() {
-        spout = SpoutManager.getInstance();
     }
 
     @Override
     public void setRaining(Player player, boolean raining) {
-        SpoutPlayer p = spout.getPlayer(player);
+        SpoutPlayer p = SpoutManager.getPlayer(player);
     }
 
     @Override
@@ -70,6 +68,12 @@ public class SpoutBackend implements IServerBackend {
     public void setSunSize(Player p, int sunSize) {
 	// TODO Auto-generated method stub
 	
+    }
+
+    @Override
+    public void reset(Player player) {
+        // TODO Auto-generated method stub
+        
     }
 
 }

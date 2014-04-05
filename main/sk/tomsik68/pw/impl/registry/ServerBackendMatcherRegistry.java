@@ -13,6 +13,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import sk.tomsik68.pw.api.IServerBackend;
 import sk.tomsik68.pw.api.IServerBackendMatcher;
 import sk.tomsik68.pw.api.registry.BaseRegistry;
+import sk.tomsik68.pw.impl.backend.BukkitAPIMatcher;
 import sk.tomsik68.pw.impl.backend.CB16BackendMatcher;
 import sk.tomsik68.pw.plugin.ProperWeather;
 
@@ -23,6 +24,7 @@ public class ServerBackendMatcherRegistry extends BaseRegistry<IServerBackendMat
     @Override
     public void load(File pluginFolder) throws IOException {
         try {
+            register("BukkitAPI", new BukkitAPIMatcher());
             register("CraftBukkit-pre1.7", new CB16BackendMatcher());
         } catch (NameAlreadyBoundException ignore) {
         }
