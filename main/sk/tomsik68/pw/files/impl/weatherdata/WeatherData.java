@@ -12,7 +12,7 @@
 
     You should have received a copy of the GNU General Public License
     along with ProperWeather.  If not, see <http://www.gnu.org/licenses/>.*/
-package sk.tomsik68.pw.struct;
+package sk.tomsik68.pw.files.impl.weatherdata;
 
 import java.io.Externalizable;
 import java.io.IOException;

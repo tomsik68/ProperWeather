@@ -16,90 +16,86 @@ package sk.tomsik68.pw.impl;
 
 import java.awt.Color;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.MetadataValue;
 
 import sk.tomsik68.pw.api.BaseWeatherElement;
 import sk.tomsik68.pw.api.IServerBackend;
-import sk.tomsik68.pw.api.WeatherController;
 import sk.tomsik68.pw.plugin.ProjectileManager;
 import sk.tomsik68.pw.plugin.ProperWeather;
 import sk.tomsik68.pw.region.Region;
+import sk.tomsik68.pw.struct.WeatherStatusStructure;
 
-public class DefaultWeatherController implements WeatherController {
-    private java.awt.Color sky;
-    private java.awt.Color clouds;
-    private java.awt.Color fog;
-    private int sunSize;
-    private int moonSize;
-    private int starFrequency;
-    private boolean moon;
-    private boolean cloudsVisible;
-    private boolean sun;
-    private boolean stars;
-    private int cloudsHeight;
-    private boolean snowing;
+public class WeatherController {
+    private WeatherStatusStructure struct = new WeatherStatusStructure();
+
     protected final Region region;
-    protected boolean thundersAllowed = true;
-    protected boolean thundering = false;
-    protected boolean rain = false;
     protected Set<BaseWeatherElement> elements = new HashSet<BaseWeatherElement>();
     protected final IServerBackend backend;
 
-    public DefaultWeatherController(Region region1, IServerBackend backend) {
+    public WeatherController(Region region1, IServerBackend backend) {
+        Validate.notNull(region1, "I'll not construct with NULL region!");
+        Validate.notNull(backend, "I'll not construct with NULL backend!");
         this.region = region1;
-        if (region == null)
-            throw new NullPointerException("I'll not construct with NULL region!");
         this.backend = backend;
-        sky = ProperWeather.defaultSkyColor;
-        clouds = (fog = java.awt.Color.white);
-        sunSize = 100;
-        moonSize = 100;
-        starFrequency = 35;
-        moon = true;
-        cloudsVisible = true;
-        sun = true;
-        stars = true;
-        cloudsHeight = 110;
     }
 
     public Region getRegion() {
         return this.region;
     }
 
-    public void update() {
-        setRaining(isRaining());
-    }
-
     public void update(Player p) {
-        if (!p.hasMetadata("pw.raining") || (p.getMetadata("pw.raining").get(0).asBoolean() ^ rain)) {
-            backend.setRaining(p, rain);
-            p.setMetadata("pw.raining", new FixedMetadataValue(ProperWeather.instance(), rain));
+        if (p.hasMetadata("pw.weather")) {
+            List<MetadataValue> values = p.getMetadata("pw.weather");
+            for (MetadataValue value : values) {
+                if (value.getOwningPlugin().equals(ProperWeather.instance())) {
+                    WeatherStatusStructure playerWeather = (WeatherStatusStructure) value.value();
+                    if (!playerWeather.equals(struct)) {
+                        setValues(p);
+                    }
+                }
+            }
+
+        } else {
+            setValues(p);
         }
     }
 
-    @Override
+    private void setValues(Player p) {
+        WeatherStatusStructure clone = struct.clone();
+        backend.setRaining(p, isRaining());
+        backend.setClouds(p, isClouds());
+        backend.setCloudsColor(p, getCloudsColor());
+        backend.setCloudsHeight(p, getCloudsHeight());
+        backend.setFogColor(p, getFogColor());
+        backend.setMoonSize(p, getMoonSize());
+        backend.setSkyColor(p, getSkyColor());
+        backend.setStarFrequency(p, getStarFrequency());
+        backend.setSunSize(p, getSunSize());
+        p.setMetadata("pw.weather", new FixedMetadataValue(ProperWeather.instance(), clone));
+    }
+
     public void strike(Location location) {
         this.region.getWorld().strikeLightning(location);
     }
 
-    @Override
     public Set<BaseWeatherElement> getActiveElements() {
         return elements;
     }
 
-    @Override
     public void activateElement(BaseWeatherElement element) {
         element.activate(this);
         elements.add(element);
     }
 
-    @Override
     public void deactivateElement(BaseWeatherElement element) {
         element.deactivate(this);
         elements.remove(element);
@@ -122,11 +118,11 @@ public class DefaultWeatherController implements WeatherController {
         }
     }
 
-    @Override
     public void finish() {
         for (Player p : region.getPlayers()) {
-            backend.setRaining(p, rain);
-            p.removeMetadata("pw.raining", ProperWeather.instance());
+            backend.setRaining(p, p.getWorld().hasStorm());
+
+            p.removeMetadata("pw.weather", ProperWeather.instance());
             p.removeMetadata("pw.moveTimestamp", ProperWeather.instance());
             p.removeMetadata("pw.lastRegion", ProperWeather.instance());
         }
@@ -137,156 +133,126 @@ public class DefaultWeatherController implements WeatherController {
         }
     }
 
+    public void updateAll() {
+        for (Player player : region.getPlayers()) {
+            update(player);
+        }
+    }
+
     // rest of the methods under here are getters/setters for each individual
     // variable
     // the setters are special, because they're also responsible for calling
     // update on each player in region.
 
     public void setSkyColor(Color color) {
-        sky = color;
-        // TODO
+        struct.skyColor = color;
     }
 
     public Color getSkyColor() {
-        return sky;
+        return struct.skyColor;
     }
 
     public void setFogColor(Color color) {
-        this.fog = color;
-        // TODO
+        struct.fogColor = color;
     }
 
     public Color getFogColor() {
-        return fog;
+        return struct.fogColor;
     }
 
     public int getSunSize() {
-        return sunSize;
+        return struct.sunSize;
     }
 
     public void setSunSize(int pcent) {
-        sunSize = pcent;
-        // TODO
+        struct.sunSize = pcent;
     }
 
     public void setStarFrequency(int pcent) {
-        starFrequency = pcent;
-        // TODO
+        struct.starFrequency = pcent;
     }
 
     public void setMoonSize(int pcent) {
-        moonSize = pcent;
-        // TODO
+        struct.moonSize = pcent;
     }
 
     public int getMoonSize() {
-        return moonSize;
+        return struct.moonSize;
     }
 
     public int getStarFrequency() {
-        return starFrequency;
+        return struct.starFrequency;
     }
 
     public boolean isStars() {
-        return stars;
+        return struct.starsVisible;
     }
 
     public boolean isClouds() {
-        return cloudsVisible;
+        return struct.cloudsVisible;
     }
 
     public Color getCloudsColor() {
-        return clouds;
+        return struct.cloudsColor;
     }
 
     public void setCloudsColor(Color color) {
-        this.clouds = color;
-        // TODO
+        struct.cloudsColor = color;
     }
 
     public void setCloudsHeight(int h) {
-        cloudsHeight = h;
-        // TODO
+        struct.cloudsHeight = h;
     }
 
     public int getCloudsHeight() {
-        return cloudsHeight;
+        return struct.cloudsHeight;
     }
 
     public void setRaining(boolean b) {
-        this.rain = b;
-        // TODO
-        for (Player p : region.getPlayers()) {
-            update(p);
-        }
+        struct.rain = b;
     }
 
     public boolean isRaining() {
-        return this.rain;
-    }
-
-    public boolean isThundering() {
-        return this.thundering;
+        return struct.rain;
     }
 
     public void setThundering(boolean b) {
-        this.thundering = true;
-        // TODO
+        struct.thundersAllowed = b;
     }
 
     public boolean isThunderingAllowed() {
-        return this.thundersAllowed;
+        return struct.thundersAllowed;
     }
 
     public boolean isMoonVisible() {
-        return moon;
+        return struct.moonVisible;
     }
 
     public boolean isSun() {
-        return sun;
+        return struct.sunVisible;
     }
 
-    public void setFogDistance(int d) {
-
-    }
-
-    public int getFogDistance() {
-        return 0;
-    }
-
-    @Override
     public void setSnowing(boolean snow) {
-        this.snowing = snow;
+        struct.snowing = snow;
     }
 
-    @Override
     public boolean isSnowing() {
-        return snowing;
+        return struct.snowing;
     }
 
-    @Override
     public void setMoon(boolean moon) {
-        this.moon = moon;
-        // TODO
+        struct.moonVisible = moon;
     }
 
-    @Override
     public void setSun(boolean sun) {
-        this.sun = sun;
-        // TODO
-
+        struct.sunVisible = sun;
     }
 
-    @Override
     public void setStars(boolean stars) {
-        this.stars = stars;
-        // TODO
+        struct.starsVisible = stars;
     }
 
-    @Override
     public void setClouds(boolean c) {
-        this.cloudsVisible = c;
-        // TODO
+        struct.cloudsVisible = c;
     }
-
 }

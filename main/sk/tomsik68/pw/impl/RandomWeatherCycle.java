@@ -31,13 +31,8 @@ public class RandomWeatherCycle extends WeatherCycle {
     private static final Random rand = new Random();
     private LinkedList<String> previousWeathers = new LinkedList<String>();
 
-    public RandomWeatherCycle(WeatherSystem ws) {
-        super(ws);
-    }
-
-    @Override
-    public String getName() {
-        return "random";
+    public RandomWeatherCycle(WeatherSystem ws, String name) {
+        super(ws, name);
     }
 
     @Override
@@ -48,7 +43,8 @@ public class RandomWeatherCycle extends WeatherCycle {
             boolean done = false;
             while (!done) {
                 Weather weather = ProperWeather.instance().getWeathers().createWeather(weathers.get(rand.nextInt(weathers.size())), wd.getRegion());
-                if (weather.canBeStarted(getPreviousWeather()) && !weather.getName().equalsIgnoreCase(getPreviousWeather()) && (!wasWeather(weather)) && (rand.nextInt(100) < weather.getProbability())) {
+                if (weather.canBeStarted(getPreviousWeather()) && !weather.getName().equalsIgnoreCase(getPreviousWeather()) && (!wasWeather(weather))
+                        && (rand.nextInt(100) < weather.getProbability())) {
                     addPrevWeather(weather.getName());
                     wd.setCurrentWeather(weather);
                     weather.initWeather();
@@ -65,7 +61,7 @@ public class RandomWeatherCycle extends WeatherCycle {
         if (previousWeathers.size() < 3) {
             previousWeathers.removeFirst();
         }
-        
+
     }
 
     private boolean wasWeather(Weather weather) {

@@ -26,8 +26,8 @@ import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.player.SkyManager;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
-import sk.tomsik68.pw.api.WeatherController;
 import sk.tomsik68.pw.api.WeatherSystem;
+import sk.tomsik68.pw.impl.WeatherController;
 
 public class PWPlayerListener implements Listener {
     private final WeatherSystem weatherSystem;

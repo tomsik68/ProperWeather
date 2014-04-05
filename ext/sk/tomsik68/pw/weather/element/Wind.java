@@ -23,7 +23,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.util.Vector;
 
 import sk.tomsik68.pw.api.BaseWeatherElement;
-import sk.tomsik68.pw.api.WeatherController;
+import sk.tomsik68.pw.impl.WeatherController;
 
 public class Wind extends BaseWeatherElement {
     private final Point2D windSpeed;
@@ -46,14 +46,10 @@ public class Wind extends BaseWeatherElement {
         unregisterAll();
     }
 
-    @Override
-    public void setExtendedFeaturesOn(boolean b) {
-        // this one does nothing with spout, so ignore this!
-    }
-
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
-        if (event.getPlayer().getLocation().getY() < minLayer || Math.abs(event.getPlayer().getVelocity().getX()) > 1.85d || Math.abs(event.getPlayer().getVelocity().getZ()) > 1.85d || event.getFrom().distanceSquared(event.getTo()) < 0.05d)
+        if (event.getPlayer().getLocation().getY() < minLayer || Math.abs(event.getPlayer().getVelocity().getX()) > 1.85d
+                || Math.abs(event.getPlayer().getVelocity().getZ()) > 1.85d || event.getFrom().distanceSquared(event.getTo()) < 0.05d)
             return;
         event.getPlayer().setVelocity(event.getPlayer().getVelocity().add(new Vector(windSpeed.getX(), 0d, windSpeed.getY())));
     }

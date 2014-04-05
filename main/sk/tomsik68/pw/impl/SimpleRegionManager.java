@@ -35,6 +35,8 @@ import org.bukkit.block.Biome;
 
 import sk.tomsik68.pw.RegionType;
 import sk.tomsik68.pw.api.RegionManager;
+import sk.tomsik68.pw.files.impl.regions.RegionSaveStructure;
+import sk.tomsik68.pw.files.impl.regions.RegionsDataFile;
 import sk.tomsik68.pw.plugin.ProperWeather;
 import sk.tomsik68.pw.region.BiomeRegion;
 import sk.tomsik68.pw.region.Region;
@@ -43,7 +45,7 @@ import sk.tomsik68.pw.region.WorldRegion;
 public class SimpleRegionManager implements RegionManager {
     private final Map<Integer, Region> regions = new HashMap<Integer, Region>();
     private final Map<UUID, Integer[]> worldRegions = new HashMap<UUID, Integer[]>();
-
+    private RegionsDataFile dataFile;
     private static int lastRegionID = -1;
 
     public Region getRegion(Integer id) {
@@ -52,14 +54,16 @@ public class SimpleRegionManager implements RegionManager {
 
     public int addRegion(Region region) {
         int r = lastRegionID++;
-        
+
         while (regions.containsKey(Integer.valueOf(r))) {
             r++;
         }
         region.setUID(r);
         regions.put(Integer.valueOf(r), region);
         if (!worldRegions.containsKey(region.getWorldId())) {
-            worldRegions.put(region.getWorldId(), new Integer[] { Integer.valueOf(r) });
+            worldRegions.put(region.getWorldId(), new Integer[] {
+                Integer.valueOf(r)
+            });
         } else {
             Integer[] array = worldRegions.get(region.getWorldId());
             Integer[] array2 = new Integer[array.length + 1];
@@ -133,52 +137,42 @@ public class SimpleRegionManager implements RegionManager {
 
     public void saveRegions() {
         ProperWeather.log.fine("Saving region data...");
-        File file = new File(ProperWeather.instance().getDataFolder(), "regions.dat");
         try {
-            if (!file.exists())
-                file.createNewFile();
-            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file));
-            oos.writeObject(new ArrayList<Region>(regions.values()));
-            oos.flush();
-            oos.close();
+            RegionSaveStructure save = new RegionSaveStructure(new ArrayList<Region>(regions.values()));
+            dataFile.saveData(save);
         } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
     public void loadRegions() {
-        ProperWeather.log.fine("Loading region data(automatically dropping broken regions)...");
-        File file = new File(ProperWeather.instance().getDataFolder(), "regions.dat");
-        regions.clear();
-        if (file.exists())
-            try {
-                ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
 
-                @SuppressWarnings("unchecked")
-                ArrayList<Region> regs = (ArrayList<Region>) ois.readObject();
-                ois.close();
-                HashMap<UUID, ArrayList<Integer>> worldregs = new HashMap<UUID, ArrayList<Integer>>();
-                for (Region region : regs) {
-                    if(region.getWorldId() == null || region.getWorld() == null)
-                        continue;
-                    regions.put(region.getUID(), region);
-                    if (!worldregs.containsKey(region.getWorldId())) {
-                        worldregs.put(region.getWorldId(), new ArrayList<Integer>());
-                    }
-                    ArrayList<Integer> worldRegionss = worldregs.get(region.getWorldId());
-                    worldRegionss.add(region.getUID());
-                    worldregs.put(region.getWorldId(), worldRegionss);
-                    lastRegionID = region.getUID();
+        ProperWeather.log.fine("Loading region data(automatically dropping broken regions)...");
+        dataFile = new RegionsDataFile(new File(ProperWeather.instance().getDataFolder(), "regions.dat"));
+        regions.clear();
+        try {
+            ArrayList<Region> regs = dataFile.loadData().getRegions();
+            HashMap<UUID, ArrayList<Integer>> worldregs = new HashMap<UUID, ArrayList<Integer>>();
+            for (Region region : regs) {
+                if (region.getWorldId() == null || region.getWorld() == null)
+                    continue;
+                regions.put(region.getUID(), region);
+                if (!worldregs.containsKey(region.getWorldId())) {
+                    worldregs.put(region.getWorldId(), new ArrayList<Integer>());
                 }
-                if (regions.size() == 0)
-                    lastRegionID = 0;
-                for (Entry<UUID, ArrayList<Integer>> entry : worldregs.entrySet()) {
-                    worldRegions.put(entry.getKey(), entry.getValue().toArray(new Integer[0]));
-                }
-                ProperWeather.log.finer("Dropped regions: "+(regs.size() - regions.size()));
-            } catch (Exception e) {
-                e.printStackTrace();
+                ArrayList<Integer> worldRegionss = worldregs.get(region.getWorldId());
+                worldRegionss.add(region.getUID());
+                worldregs.put(region.getWorldId(), worldRegionss);
+                lastRegionID = region.getUID();
             }
+            if (regions.size() == 0)
+                lastRegionID = 0;
+            for (Entry<UUID, ArrayList<Integer>> entry : worldregs.entrySet()) {
+                worldRegions.put(entry.getKey(), entry.getValue().toArray(new Integer[0]));
+            }
+            ProperWeather.log.finer("Dropped regions: " + (regs.size() - regions.size()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public Collection<Region> getAllRegions() {

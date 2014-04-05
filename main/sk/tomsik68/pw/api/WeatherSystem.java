@@ -14,18 +14,20 @@
     along with ProperWeather.  If not, see <http://www.gnu.org/licenses/>.*/
 package sk.tomsik68.pw.api;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.bukkit.World;
 
+import sk.tomsik68.pw.impl.WeatherController;
 import sk.tomsik68.pw.region.Region;
 
 public abstract interface WeatherSystem {
     public abstract void startCycle(String cycle, String world, String startWeather);
 
-    public abstract void deInit();
+    public abstract void deInit() throws Exception;
 
-    public abstract void init();
+    public abstract void init() throws Exception;
 
     public abstract void update(World paramWorld);
 

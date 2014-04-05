@@ -17,6 +17,7 @@ package sk.tomsik68.pw.api;
 import java.util.List;
 
 import sk.tomsik68.pw.config.WeatherDescription;
+import sk.tomsik68.pw.impl.WeatherController;
 import sk.tomsik68.pw.plugin.ProperWeather;
 
 /**

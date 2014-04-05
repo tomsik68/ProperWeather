@@ -21,7 +21,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 
 import sk.tomsik68.pw.api.Weather;
-import sk.tomsik68.pw.api.WeatherController;
+import sk.tomsik68.pw.impl.WeatherController;
 import sk.tomsik68.pw.api.WeatherDefaults;
 import sk.tomsik68.pw.config.WeatherDescription;
 import sk.tomsik68.pw.impl.BasicWeatherDefaults;

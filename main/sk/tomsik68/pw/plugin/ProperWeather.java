@@ -92,7 +92,11 @@ public class ProperWeather extends JavaPlugin {
             int c = ProjectileManager.size();
             ProjectileManager.killAll();
             log.fine("Killed " + c + " projectiles ;)");
-            weatherSystem.deInit();
+            try {
+                weatherSystem.deInit();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             getServer().getScheduler().cancelTask(weatherUpdateTask);
             getServer().getScheduler().cancelTask(regionUpdateTask);
             log.info("ProperWeather disabled");
@@ -102,20 +106,21 @@ public class ProperWeather extends JavaPlugin {
     public void onEnable() {
         log = getLogger();
         /*
-        try {
-            PackageResolver.init(Bukkit.class.getClassLoader());
-            CompatibilityChecker.test();
-            log.fine("Bukkit compatibility test done. ");
-        } catch (Exception e) {
-            log.severe("Incompatible CraftBukkit version. Plugin will now shutdown to prevent further issues.");
-            log.severe("Error: " + e.getMessage());
-            e.printStackTrace();
-            getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
-        */
+         * try {
+         * PackageResolver.init(Bukkit.class.getClassLoader());
+         * CompatibilityChecker.test();
+         * log.fine("Bukkit compatibility test done. ");
+         * } catch (Exception e) {
+         * log.severe(
+         * "Incompatible CraftBukkit version. Plugin will now shutdown to prevent further issues."
+         * );
+         * log.severe("Error: " + e.getMessage());
+         * e.printStackTrace();
+         * getServer().getPluginManager().disablePlugin(this);
+         * return;
+         * }
+         */
         File dataFolder = new File("plugins", getDescription().getName());
-        log.info("Enabling ProperWeather...");
         if (!dataFolder.exists())
             dataFolder.mkdir();
         log.info("Looking for suitable backend...");
@@ -126,6 +131,12 @@ public class ProperWeather extends JavaPlugin {
             e.printStackTrace();
         }
         backend = serverBackendMatcherRegistry.getBackend(getServer());
+        if (backend == null) {
+            log.severe("No server backend was found for your server. ProperWeather cannot work without a backend, so it will shutdown. You can request to implement backend for your server software at plugin's homepage (http://dev.bukkit.org/server-mods/properweather/)");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+        log.info("Using backend: " + backend.getClass().getSimpleName());
         initFactories();
 
         if (!new File(dataFolder, "config.yml").exists()) {
@@ -135,7 +146,7 @@ public class ProperWeather extends JavaPlugin {
         permissions = config.getPerms();
         color = config.getColorTheme()[0];
         factColor = config.getColorTheme()[1];
-        weatherSystem = new DefaultWeatherSystem(weatherFactoryRegistry, backend);
+        weatherSystem = new DefaultWeatherSystem(weatherFactoryRegistry, weatherCycleFactoryRegistry, backend);
 
         weatherListener = new PWWeatherListener(weatherSystem);
         playerListener = new PWPlayerListener(weatherSystem);
@@ -151,7 +162,12 @@ public class ProperWeather extends JavaPlugin {
         loadWeatherSettings();
         initTranslations();
 
-        weatherSystem.init();
+        try {
+            weatherSystem.init();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         if (config.shouldMapBiomes()) {
             // initiate a complete scan...
             mapperManager.completeScan();
@@ -177,8 +193,10 @@ public class ProperWeather extends JavaPlugin {
     private void registerTasks() {
         registerAllEvents(PWPlayerListener.class, playerListener);
         registerAllEvents(PWWeatherListener.class, weatherListener);
-        weatherUpdateTask = getServer().getScheduler().runTaskTimerAsynchronously(this, new WeatherUpdateTask(weatherSystem), 88L, TASK_PERIOD).getTaskId();
-        regionUpdateTask = getServer().getScheduler().scheduleSyncRepeatingTask(this, new RegionUpdateTask(weatherSystem.getRegionManager()), 88L, 88L);
+        weatherUpdateTask = getServer().getScheduler().runTaskTimerAsynchronously(this, new WeatherUpdateTask(weatherSystem), 88L, TASK_PERIOD)
+                .getTaskId();
+        regionUpdateTask = getServer().getScheduler().scheduleSyncRepeatingTask(this, new RegionUpdateTask(weatherSystem.getRegionManager()), 88L,
+                88L);
         if ((weatherUpdateTask == -1) || (regionUpdateTask == -1)) {
             log.severe(ChatColor.GREEN + "FATAL ERROR: Task scheduling failed! Plugin will now shut down itself");
             getServer().getPluginManager().disablePlugin(this);
@@ -217,13 +235,15 @@ public class ProperWeather extends JavaPlugin {
     }
 
     public static String[] getVersionInfo() {
-        return new String[] { "ProperWeather v" + instance().getDescription().getVersion(), "by: Tomsik68", "Homepage:", "http://dev.bukkit.org/server-mods/properweather/" };
+        return new String[] {
+                "ProperWeather v" + instance().getDescription().getVersion(), "by: Tomsik68", "Homepage:",
+                "http://dev.bukkit.org/server-mods/properweather/"
+        };
     }
 
     public void setupPermissions() {
         permissions = config.getPerms();
     }
-
 
     public void reload() {
         onDisable();

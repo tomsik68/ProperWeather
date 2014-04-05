@@ -21,6 +21,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.RegisteredListener;
 
 import sk.tomsik68.pw.RegionalEventExecutor;
+import sk.tomsik68.pw.impl.WeatherController;
 import sk.tomsik68.pw.plugin.ProperWeather;
 import sk.tomsik68.pw.region.Region;
 /** Represents a weather element like wind. It'll soon be extended to plugins.
@@ -52,14 +53,6 @@ public abstract class BaseWeatherElement implements Listener {
     public Region getRegion() {
         return region;
     }
-
-    /**
-     * Spout etc. [called by plugin]
-     * 
-     * @param b
-     *            - Whether user will see spout features
-     */
-    public abstract void setExtendedFeaturesOn(boolean b);
 
     protected final void registerEvent(Class<? extends Event> eventClass, EventPriority priority) {
         try {

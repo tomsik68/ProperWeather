@@ -14,6 +14,12 @@
     along with ProperWeather.  If not, see <http://www.gnu.org/licenses/>.*/
 package sk.tomsik68.pw.impl;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,22 +31,20 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 
-import sk.tomsik68.pw.DataManager;
-import sk.tomsik68.pw.Util;
 import sk.tomsik68.pw.api.IServerBackend;
 import sk.tomsik68.pw.api.IWeatherData;
 import sk.tomsik68.pw.api.RegionManager;
 import sk.tomsik68.pw.api.Weather;
-import sk.tomsik68.pw.api.WeatherController;
 import sk.tomsik68.pw.api.WeatherCycle;
 import sk.tomsik68.pw.api.WeatherSystem;
+import sk.tomsik68.pw.files.impl.weatherdata.WeatherDataFile;
+import sk.tomsik68.pw.files.impl.weatherdata.WeatherFileFormat;
+import sk.tomsik68.pw.files.impl.weatherdata.WeatherSaveEntry;
+import sk.tomsik68.pw.impl.registry.WeatherCycleFactoryRegistry;
 import sk.tomsik68.pw.impl.registry.WeatherFactoryRegistry;
 import sk.tomsik68.pw.plugin.ProperWeather;
 import sk.tomsik68.pw.region.Region;
-import sk.tomsik68.pw.spout.SpoutWeatherController;
-import sk.tomsik68.pw.struct.WeatherData;
-import sk.tomsik68.pw.struct.WeatherDataExt;
-import sk.tomsik68.pw.struct.WeatherDatav4;
+import sk.tomsik68.pw.struct.WeatherDatav5;
 
 public class DefaultWeatherSystem implements WeatherSystem {
     private Map<Integer, IWeatherData> weatherData;
@@ -49,13 +53,15 @@ public class DefaultWeatherSystem implements WeatherSystem {
     private Random rand = new Random();
     private final WeatherFactoryRegistry weathers;
     private final IServerBackend backend;
+    private final WeatherCycleFactoryRegistry cycles;
+    private WeatherDataFile dataFile;
 
-    public DefaultWeatherSystem(WeatherFactoryRegistry weathers, IServerBackend backend) {
+    public DefaultWeatherSystem(WeatherFactoryRegistry weathers, WeatherCycleFactoryRegistry cycles, IServerBackend backend) {
         weatherData = new HashMap<Integer, IWeatherData>();
         controllers = new HashMap<Integer, WeatherController>();
         this.weathers = weathers;
         this.backend = backend;
-
+        this.cycles = cycles;
     }
 
     public void runWeather(String worldName) {
@@ -75,15 +81,7 @@ public class DefaultWeatherSystem implements WeatherSystem {
         Validate.notEmpty(worldName);
 
         World world = Bukkit.getWorld(worldName);
-        if (regionManager.isHooked(world)) {
-            List<Integer> regions = regionManager.getRegions(world);
-            for (int r : regions) {
-                if (controllers.containsKey(r)) {
-                    controllers.get(r).finish();
-                    controllers.remove(r);
-                }
-            }
-        } else
+        if (!regionManager.isHooked(world))
             regionManager.hook(Bukkit.getWorld(worldName), ProperWeather.instance().getConfigFile().getRegionType(worldName));
 
         List<Integer> regionsInWorld = regionManager.getRegions(Bukkit.getWorld(worldName));
@@ -95,6 +93,11 @@ public class DefaultWeatherSystem implements WeatherSystem {
 
     @Override
     public void startCycleInRegion(String cycleName, int r, String startWeather) {
+        if (controllers.containsKey(r)) {
+            controllers.get(r).finish();
+            controllers.remove(r);
+        }
+
         IWeatherData wd = weatherData.get(r);
         if (wd == null) {
             wd = createDefaultWeatherData();
@@ -104,114 +107,57 @@ public class DefaultWeatherSystem implements WeatherSystem {
         wd.setCycle(cycle);
         if (startWeather != null && !startWeather.isEmpty()) {
             wd.setCurrentWeather(ProperWeather.instance().getWeathers().get(startWeather).create(r));
-            wd.getCurrentWeather().initWeather();
         } else {
-            wd = cycle.nextWeatherData(wd);
+            wd.setCurrentWeather(ProperWeather.instance().getWeathers().get("clear").create(r));
         }
+        wd.getCurrentWeather().initWeather();
+        controllers.get(r).updateAll();
         weatherData.put(r, wd);
     }
 
-    public synchronized void deInit() {
-        List<IWeatherData> toSave = new ArrayList<IWeatherData>();
+    public synchronized void deInit() throws Exception {
+        ArrayList<WeatherSaveEntry> toSave = new ArrayList<WeatherSaveEntry>();
         for (Entry<Integer, IWeatherData> entry : weatherData.entrySet()) {
-            entry.getValue().setRegion(entry.getKey().intValue());
-            toSave.add(entry.getValue());
+            WeatherSaveEntry save = new WeatherSaveEntry();
+            save.duration = entry.getValue().getDuration();
+            save.region = entry.getValue().getRegion();
+            save.weather = entry.getValue().getCurrentWeather().getName();
+            save.cycle = entry.getValue().getCycle().getName();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            entry.getValue().getCycle().saveState(new ObjectOutputStream(baos));
+            baos.flush();
+            baos.close();
+            save.cycleData = baos.toByteArray();
         }
-        regionManager.saveRegions();
-        DataManager.save(toSave);
+        dataFile.saveData(new WeatherFileFormat(toSave));
     }
 
-    @SuppressWarnings(value = {
-        "deprecation"
-    })
-    public void init() {
-        boolean mv = false;
+    public void init() throws Exception {
         regionManager.loadRegions();
-        try {
-            List<?> toLoad = DataManager.load();
-            if ((toLoad != null) && (toLoad.size() > 0)) {
-                if ((toLoad.get(0) instanceof WeatherData)) {
-                    ProperWeather.log.fine("Detected v2 data file. Converting...");
-                    HashMap<Integer, String> oldWeatherMap = Util.generateOLDIntWeatherLookupMap();
-                    for (Object obj : toLoad) {
-                        WeatherData wd = (WeatherData) obj;
-                        if (wd != null) {
-                            try {
-                                regionManager.getRegion(Integer.valueOf(wd.getRegion())).getWorld();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                continue;
-                            }
-                            WeatherDataExt dataV3 = new WeatherDataExt();
-                            dataV3.setCanEverChange(wd.canEverChange());
-                            dataV3.setDuration(wd.getDuration());
-                            dataV3.setRegion(wd.getRegion());
-                            Weather weather = weathers.createWeather(oldWeatherMap.get(wd.getNumberOfWeather()), dataV3.getRegion());
-                            weather.initWeather();
-                            dataV3.setCurrentWeather(weather);
-
-                            WeatherDatav4 dataV4 = new WeatherDatav4();
-                            dataV4.setCycle(dataV3.getCycle());
-                            weatherData.put(Integer.valueOf(wd.getRegion()), dataV4);
-                        } else {
-                            ProperWeather.log.finest("Got a null data!!!");
-                        }
-                    }
-                    ProperWeather.log.fine("Conversion finished.");
-                } else if (toLoad.get(0) instanceof WeatherDataExt) {
-                    ProperWeather.log.fine("Detected v3 data file. Converting...");
-                    for (Object obj : toLoad) {
-                        WeatherDataExt oldWD = (WeatherDataExt) obj;
-                        if (oldWD != null) {
-                            try {
-                                regionManager.getRegion(oldWD.getRegion()).getWorld();
-                            } catch (Exception e) {
-                                continue;
-                            }
-                            Weather w = oldWD.getCurrentWeather();
-                            w.initWeather();
-                            WeatherDatav4 wd = new WeatherDatav4();
-                            wd.setCycle(oldWD.getCycle());
-
-                            weatherData.put(oldWD.getRegion(), wd);
-                        }
-                    }
-                    ProperWeather.log.fine("Conversion finished.");
-                } else if (toLoad.get(0) instanceof WeatherDatav4) {
-                    ProperWeather.log.fine("Detected v4 data file. Loading...");
-                    for (Object obj : toLoad) {
-                        WeatherDatav4 wd = (WeatherDatav4) obj;
-                        if (wd != null) {
-                            try {
-                                regionManager.getRegion(wd.getRegion()).getWorld();
-                            } catch (Exception e) {
-                                continue;
-                            }
-                            Weather w = wd.getCurrentWeather();
-                            w.initWeather();
-
-                            weatherData.put(wd.getRegion(), wd);
-                        }
-                    }
-                    ProperWeather.log.fine("Loading finished.");
-                } else
-                    ProperWeather.log.severe("Detected corrupted/incompatible save file. Class=" + toLoad.get(0).getClass());
+        dataFile = new WeatherDataFile(new File(ProperWeather.instance().getDataFolder(), "data.dat"));
+        WeatherFileFormat format = dataFile.loadData();
+        for (WeatherSaveEntry entry : format.getData()) {
+            try {
+                regionManager.getRegion(entry.region).getWorld();
+            } catch (Exception e) {
+                continue;
             }
-            if ((toLoad == null) && (mv)) {
-                ProperWeather.log.info("Data file not found, but it looks like you've got multiverse installed.");
-                ProperWeather.log.info("You can use /pw im to import weather settings from multiverse.");
-                return;
-            }
-            DataManager.save(new ArrayList<WeatherDatav4>());
-            // cancel raining, so minecraft server doesn't change it(raining is
-            // handled by WeatherControllers, which send packets directly to
-            // players)
-            for (String w : getWorldList()) {
-                Bukkit.getWorld(w).setStorm(false);
-            }
-        } catch (Exception e) {
-            ProperWeather.log.severe("Can't find any data source, creating file...");
-            e.printStackTrace();
+            IWeatherData wd = createDefaultWeatherData();
+            wd.setDuration(entry.duration);
+            wd.setRegion(entry.region);
+            Weather weather = weathers.createWeather(entry.weather, entry.region);
+            weather.initWeather();
+            wd.setCurrentWeather(weather);
+            WeatherCycle cycle = cycles.get(entry.cycle).create(this);
+            cycle.loadState(new ObjectInputStream(new ByteArrayInputStream(entry.cycleData)));
+            wd.setCycle(cycle);
+            weatherData.put(entry.region, wd);
+        }
+        // cancel raining, so minecraft server doesn't change it(raining is
+        // handled by individual backends, which send packets directly to
+        // players)
+        for (String w : getWorldList()) {
+            Bukkit.getWorld(w).setStorm(false);
         }
 
     }
@@ -246,7 +192,7 @@ public class DefaultWeatherSystem implements WeatherSystem {
     public WeatherController getWeatherController(int regionId) {
         WeatherController wc;
         if (!controllers.containsKey(Integer.valueOf(regionId))) {
-            wc = new DefaultWeatherController(regionManager.getRegion(regionId), backend);
+            wc = new WeatherController(regionManager.getRegion(regionId), backend);
             controllers.put(Integer.valueOf(regionId), wc);
         } else
             wc = controllers.get(Integer.valueOf(regionId));
@@ -274,7 +220,7 @@ public class DefaultWeatherSystem implements WeatherSystem {
     }
 
     private IWeatherData createDefaultWeatherData() {
-        WeatherDatav4 wd = new WeatherDatav4();
+        WeatherDatav5 wd = new WeatherDatav5();
         wd.setDuration(-1);
         return wd;
     }
