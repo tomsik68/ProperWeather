@@ -85,7 +85,7 @@ public abstract class Weather {
     public final void initWeather() {
         List<String> elements = wd.getActiveElements();
         for(String elem : elements){
-            BaseWeatherElement element = ProperWeather.instance().getWeatherElementFactories().get(elem).create(getController());
+            BaseWeatherElement element = ProperWeather.instance().getWeatherElements().get(elem).create(getController());
             getController().activateElement(element);
         }
         doInitWeather();

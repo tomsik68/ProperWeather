@@ -286,7 +286,7 @@ public class ProperWeather extends JavaPlugin {
         return weatherCycleFactoryRegistry;
     }
 
-    public WeatherElementFactoryRegistry getWeatherElementFactories() {
+    public WeatherElementFactoryRegistry getWeatherElements() {
         return weatherElementFactoryRegistry;
     }
 }
