@@ -22,9 +22,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.getspout.spoutapi.SpoutManager;
-import org.getspout.spoutapi.player.SkyManager;
-import org.getspout.spoutapi.player.SpoutPlayer;
 
 import sk.tomsik68.pw.api.WeatherSystem;
 import sk.tomsik68.pw.impl.WeatherController;

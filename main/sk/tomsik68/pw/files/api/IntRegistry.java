@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.NoSuchElementException;
 
 import javax.naming.NameAlreadyBoundException;
 

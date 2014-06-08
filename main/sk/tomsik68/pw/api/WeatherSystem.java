@@ -14,7 +14,6 @@
     along with ProperWeather.  If not, see <http://www.gnu.org/licenses/>.*/
 package sk.tomsik68.pw.api;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.bukkit.World;

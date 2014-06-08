@@ -2,6 +2,7 @@ package sk.tomsik68.pw.test;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
 import org.junit.Test;
 
 public class TestHashmapOrder {

@@ -1,6 +1,7 @@
 package sk.tomsik68.pw.impl.factory;
 
 import java.util.List;
+
 import org.bukkit.configuration.ConfigurationSection;
 
 import sk.tomsik68.pw.api.WeatherCycle;

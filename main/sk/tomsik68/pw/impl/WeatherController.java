@@ -57,8 +57,8 @@ public class WeatherController {
             List<MetadataValue> values = p.getMetadata("pw.weather");
             for (MetadataValue value : values) {
                 if (value.getOwningPlugin().equals(ProperWeather.instance())) {
-                    WeatherStatusStructure playerWeather = (WeatherStatusStructure) value.value();
-                    if (!playerWeather.equals(struct)) {
+                    String playerWeatherCode = value.asString();
+                    if (!playerWeatherCode.equalsIgnoreCase(struct.getHash())) {
                         setValues(p);
                     }
                 }
@@ -70,7 +70,6 @@ public class WeatherController {
     }
 
     private void setValues(Player p) {
-        WeatherStatusStructure clone = struct.clone();
         backend.setRaining(p, isRaining());
         backend.setClouds(p, isClouds());
         backend.setCloudsColor(p, getCloudsColor());
@@ -80,7 +79,7 @@ public class WeatherController {
         backend.setSkyColor(p, getSkyColor());
         backend.setStarFrequency(p, getStarFrequency());
         backend.setSunSize(p, getSunSize());
-        p.setMetadata("pw.weather", new FixedMetadataValue(ProperWeather.instance(), clone));
+        p.setMetadata("pw.weather", new FixedMetadataValue(ProperWeather.instance(), struct.getHash()));
     }
 
     public void strike(Location location) {
@@ -113,6 +112,7 @@ public class WeatherController {
         ProjectileManager.killAll(Projectile.class);
         setRaining(false);
         setThundering(false);
+        struct = new WeatherStatusStructure();
         for (BaseWeatherElement elem : elements) {
             elem.deactivate(this);
         }

@@ -19,6 +19,7 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+
 import org.apache.commons.lang.Validate;
 
 import sk.tomsik68.pw.plugin.ProperWeather;

@@ -14,9 +14,11 @@
     along with ProperWeather.  If not, see <http://www.gnu.org/licenses/>.*/
 package sk.tomsik68.pw.struct;
 
+import java.awt.Color;
+
 import sk.tomsik68.pw.plugin.ProperWeather;
 
-public class WeatherStatusStructure implements Cloneable {
+public class WeatherStatusStructure {
     public java.awt.Color skyColor;
     public java.awt.Color cloudsColor;
     public java.awt.Color fogColor;
@@ -34,7 +36,8 @@ public class WeatherStatusStructure implements Cloneable {
 
     public WeatherStatusStructure() {
         skyColor = ProperWeather.defaultSkyColor;
-        cloudsColor = (fogColor = java.awt.Color.white);
+        cloudsColor = Color.white;
+        fogColor = Color.white;
         sunSize = 100;
         moonSize = 100;
         starFrequency = 35;
@@ -45,19 +48,23 @@ public class WeatherStatusStructure implements Cloneable {
         cloudsHeight = 110;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj != null && obj instanceof WeatherStatusStructure) {
-            WeatherStatusStructure that = (WeatherStatusStructure) obj;
-            return (that.cloudsColor.equals(cloudsColor) && that.cloudsVisible == cloudsVisible && that.moonVisible == moonVisible
-                    && that.rain == rain && that.snowing == snowing && that.starsVisible == starsVisible && that.sunVisible == sunVisible
-                    && that.thundersAllowed == thundersAllowed && that.cloudsHeight == cloudsHeight && that.fogColor.equals(fogColor)
-                    && that.moonSize == moonSize && that.skyColor.equals(skyColor) && that.starFrequency == starFrequency && that.sunSize == sunSize);
-        }
-        return super.equals(obj);
+    public String getHash() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(Integer.toHexString(skyColor.getRGB()));
+        sb.append(Integer.toHexString(cloudsColor.getRGB()));
+        sb.append(Integer.toHexString(fogColor.getRGB()));
+        sb.append(Integer.toHexString(sunSize));
+        sb.append(Integer.toHexString(moonSize));
+        sb.append(Integer.toHexString(starFrequency));
+        sb.append(Integer.toHexString(cloudsHeight));
+        sb.append(moonVisible ? "1" : "0");
+        sb.append(cloudsVisible ? "1" : "0");
+        sb.append(sunVisible ? "1" : "0");
+        sb.append(starsVisible ? "1" : "0");
+        return sb.toString();
     }
 
-    public WeatherStatusStructure clone() {
+/*    public WeatherStatusStructure clone() {
         WeatherStatusStructure clone = new WeatherStatusStructure();
         clone.skyColor = skyColor;
         clone.cloudsColor = cloudsColor;
@@ -71,6 +78,6 @@ public class WeatherStatusStructure implements Cloneable {
         clone.thundersAllowed = thundersAllowed;
         clone.rain = rain;
         return clone;
-    }
+    }*/
 
 }

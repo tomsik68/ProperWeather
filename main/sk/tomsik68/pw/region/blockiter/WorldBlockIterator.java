@@ -32,9 +32,8 @@ public class WorldBlockIterator implements Iterator<Block> {
 
     public WorldBlockIterator(WorldRegion region) {
         this.world = region.getWorld();
-        chunks = new Chunk[world.getLoadedChunks().length];
-        System.arraycopy(world.getLoadedChunks(), 0, chunks, 0, world.getLoadedChunks().length);
-        chunk = chunks[chunkID];
+        chunks = world.getLoadedChunks();
+        chunk = chunks[0];
     }
 
     public boolean hasNext() {
@@ -43,11 +42,11 @@ public class WorldBlockIterator implements Iterator<Block> {
 
     public Block next() {
         this.x += 1;
-        if (this.x == 15) {
+        if (this.x == 16) {
             this.x = 0;
             this.z += 1;
         }
-        if (this.z == 15) {
+        if (this.z == 16) {
             this.x = 0;
             this.z = 0;
             this.chunkID += 1;

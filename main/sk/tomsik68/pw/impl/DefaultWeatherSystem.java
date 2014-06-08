@@ -33,7 +33,6 @@ import org.bukkit.World;
 import sk.tomsik68.pw.api.IServerBackend;
 import sk.tomsik68.pw.api.IWeatherData;
 import sk.tomsik68.pw.api.RegionManager;
-import sk.tomsik68.pw.api.Weather;
 import sk.tomsik68.pw.api.WeatherCycle;
 import sk.tomsik68.pw.api.WeatherSystem;
 import sk.tomsik68.pw.files.impl.weatherdata.WeatherDataFile;
@@ -104,9 +103,9 @@ public class DefaultWeatherSystem implements WeatherSystem {
         WeatherCycle cycle = cycles.get(cycleName).create(this);
         wd.setCycle(cycle);
         if (startWeather != null && !startWeather.isEmpty()) {
-            wd.setCurrentWeather(ProperWeather.instance().getWeathers().get(startWeather).create(r));
+            wd.setCurrentWeather(weathers.get(startWeather).create(r));
         } else {
-            wd.setCurrentWeather(ProperWeather.instance().getWeathers().get("clear").create(r));
+            wd.setCurrentWeather(weathers.get("clear").create(r));
         }
         wd.getCurrentWeather().initWeather();
         getWeatherController(r).updateAll();
@@ -145,14 +144,15 @@ public class DefaultWeatherSystem implements WeatherSystem {
             IWeatherData wd = createDefaultWeatherData();
             wd.setDuration(entry.duration);
             wd.setRegion(entry.region);
-            Weather weather = weathers.createWeather(entry.weather, entry.region);
-            weather.initWeather();
-            wd.setCurrentWeather(weather);
+
             WeatherCycle cycle = cycles.get(entry.cycle).create(this);
             if (entry.cycleData != null) {
                 cycle.loadState(new ObjectInputStream(new ByteArrayInputStream(entry.cycleData)));
             }
             wd.setCycle(cycle);
+            wd.setCurrentWeather(weathers.get(entry.weather).create(entry.region));
+            wd.getCurrentWeather().initWeather();
+            getWeatherController(entry.region).updateAll();
             weatherData.put(entry.region, wd);
         }
         // cancel raining, so minecraft server doesn't change it(raining is

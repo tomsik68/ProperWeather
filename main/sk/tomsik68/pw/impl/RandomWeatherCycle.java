@@ -22,8 +22,8 @@ import java.util.LinkedList;
 import java.util.Random;
 
 import sk.tomsik68.pw.api.IWeatherData;
-import sk.tomsik68.pw.api.WeatherCycle;
 import sk.tomsik68.pw.api.Weather;
+import sk.tomsik68.pw.api.WeatherCycle;
 import sk.tomsik68.pw.api.WeatherSystem;
 import sk.tomsik68.pw.plugin.ProperWeather;
 
