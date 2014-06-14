@@ -49,9 +49,9 @@ public class YAMLWeatherCycle extends WeatherCycle {
         if (stop)
             return wd;
         wd.decrementDuration();
-        switch (order) {
-        case RANDOM:
-            if (wd.getDuration() <= 0) {
+        if (wd.getDuration() <= 0) {
+            switch (order) {
+            case RANDOM:
                 // recursity was removed, using while instead...
                 boolean done = false;
                 while (!done) {
@@ -67,17 +67,15 @@ public class YAMLWeatherCycle extends WeatherCycle {
                         done = true;
                     }
                 }
-            }
-            break;
-        case SPECIFIED:
-            if (wd.getDuration() <= 0) {
+                break;
+            case SPECIFIED:
                 Weather weather = ProperWeather.instance().getWeathers().createWeather(weathers.get(last++), wd.getRegion());
                 if (last == weathers.size())
                     last = 0;
                 weatherSystem.setRegionalWeather(weather, wd.getRegion());
                 wd.setDuration(weather.getMinDuration() + rand.nextInt(weather.getMaxDuration() - weather.getMinDuration()));
+                break;
             }
-            break;
         }
         return wd;
     }
