@@ -72,11 +72,11 @@ public class WeatherController {
     private void setValues(Player p) {
         backend.setRaining(p, isRaining());
         backend.setClouds(p, isClouds());
-        backend.setCloudsColor(p, getCloudsColor());
+        backend.setCloudsColor(p, getCloudsColorRGB());
         backend.setCloudsHeight(p, getCloudsHeight());
-        backend.setFogColor(p, getFogColor());
+        backend.setFogColor(p, getFogColorRGB());
         backend.setMoonSize(p, getMoonSize());
-        backend.setSkyColor(p, getSkyColor());
+        backend.setSkyColor(p, getSkyColorRGB());
         backend.setStarFrequency(p, getStarFrequency());
         backend.setSunSize(p, getSunSize());
         p.setMetadata("pw.weather", new FixedMetadataValue(ProperWeather.instance(), struct.getHash()));
@@ -144,19 +144,19 @@ public class WeatherController {
     // the setters are special, because they're also responsible for calling
     // update on each player in region.
 
-    public void setSkyColor(Color color) {
-        struct.skyColor = color;
+    public void setSkyColor(int rgb) {
+        struct.skyColor = rgb;
     }
 
-    public Color getSkyColor() {
+    public int getSkyColorRGB() {
         return struct.skyColor;
     }
 
-    public void setFogColor(Color color) {
-        struct.fogColor = color;
+    public void setFogColor(int rgb) {
+        struct.fogColor = rgb;
     }
 
-    public Color getFogColor() {
+    public int getFogColorRGB() {
         return struct.fogColor;
     }
 
@@ -192,12 +192,12 @@ public class WeatherController {
         return struct.cloudsVisible;
     }
 
-    public Color getCloudsColor() {
+    public int getCloudsColorRGB() {
         return struct.cloudsColor;
     }
 
-    public void setCloudsColor(Color color) {
-        struct.cloudsColor = color;
+    public void setCloudsColor(int rgb) {
+        struct.cloudsColor = rgb;
     }
 
     public void setCloudsHeight(int h) {

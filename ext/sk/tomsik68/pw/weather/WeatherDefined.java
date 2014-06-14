@@ -23,7 +23,9 @@ import sk.tomsik68.pw.impl.WeatherController;
 
 public class WeatherDefined extends Weather {
     private final WeatherDefinition defi;
-    public static final WeatherDefaults def = new BasicWeatherDefaults(0, 0, 0, 0, new String[] { "" });
+    public static final WeatherDefaults def = new BasicWeatherDefaults(0, 0, 0, 0, new String[] {
+        ""
+    });
 
     public WeatherDefined(WeatherDescription wd1, Integer reg, WeatherDefinition d) {
         super(wd1, reg);
@@ -32,12 +34,15 @@ public class WeatherDefined extends Weather {
 
     public void doInitWeather() {
         WeatherController wc = getController();
-        wc.setCloudsColor(this.defi.getCloudsColor());
+        if (defi.getCloudsColor() != null)
+            wc.setCloudsColor(this.defi.getCloudsColor().getRGB());
         wc.setCloudsHeight(this.defi.getCloudsHeight());
-        wc.setFogColor(this.defi.getFogColor());
+        if (defi.getFogColor() != null)
+            wc.setFogColor(this.defi.getFogColor().getRGB());
         wc.setMoonSize(this.defi.getMoonSize());
         wc.setRaining(this.defi.isRaining());
-        wc.setSkyColor(this.defi.getSkyColor());
+        if (defi.getSkyColor() != null)
+            wc.setSkyColor(this.defi.getSkyColor().getRGB());
         wc.setStarFrequency(this.defi.getStarFrequency());
         wc.setSunSize(this.defi.getSunSize());
         wc.setClouds(defi.isCloudsVisible());

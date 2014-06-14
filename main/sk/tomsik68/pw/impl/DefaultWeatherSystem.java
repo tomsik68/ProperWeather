@@ -33,6 +33,7 @@ import org.bukkit.World;
 import sk.tomsik68.pw.api.IServerBackend;
 import sk.tomsik68.pw.api.IWeatherData;
 import sk.tomsik68.pw.api.RegionManager;
+import sk.tomsik68.pw.api.Weather;
 import sk.tomsik68.pw.api.WeatherCycle;
 import sk.tomsik68.pw.api.WeatherSystem;
 import sk.tomsik68.pw.files.impl.weatherdata.WeatherDataFile;
@@ -53,6 +54,7 @@ public class DefaultWeatherSystem implements WeatherSystem {
     private final IServerBackend backend;
     private final WeatherCycleFactoryRegistry cycles;
     private WeatherDataFile dataFile;
+    private final Object changeLock = new Object();
 
     public DefaultWeatherSystem(WeatherFactoryRegistry weathers, WeatherCycleFactoryRegistry cycles, IServerBackend backend) {
         weatherData = new HashMap<Integer, IWeatherData>();
@@ -90,29 +92,49 @@ public class DefaultWeatherSystem implements WeatherSystem {
 
     @Override
     public void startCycleInRegion(String cycleName, int r, String startWeather) {
-        if (controllers.containsKey(r)) {
-            controllers.get(r).finish();
-            controllers.remove(r);
+        synchronized (changeLock) {
+            if (controllers.containsKey(r)) {
+                controllers.get(r).finish();
+                controllers.remove(r);
+            }
+            // get rid of old weather data
+            weatherData.remove(r);
+            // create new weather data
+            IWeatherData wd = createDefaultWeatherData();
+            weatherData.put(r, wd);
+            // set cycle for the data
+            WeatherCycle cycle = cycles.get(cycleName).create(this);
+            wd.setCycle(cycle);
+            // start the initial weather or set weather to clear with -1 duration to get replaced
+            if (startWeather.length() == 0) {
+                wd.setDuration(-1);
+                setRegionalWeather(weathers.get("clear").create(r), r);
+            } else {
+                setRegionalWeather(weathers.get(startWeather).create(r), r);
+            }
+            weatherData.put(r, wd);
         }
 
-        IWeatherData wd = weatherData.get(r);
-        if (wd == null) {
-            wd = createDefaultWeatherData();
-        }
+    }
 
-        WeatherCycle cycle = cycles.get(cycleName).create(this);
-        wd.setCycle(cycle);
-        if (startWeather != null && !startWeather.isEmpty()) {
-            wd.setCurrentWeather(weathers.get(startWeather).create(r));
-        } else {
-            wd.setCurrentWeather(weathers.get("clear").create(r));
+    @Override
+    public void setRegionalWeather(Weather w, int r) {
+        synchronized (changeLock) {
+            if (controllers.containsKey(r)) {
+                controllers.get(r).finish();
+                controllers.remove(r);
+            }
+            IWeatherData wd = weatherData.get(r);
+            Validate.notNull(wd);
+            wd.setCurrentWeather(w);
+            w.initWeather();
+            getWeatherController(r).updateAll();
+            weatherData.put(r, wd);
         }
-        wd.getCurrentWeather().initWeather();
-        getWeatherController(r).updateAll();
-        weatherData.put(r, wd);
     }
 
     public synchronized void deInit() throws Exception {
+        regionManager.saveRegions();
         ArrayList<WeatherSaveEntry> toSave = new ArrayList<WeatherSaveEntry>();
         for (Entry<Integer, IWeatherData> entry : weatherData.entrySet()) {
             WeatherSaveEntry save = new WeatherSaveEntry();
@@ -121,14 +143,16 @@ public class DefaultWeatherSystem implements WeatherSystem {
             save.weather = entry.getValue().getCurrentWeather().getName();
             save.cycle = entry.getValue().getCycle().getName();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            entry.getValue().getCycle().saveState(new ObjectOutputStream(baos));
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            entry.getValue().getCycle().saveState(oos);
+            oos.flush();
             baos.flush();
+            oos.close();
             baos.close();
             save.cycleData = baos.toByteArray();
             toSave.add(save);
         }
         dataFile.saveData(new WeatherFileFormat(toSave));
-        regionManager.saveRegions();
     }
 
     public void init() throws Exception {
@@ -146,7 +170,7 @@ public class DefaultWeatherSystem implements WeatherSystem {
             wd.setRegion(entry.region);
 
             WeatherCycle cycle = cycles.get(entry.cycle).create(this);
-            if (entry.cycleData != null) {
+            if (entry.cycleData != null && entry.cycleData.length > 0) {
                 cycle.loadState(new ObjectInputStream(new ByteArrayInputStream(entry.cycleData)));
             }
             wd.setCycle(cycle);
@@ -182,6 +206,8 @@ public class DefaultWeatherSystem implements WeatherSystem {
                 if (rand.nextInt(100) <= wd.getCurrentWeather().getRandomTimeProbability()) {
                     wd.getCurrentWeather().onRandomTime();
                 }
+            } else {
+                ProperWeather.log.severe("Alert: NULL WeatherData!");
             }
         }
     }

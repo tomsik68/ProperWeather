@@ -55,4 +55,6 @@ public abstract interface WeatherSystem {
     public abstract void unHook(String worldName);
 
     public abstract boolean isHooked(World world);
+
+    public void setRegionalWeather(Weather w, int region);
 }

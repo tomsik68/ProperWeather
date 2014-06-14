@@ -14,7 +14,6 @@
     along with ProperWeather.  If not, see <http://www.gnu.org/licenses/>.*/
 package sk.tomsik68.pw.plugin;
 
-import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.util.Set;
@@ -52,8 +51,6 @@ import sk.tomsik68.pw.transl.Translator;
 public class ProperWeather extends JavaPlugin {
     public static Logger log;
     public static boolean isSpout = true;
-
-    public static final Color defaultSkyColor = new Color(9742079, false);
 
     public static final int TASK_PERIOD = 88;
 

@@ -16,12 +16,10 @@ package sk.tomsik68.pw.struct;
 
 import java.awt.Color;
 
-import sk.tomsik68.pw.plugin.ProperWeather;
-
 public class WeatherStatusStructure {
-    public java.awt.Color skyColor;
-    public java.awt.Color cloudsColor;
-    public java.awt.Color fogColor;
+    public int skyColor;
+    public int cloudsColor;
+    public int fogColor;
     public int sunSize;
     public int moonSize;
     public int starFrequency;
@@ -35,9 +33,9 @@ public class WeatherStatusStructure {
     public boolean rain = false;
 
     public WeatherStatusStructure() {
-        skyColor = ProperWeather.defaultSkyColor;
-        cloudsColor = Color.white;
-        fogColor = Color.white;
+        skyColor = 9742079;
+        cloudsColor = 0xFFFFFF;
+        fogColor = 0xFFFFFF;
         sunSize = 100;
         moonSize = 100;
         starFrequency = 35;
@@ -50,9 +48,9 @@ public class WeatherStatusStructure {
 
     public String getHash() {
         StringBuilder sb = new StringBuilder();
-        sb.append(Integer.toHexString(skyColor.getRGB()));
-        sb.append(Integer.toHexString(cloudsColor.getRGB()));
-        sb.append(Integer.toHexString(fogColor.getRGB()));
+        sb.append(Integer.toHexString(skyColor));
+        sb.append(Integer.toHexString(cloudsColor));
+        sb.append(Integer.toHexString(fogColor));
         sb.append(Integer.toHexString(sunSize));
         sb.append(Integer.toHexString(moonSize));
         sb.append(Integer.toHexString(starFrequency));

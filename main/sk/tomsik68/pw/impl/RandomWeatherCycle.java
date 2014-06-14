@@ -37,7 +37,8 @@ public class RandomWeatherCycle extends WeatherCycle {
 
     @Override
     public IWeatherData nextWeatherData(IWeatherData wd) {
-        if (wd.decrementDuration() <= 0) {
+        wd.decrementDuration();
+        if (wd.getDuration() <= 0) {
             ArrayList<String> weathers = new ArrayList<String>(ProperWeather.instance().getWeathers().getRegistered());
             // recursity was removed, using while instead...
             boolean done = false;
@@ -46,9 +47,11 @@ public class RandomWeatherCycle extends WeatherCycle {
                 if (weather.canBeStarted(getPreviousWeather()) && !weather.getName().equalsIgnoreCase(getPreviousWeather()) && (!wasWeather(weather))
                         && (rand.nextInt(100) < weather.getProbability())) {
                     addPrevWeather(weather.getName());
-                    wd.setCurrentWeather(weather);
-                    weather.initWeather();
+
+                    weatherSystem.setRegionalWeather(weather, wd.getRegion());
+
                     wd.setDuration(weather.getMinDuration() + rand.nextInt(weather.getMaxDuration() - weather.getMinDuration()));
+
                     done = true;
                 }
             }

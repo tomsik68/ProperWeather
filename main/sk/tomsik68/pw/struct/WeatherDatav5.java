@@ -17,6 +17,7 @@ package sk.tomsik68.pw.struct;
 import sk.tomsik68.pw.api.IWeatherData;
 import sk.tomsik68.pw.api.Weather;
 import sk.tomsik68.pw.api.WeatherCycle;
+import sk.tomsik68.pw.plugin.ProperWeather;
 
 public class WeatherDatav5 implements IWeatherData {
     private Weather currentWeather;
@@ -36,7 +37,7 @@ public class WeatherDatav5 implements IWeatherData {
 
     @Override
     public int decrementDuration() {
-        return duration--;
+        return duration -= ProperWeather.TASK_PERIOD;
     }
 
     @Override

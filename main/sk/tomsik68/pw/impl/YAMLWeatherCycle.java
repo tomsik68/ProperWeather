@@ -48,18 +48,21 @@ public class YAMLWeatherCycle extends WeatherCycle {
     public IWeatherData nextWeatherData(IWeatherData wd) {
         if (stop)
             return wd;
+        wd.decrementDuration();
         switch (order) {
         case RANDOM:
-            if (wd.decrementDuration() <= 0) {
-                ArrayList<String> weathers = new ArrayList<String>(ProperWeather.instance().getWeathers().getRegistered());
+            if (wd.getDuration() <= 0) {
                 // recursity was removed, using while instead...
                 boolean done = false;
                 while (!done) {
-                    Weather weather = ProperWeather.instance().getWeathers().createWeather(weathers.get(rand.nextInt(weathers.size())), wd.getRegion());
-                    if (weather.canBeStarted(getPreviousWeather()) && !weather.getName().equalsIgnoreCase(getPreviousWeather()) && (!wasWeather(weather)) && (rand.nextInt(100) < weather.getProbability())) {
+                    Weather weather = ProperWeather.instance().getWeathers()
+                            .createWeather(weathers.get(rand.nextInt(weathers.size())), wd.getRegion());
+                    if (weather.canBeStarted(getPreviousWeather()) && !weather.getName().equalsIgnoreCase(getPreviousWeather())
+                            && (!wasWeather(weather)) && (rand.nextInt(100) < weather.getProbability())) {
                         addPrevWeather(weather.getName());
-                        wd.setCurrentWeather(weather);
-                        weather.initWeather();
+
+                        weatherSystem.setRegionalWeather(weather, wd.getRegion());
+
                         wd.setDuration(weather.getMinDuration() + rand.nextInt(weather.getMaxDuration() - weather.getMinDuration()));
                         done = true;
                     }
@@ -67,12 +70,11 @@ public class YAMLWeatherCycle extends WeatherCycle {
             }
             break;
         case SPECIFIED:
-            if (wd.decrementDuration() <= 0) {
+            if (wd.getDuration() <= 0) {
                 Weather weather = ProperWeather.instance().getWeathers().createWeather(weathers.get(last++), wd.getRegion());
                 if (last == weathers.size())
                     last = 0;
-                wd.setCurrentWeather(weather);
-                weather.initWeather();
+                weatherSystem.setRegionalWeather(weather, wd.getRegion());
                 wd.setDuration(weather.getMinDuration() + rand.nextInt(weather.getMaxDuration() - weather.getMinDuration()));
             }
             break;

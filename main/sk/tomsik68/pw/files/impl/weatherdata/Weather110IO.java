@@ -39,7 +39,7 @@ public class Weather110IO implements IDataIO<WeatherFileFormat> {
             dos.writeUTF(entry.weather);
             dos.writeUTF(entry.cycle);
             dos.writeInt(entry.cycleData.length);
-            dos.write(entry.cycleData);
+            dos.write(entry.cycleData, 0, entry.cycleData.length);
         }
     }
 
