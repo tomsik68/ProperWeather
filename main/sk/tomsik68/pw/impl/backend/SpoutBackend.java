@@ -1,7 +1,5 @@
 package sk.tomsik68.pw.impl.backend;
 
-import java.awt.Color;
-
 import org.bukkit.entity.Player;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.player.SpoutPlayer;

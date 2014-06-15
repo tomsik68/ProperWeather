@@ -62,13 +62,9 @@ public class WeatherInfoManager {
         return wd;
     }
 
-    public WeatherDefinition getWeatherDefinition(String weatherName) {
-        return new WeatherDefinition(weatherSettings.getConfigurationSection(weatherName));
-    }
-
-    public void loadDefaults(File dataFolder, Collection<String> registeredWeathers) {
+    public void createDefaultsInFile(File dataFolder, Collection<String> registeredWeathers) {
         if (weatherSettingsFile == null)
-            weatherSettingsFile = new File(dataFolder, "weathers.yml");
+            weatherSettingsFile = new File(dataFolder, "weather_settings.yml");
         if (!weatherSettingsFile.exists() || (weatherSettingsFile.exists() && weatherSettingsFile.length() == 0))
             WeatherDescription.generateDefaultWeathersConfig(weatherSettingsFile, registeredWeathers);
         weatherSettings = YamlConfiguration.loadConfiguration(weatherSettingsFile);
@@ -78,12 +74,6 @@ public class WeatherInfoManager {
                 if (!weatherSettings.contains(weatherName)) {
                     WeatherDefaults wd = defaults.get(weatherName);
                     Validate.notNull(wd);
-                    /*
-                     * if (wd == null) { wd =
-                     * WeatherManager.getWeatherDefaults(weatherName); if (wd ==
-                     * null) throw new NullPointerException("No data about " +
-                     * weatherName); defaults.put(weatherName, wd); }
-                     */
 
                     weatherSettings.createSection(weatherName);
                     weatherSettings.set(weatherName + ".probability", Integer.valueOf(wd.getDefProbability()));

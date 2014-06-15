@@ -14,7 +14,6 @@
     along with ProperWeather.  If not, see <http://www.gnu.org/licenses/>.*/
 package sk.tomsik68.pw.impl;
 
-import java.awt.Color;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;

@@ -17,10 +17,13 @@ package sk.tomsik68.pw.plugin;
 import java.io.File;
 import java.io.IOException;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginEnableEvent;
@@ -100,7 +103,7 @@ public class ProperWeather extends JavaPlugin implements Listener {
     public void onEnable() {
         log = getLogger();
 
-        File dataFolder = new File("plugins", getDescription().getName());
+        File dataFolder = getDataFolder();
         if (!dataFolder.exists())
             dataFolder.mkdir();
 
@@ -118,7 +121,12 @@ public class ProperWeather extends JavaPlugin implements Listener {
             return;
         }
         log.info("Using backend: " + backend.getClass().getSimpleName());
-        initFactories();
+        try {
+            initFactories();
+        } catch (IOException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
 
         if (!new File(dataFolder, "config.yml").exists()) {
             ConfigFile.generateDefaultConfig(new File(getDataFolder(), "config.yml"));
@@ -131,8 +139,6 @@ public class ProperWeather extends JavaPlugin implements Listener {
 
         weatherListener = new PWWeatherListener(weatherSystem);
         playerListener = new PWPlayerListener(weatherSystem);
-        if (!getDataFolder().exists())
-            getDataFolder().mkdir();
         if (permissions == null)
             permissions = EPermissions.OP;
         getCommand("pw").setExecutor(new PWCommand(new CommandHandler(weatherSystem)));
@@ -146,7 +152,6 @@ public class ProperWeather extends JavaPlugin implements Listener {
             weatherSystem.init();
             weatherSystemInitFail = false;
         } catch (NoSuchElementException e) {
-            e.printStackTrace();
             weatherSystemInitFail = true;
             log.info("Waiting for other plugins to register their weathers...");
         } catch (Exception e) {
@@ -164,7 +169,6 @@ public class ProperWeather extends JavaPlugin implements Listener {
     void onPluginEnable(PluginEnableEvent event) {
         if (weatherSystemInitFail) {
             try {
-                //weatherSystem = new DefaultWeatherSystem(weatherFactoryRegistry, weatherCycleFactoryRegistry, backend);
                 weatherSystem.init();
                 weatherSystemInitFail = false;
                 log.info("Plugins have registered their weathers! Finally :)");
@@ -176,7 +180,30 @@ public class ProperWeather extends JavaPlugin implements Listener {
         }
     }
 
-    private void initFactories() {
+    private void initFactories() throws IOException {
+        File oldWeathersYmlFile = new File(getDataFolder(), "weathers.yml");
+        if (oldWeathersYmlFile.exists()) {
+            YamlConfiguration weathersYml = YamlConfiguration.loadConfiguration(oldWeathersYmlFile);
+            YamlConfiguration weatherSettings = new YamlConfiguration();
+            YamlConfiguration weatherDefinitions = new YamlConfiguration();
+            
+            Set<String> keys = weathersYml.getKeys(false);
+            for (String key : keys) {
+                if (weathersYml.isConfigurationSection(key)) {
+                    ConfigurationSection section = weathersYml.getConfigurationSection(key);
+                    if (section.contains("raining")) {
+                        // it's a definition
+                        weatherDefinitions.createSection(key, section.getValues(true));
+                    } else {
+                        // it's a description
+                        weatherSettings.createSection(key, section.getValues(true));
+                    }
+                }
+            }
+            weatherSettings.save(new File(getDataFolder(), "weather_settings.yml"));
+            weatherDefinitions.save(new File(getDataFolder(), "weather_defs.yml"));
+            oldWeathersYmlFile.delete();
+        }
         weatherFactoryRegistry = new WeatherFactoryRegistry(wim = new WeatherInfoManager());
         weatherCycleFactoryRegistry = new WeatherCycleFactoryRegistry();
         weatherElementFactoryRegistry = new WeatherElementFactoryRegistry();
@@ -251,10 +278,6 @@ public class ProperWeather extends JavaPlugin implements Listener {
 
     public WeatherDescription getWeatherDescription(String weatherName) {
         return wim.getWeatherDescription(weatherName);
-    }
-
-    public WeatherDefinition getWeatherDefinition(String name) {
-        return wim.getWeatherDefinition(name);
     }
 
     public WeatherDefaults getWeatherDefaults(String weather) {

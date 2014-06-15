@@ -1,7 +1,5 @@
 package sk.tomsik68.pw.api;
 
-import java.awt.Color;
-
 import org.bukkit.entity.Player;
 
 /**

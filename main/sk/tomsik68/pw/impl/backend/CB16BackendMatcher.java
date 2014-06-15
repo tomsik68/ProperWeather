@@ -74,8 +74,11 @@ public class CB16BackendMatcher implements IServerBackendMatcher {
             test();
             return true;
         } catch (Exception e) {
+            return false;
+        } catch (Error err) {
+            return false;
         }
-        return false;
+        
     }
 
     @Override

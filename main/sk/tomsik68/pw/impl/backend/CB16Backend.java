@@ -1,7 +1,5 @@
 package sk.tomsik68.pw.impl.backend;
 
-import java.awt.Color;
-
 import org.bukkit.entity.Player;
 
 import sk.tomsik68.bukkitbp.v1.PackageResolver;

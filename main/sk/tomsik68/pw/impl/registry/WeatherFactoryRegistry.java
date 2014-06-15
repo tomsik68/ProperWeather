@@ -46,15 +46,16 @@ public class WeatherFactoryRegistry extends BaseRegistry<WeatherFactory<?>> {
                 throw new RuntimeException("Weather registration failed for: " + weatherClass.getName(), e);
             }
         }
-
-        loadDefinedWeathers(pluginFolder);
-
+        
         Collection<String> registered = getRegistered();
         for (String name : registered) {
             wim.register(name, get(name).getDefaults());
         }
-        wim.loadDefaults(pluginFolder, registered);
 
+        wim.createDefaultsInFile(pluginFolder, registered);
+        
+        // defined weathers won't be added to weatherSettings file
+        loadDefinedWeathers(pluginFolder);
     }
 
     private void loadDefinedWeathers(File pluginFolder) throws IOException {
@@ -69,7 +70,7 @@ public class WeatherFactoryRegistry extends BaseRegistry<WeatherFactory<?>> {
                 } else {
                     ProperWeather.log.finest("Registering new weather: " + weather);
                     try {
-                        register(weather, new DefinedWeatherFactory(weather));
+                        register(weather, new DefinedWeatherFactory(weatherDefinitions.getConfigurationSection(weather)));
                     } catch (NameAlreadyBoundException e) {
                         e.printStackTrace();
                     }

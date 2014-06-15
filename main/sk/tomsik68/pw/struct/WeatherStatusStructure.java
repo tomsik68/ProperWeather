@@ -14,7 +14,6 @@
     along with ProperWeather.  If not, see <http://www.gnu.org/licenses/>.*/
 package sk.tomsik68.pw.struct;
 
-import java.awt.Color;
 
 public class WeatherStatusStructure {
     public int skyColor;
