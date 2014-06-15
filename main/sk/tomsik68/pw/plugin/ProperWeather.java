@@ -16,16 +16,14 @@ package sk.tomsik68.pw.plugin;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Set;
+import java.util.NoSuchElementException;
 import java.util.logging.Logger;
-
-import javax.naming.NameAlreadyBoundException;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import sk.tomsik68.permsguru.EPermissions;
@@ -41,14 +39,13 @@ import sk.tomsik68.pw.config.WeatherDefinition;
 import sk.tomsik68.pw.config.WeatherDescription;
 import sk.tomsik68.pw.impl.DefaultBiomeMapperManager;
 import sk.tomsik68.pw.impl.DefaultWeatherSystem;
-import sk.tomsik68.pw.impl.factory.DefinedWeatherFactory;
 import sk.tomsik68.pw.impl.registry.ServerBackendMatcherRegistry;
 import sk.tomsik68.pw.impl.registry.WeatherCycleFactoryRegistry;
 import sk.tomsik68.pw.impl.registry.WeatherElementFactoryRegistry;
 import sk.tomsik68.pw.impl.registry.WeatherFactoryRegistry;
 import sk.tomsik68.pw.transl.Translator;
 
-public class ProperWeather extends JavaPlugin {
+public class ProperWeather extends JavaPlugin implements Listener {
     public static Logger log;
     public static boolean isSpout = true;
 
@@ -61,7 +58,6 @@ public class ProperWeather extends JavaPlugin {
     public EPermissions permissions;
 
     private ConfigFile config;
-    private FileConfiguration weatherSettings = null;
 
     public static ChatColor factColor = ChatColor.GRAY;
     public static ChatColor color = ChatColor.GREEN;
@@ -78,6 +74,7 @@ public class ProperWeather extends JavaPlugin {
     private WeatherElementFactoryRegistry weatherElementFactoryRegistry;
     private ServerBackendMatcherRegistry serverBackendMatcherRegistry;
     private IServerBackend backend;
+    private boolean weatherSystemInitFail;
 
     public ProperWeather() {
     }
@@ -147,6 +144,11 @@ public class ProperWeather extends JavaPlugin {
 
         try {
             weatherSystem.init();
+            weatherSystemInitFail = false;
+        } catch (NoSuchElementException e) {
+            e.printStackTrace();
+            weatherSystemInitFail = true;
+            log.info("Waiting for other plugins to register their weathers...");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -156,6 +158,22 @@ public class ProperWeather extends JavaPlugin {
             getServer().getPluginManager().registerEvents(mapperManager, this);
         }
         log.info(getDescription().getVersion() + " is enabled");
+    }
+
+    @EventHandler
+    void onPluginEnable(PluginEnableEvent event) {
+        if (weatherSystemInitFail) {
+            try {
+                //weatherSystem = new DefaultWeatherSystem(weatherFactoryRegistry, weatherCycleFactoryRegistry, backend);
+                weatherSystem.init();
+                weatherSystemInitFail = false;
+                log.info("Plugins have registered their weathers! Finally :)");
+            } catch (NoSuchElementException e) {
+                weatherSystemInitFail = true;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void initFactories() {
@@ -175,6 +193,7 @@ public class ProperWeather extends JavaPlugin {
     private void registerTasks() {
         registerAllEvents(PWPlayerListener.class, playerListener);
         registerAllEvents(PWWeatherListener.class, weatherListener);
+        registerAllEvents(this.getClass(), this);
         weatherUpdateTask = getServer().getScheduler().runTaskTimerAsynchronously(this, new WeatherUpdateTask(weatherSystem), 88L, TASK_PERIOD)
                 .getTaskId();
         regionUpdateTask = getServer().getScheduler().scheduleSyncRepeatingTask(this, new RegionUpdateTask(weatherSystem.getRegionManager()), 88L,

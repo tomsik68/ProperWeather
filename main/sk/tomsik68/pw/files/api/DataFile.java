@@ -40,7 +40,8 @@ public abstract class DataFile<D extends IData> extends IntRegistry<IDataIO<D>> 
         if (!file.exists()) {
             return getEmptyData();
         }
-        DataInputStream dis = new DataInputStream(new FileInputStream(file));
+        FileInputStream fis;
+        DataInputStream dis = new DataInputStream(fis = new FileInputStream(file));
         int version = dis.readInt();
         IDataIO<D> io = get(version);
         D data = null;
@@ -58,6 +59,7 @@ public abstract class DataFile<D extends IData> extends IntRegistry<IDataIO<D>> 
             data = io.load(dis);
         }
         dis.close();
+        fis.close();
         return data;
     }
 

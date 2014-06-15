@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import sk.tomsik68.pw.impl.factory.YAMLWeatherCycleFactory;
@@ -17,11 +16,10 @@ public class WeatherCyclesConfig {
     }
 
     public Map<String, YAMLWeatherCycleFactory> getWeatherCycles() {
-        ConfigurationSection cyclesSection = config.getConfigurationSection("cycles");
         HashMap<String, YAMLWeatherCycleFactory> result = new HashMap<String, YAMLWeatherCycleFactory>();
-        Set<String> cyclesKeys = cyclesSection.getKeys(false);
+        Set<String> cyclesKeys = config.getKeys(false);
         for (String cycleName : cyclesKeys) {
-            result.put(cycleName, new YAMLWeatherCycleFactory(cyclesSection.getConfigurationSection(cycleName)));
+            result.put(cycleName, new YAMLWeatherCycleFactory(config.getConfigurationSection(cycleName)));
         }
         return result;
     }
