@@ -32,8 +32,6 @@ public class DefinedWeatherFactory implements WeatherFactory<WeatherDefined> {
     }
 
     public WeatherDefaults getDefaults() {
-        // defaults are not quite neccessary if weather is defined, since you
-        // have to put those fields into weathers.yml but whatever...
         return WeatherDefined.def;
     }
 }

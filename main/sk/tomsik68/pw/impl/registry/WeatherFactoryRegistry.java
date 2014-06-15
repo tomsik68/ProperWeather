@@ -4,8 +4,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Set;
 
 import javax.naming.NameAlreadyBoundException;
+
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 import sk.tomsik68.pw.Util;
 import sk.tomsik68.pw.WeatherInfoManager;
@@ -13,6 +17,8 @@ import sk.tomsik68.pw.api.Weather;
 import sk.tomsik68.pw.api.WeatherFactory;
 import sk.tomsik68.pw.api.registry.BaseRegistry;
 import sk.tomsik68.pw.impl.factory.ClassWeatherFactory;
+import sk.tomsik68.pw.impl.factory.DefinedWeatherFactory;
+import sk.tomsik68.pw.plugin.ProperWeather;
 import sk.tomsik68.pw.weather.WeatherClear;
 import sk.tomsik68.pw.weather.WeatherRain;
 import sk.tomsik68.pw.weather.WeatherStorm;
@@ -36,16 +42,42 @@ public class WeatherFactoryRegistry extends BaseRegistry<WeatherFactory<?>> {
         for (Class<? extends Weather> weatherClass : weathers) {
             try {
                 registerClass(weatherClass);
-                wim.register(weatherNameFromClass(weatherClass), Util.getWeatherDefaults(weatherClass));
             } catch (Exception e) {
                 throw new RuntimeException("Weather registration failed for: " + weatherClass.getName(), e);
             }
         }
+
+        loadDefinedWeathers(pluginFolder);
+
         Collection<String> registered = getRegistered();
-        wim.init(pluginFolder, registered);
         for (String name : registered) {
             wim.register(name, get(name).getDefaults());
         }
+        wim.loadDefaults(pluginFolder, registered);
+
+    }
+
+    private void loadDefinedWeathers(File pluginFolder) throws IOException {
+        File weatherDefs = new File(pluginFolder, "weather_defs.yml");
+        if (weatherDefs.exists()) {
+            FileConfiguration weatherDefinitions = YamlConfiguration.loadConfiguration(weatherDefs);
+            Set<String> keys = weatherDefinitions.getKeys(false);
+            for (String weather : keys) {
+                if (isRegistered(weather)) {
+                    ProperWeather.log.severe("Weather registration problem: '" + weather
+                            + "' already exists. Please rename it in your definition file.");
+                } else {
+                    ProperWeather.log.finest("Registering new weather: " + weather);
+                    try {
+                        register(weather, new DefinedWeatherFactory(weather));
+                    } catch (NameAlreadyBoundException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+        } else
+            weatherDefs.createNewFile();
     }
 
     private String weatherNameFromClass(Class<?> clazz) {
@@ -56,7 +88,8 @@ public class WeatherFactoryRegistry extends BaseRegistry<WeatherFactory<?>> {
         return name;
     }
 
-    public <W extends Weather> void registerClass(Class<W> weather) throws NameAlreadyBoundException {
+    public <W extends Weather> void registerClass(Class<W> weather) throws Exception {
+        wim.register(weatherNameFromClass(weather), Util.getWeatherDefaults(weather));
         register(weatherNameFromClass(weather), new ClassWeatherFactory<W>(weather));
     }
 

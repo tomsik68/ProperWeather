@@ -2,7 +2,7 @@ name: ProperWeather
 description: Very powerful weather controlling plugin
 main: sk.tomsik68.pw.plugin.ProperWeather
 author: Tomsik68 <tomsik68@gmail.com>
-version: 1.1.4a
+version: 1.1.5a
 commands:
     pw:
         description: /pw for more info ;)

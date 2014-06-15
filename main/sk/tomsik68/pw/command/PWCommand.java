@@ -123,7 +123,6 @@ public class PWCommand implements CommandExecutor {
             @Override
             public void run() {
                 if (args.length == 3) {
-                    sender.sendMessage("2 args");
                     handler.inGameConfig(sender, args[1], args[2]);
                 } else if (args.length == 2) {
                     handler.sendConfigProperty(sender, args[1]);
@@ -142,7 +141,12 @@ public class PWCommand implements CommandExecutor {
             sb.deleteCharAt(sb.length() - 1);
             for (Pattern ptr : executors.keySet()) {
                 if (ptr.matcher(sb.toString()).matches()) {
-                    return executors.get(ptr).onCommand(sender, command, label, args);
+                    try {
+                        return executors.get(ptr).onCommand(sender, command, label, args);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        sender.sendMessage("[ProperWeather] Unknown error has occured while trying to execute command.");
+                    }
                 }
             }
         }
@@ -158,10 +162,13 @@ public class PWCommand implements CommandExecutor {
         sender.sendMessage(formMessage("pw list - Lists all worlds which are being controlled by ProperWeather", console));
         sender.sendMessage(formMessage("pw wlist - Lists all available weathers", console));
         sender.sendMessage(formMessage("pw stopat <weather> {world} - Changes weather and stops it in specified or player's world", console));
-        sender.sendMessage(formMessage("pw run {world} - Starts changing weather in specified or player's world by ProperWeather's weather system.", console));
+        sender.sendMessage(formMessage("pw run {world} - Starts changing weather in specified or player's world by ProperWeather's weather system.",
+                console));
         sender.sendMessage(formMessage("pw v - Displays release information about this ProperWeather version.", console));
         sender.sendMessage(formMessage("pw sit - Displays situation in your region(player) or all regions(console)", console));
-        sender.sendMessage(formMessage("pw rgt <world> <type> - Sets region type of specified world to type. You always have to type world. Possible types are: BIOME,WORLD", console));
+        sender.sendMessage(formMessage(
+                "pw rgt <world> <type> - Sets region type of specified world to type. You always have to type world. Possible types are: BIOME,WORLD",
+                console));
         sender.sendMessage(formMessage("pw perms - Tells you what you can do.", console));
         sender.sendMessage(formMessage("pw start <cycle> {world} - Starts selected cycle in specified world.", console));
         sender.sendMessage(formMessage("pw reload - Reloads plugin", console));

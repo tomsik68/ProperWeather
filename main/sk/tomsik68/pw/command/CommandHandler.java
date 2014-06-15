@@ -44,14 +44,20 @@ public class CommandHandler implements ICommandHandler {
             return;
         }
         if (Bukkit.getServer().getWorld(worldName) == null) {
-            sender.sendMessage(ChatColor.RED + "[ProperWeather]" + Translator.translateString("error.nofound.world", new Object[] { worldName }));
+            sender.sendMessage(ChatColor.RED + "[ProperWeather]" + Translator.translateString("error.nofound.world", new Object[] {
+                worldName
+            }));
             return;
         }
         try {
             weatherSystem.startCycle("stop", worldName, weatherName);
-            sender.sendMessage(ProperWeather.color + "[ProperWeather]" + Translator.translateString("notify.stopped", new Object[] { weatherName, worldName }));
+            sender.sendMessage(ProperWeather.color + "[ProperWeather]" + Translator.translateString("notify.stopped", new Object[] {
+                    weatherName, worldName
+            }));
         } catch (NoSuchElementException nsee) {
-            sender.sendMessage(ChatColor.RED + "[ProperWeather]" + Translator.translateString("error.nofound.weather", new Object[] { weatherName }));
+            sender.sendMessage(ChatColor.RED + "[ProperWeather]" + Translator.translateString("error.nofound.weather", new Object[] {
+                weatherName
+            }));
         } catch (NullPointerException npe) {
             npe.printStackTrace();
             sender.sendMessage(ChatColor.RED + "[ProperWeather] " + npe.getMessage());
@@ -65,11 +71,15 @@ public class CommandHandler implements ICommandHandler {
             return;
         }
         if (Bukkit.getServer().getWorld(worldName) == null) {
-            sender.sendMessage(ChatColor.RED + "[ProperWeather]" + Translator.translateString("error.nofound.world", new Object[] { worldName }));
+            sender.sendMessage(ChatColor.RED + "[ProperWeather]" + Translator.translateString("error.nofound.world", new Object[] {
+                worldName
+            }));
             return;
         }
         weatherSystem.startCycle("random", worldName, "");
-        sender.sendMessage(ProperWeather.color + "[ProperWeather]" + Translator.translateString("notify.running", new Object[] { worldName }));
+        sender.sendMessage(ProperWeather.color + "[ProperWeather]" + Translator.translateString("notify.running", new Object[] {
+            worldName
+        }));
     }
 
     public void sendWorldList(CommandSender sender) {
@@ -120,7 +130,9 @@ public class CommandHandler implements ICommandHandler {
         if (!verifyPermission(sender, "pw.off") && !verifyPermission(sender, "pw.disable"))
             return;
         weatherSystem.unHook(worldName);
-        sender.sendMessage(ProperWeather.color + "[ProperWeather]" + Translator.translateString("notify.unhooked", new Object[] { worldName }));
+        sender.sendMessage(ProperWeather.color + "[ProperWeather]" + Translator.translateString("notify.unhooked", new Object[] {
+            worldName
+        }));
     }
 
     public boolean verifyPermission(CommandSender sender, String p) {
@@ -138,7 +150,9 @@ public class CommandHandler implements ICommandHandler {
     }
 
     public void sendPermissionInfo(CommandSender sender) {
-        sender.sendMessage(ProperWeather.color + Translator.translateString("notify.permissionsys", new Object[] { ProperWeather.instance().permissions.name() }));
+        sender.sendMessage(ProperWeather.color + Translator.translateString("notify.permissionsys", new Object[] {
+            ProperWeather.instance().permissions.name()
+        }));
         sender.sendMessage(formPNMessage(sender, "pw.*"));
         sender.sendMessage(formPNMessage(sender, "pw.pw"));
         sender.sendMessage(formPNMessage(sender, "pw.stopat"));
@@ -185,7 +199,9 @@ public class CommandHandler implements ICommandHandler {
                 }
                 Region region = weatherSystem.getRegionManager().getRegionAt(((Player) sender).getLocation());
                 if (region.getWorld() != null && region.getWeatherData() != null && region.getWeatherData().getCurrentWeather() != null)
-                    sender.sendMessage(ProperWeather.color + "[ProperWeather]" + region.toString() + " : " + region.getWeatherData().getCurrentWeather().getName() + " for next " + region.getWeatherData().getDuration() + " ticks.");
+                    sender.sendMessage(ProperWeather.color + "[ProperWeather]" + region.toString() + " : "
+                            + region.getWeatherData().getCurrentWeather().getName() + " for next " + region.getWeatherData().getDuration()
+                            + " ticks.");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -201,7 +217,8 @@ public class CommandHandler implements ICommandHandler {
         }
         RegionType type = RegionType.valueOf(typ.toUpperCase());
         if (type == null) {
-            sender.sendMessage(ChatColor.RED + "[ProperWeather]" + Translator.translateString("error.invalidarg", typ, RegionType.BIOME.name() + "," + RegionType.WORLD.name()));
+            sender.sendMessage(ChatColor.RED + "[ProperWeather]"
+                    + Translator.translateString("error.invalidarg", typ, RegionType.BIOME.name() + "," + RegionType.WORLD.name()));
             return;
         }
         ProperWeather.instance().getConfigFile().setRegionType(world, type);
@@ -262,10 +279,18 @@ public class CommandHandler implements ICommandHandler {
             return;
         }
         if (Bukkit.getServer().getWorld(worldName) == null) {
-            sender.sendMessage(ChatColor.RED + "[ProperWeather]" + Translator.translateString("error.nofound.world", new Object[] { worldName }));
+            sender.sendMessage(ChatColor.RED + "[ProperWeather]" + Translator.translateString("error.nofound.world", new Object[] {
+                worldName
+            }));
             return;
         }
-        weatherSystem.startCycle(cycle, worldName, "");
-        sender.sendMessage(ProperWeather.color + "[ProperWeather]" + Translator.translateString("notify.cycle.started", new Object[] { worldName, cycle }));
+        try {
+            weatherSystem.startCycle(cycle, worldName, "");
+            sender.sendMessage(ProperWeather.color + "[ProperWeather]" + Translator.translateString("notify.cycle.started", new Object[] {
+                    worldName, cycle
+            }));
+        } catch (NoSuchElementException nse) {
+            sender.sendMessage(ChatColor.RED + "[ProperWeather]" + Translator.translateString("error.nofound.cycle", cycle));
+        }
     }
 }

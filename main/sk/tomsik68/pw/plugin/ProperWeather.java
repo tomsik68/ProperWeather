@@ -102,24 +102,11 @@ public class ProperWeather extends JavaPlugin {
 
     public void onEnable() {
         log = getLogger();
-        /*
-         * try {
-         * PackageResolver.init(Bukkit.class.getClassLoader());
-         * CompatibilityChecker.test();
-         * log.fine("Bukkit compatibility test done. ");
-         * } catch (Exception e) {
-         * log.severe(
-         * "Incompatible CraftBukkit version. Plugin will now shutdown to prevent further issues."
-         * );
-         * log.severe("Error: " + e.getMessage());
-         * e.printStackTrace();
-         * getServer().getPluginManager().disablePlugin(this);
-         * return;
-         * }
-         */
+
         File dataFolder = new File("plugins", getDescription().getName());
         if (!dataFolder.exists())
             dataFolder.mkdir();
+
         log.info("Looking for suitable backend...");
         serverBackendMatcherRegistry = new ServerBackendMatcherRegistry();
         try {
@@ -156,7 +143,6 @@ public class ProperWeather extends JavaPlugin {
         registerTasks();
         log.fine("Permissions system: " + permissions.toString());
 
-        loadWeatherSettings();
         initTranslations();
 
         try {
@@ -196,21 +182,6 @@ public class ProperWeather extends JavaPlugin {
         if ((weatherUpdateTask == -1) || (regionUpdateTask == -1)) {
             log.severe(ChatColor.RED + "FATAL ERROR: Task scheduling failed! Plugin will now shut down itself");
             getServer().getPluginManager().disablePlugin(this);
-        }
-    }
-
-    private void loadWeatherSettings() {
-        weatherSettings = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "weathers.yml"));
-        Set<String> keys = weatherSettings.getKeys(false);
-        for (String weather : keys) {
-            if (!weatherFactoryRegistry.isRegistered(weather)) {
-                log.finest("Registering new weather: " + weather);
-                try {
-                    weatherFactoryRegistry.register(weather, new DefinedWeatherFactory(weather));
-                } catch (NameAlreadyBoundException e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
 

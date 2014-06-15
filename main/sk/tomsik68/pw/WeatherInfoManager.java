@@ -66,7 +66,7 @@ public class WeatherInfoManager {
         return new WeatherDefinition(weatherSettings.getConfigurationSection(weatherName));
     }
 
-    public void init(File dataFolder, Collection<String> registeredWeathers) {
+    public void loadDefaults(File dataFolder, Collection<String> registeredWeathers) {
         if (weatherSettingsFile == null)
             weatherSettingsFile = new File(dataFolder, "weathers.yml");
         if (!weatherSettingsFile.exists() || (weatherSettingsFile.exists() && weatherSettingsFile.length() == 0))
