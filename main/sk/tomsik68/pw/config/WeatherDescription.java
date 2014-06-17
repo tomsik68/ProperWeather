@@ -14,19 +14,12 @@
     along with ProperWeather.  If not, see <http://www.gnu.org/licenses/>.*/
 package sk.tomsik68.pw.config;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import org.bukkit.block.Biome;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
-
-import sk.tomsik68.pw.api.WeatherDefaults;
-import sk.tomsik68.pw.plugin.ProperWeather;
 
 public class WeatherDescription {
     private ConfigurationSection cs;
@@ -57,43 +50,6 @@ public class WeatherDescription {
         return cs.getInt("probability");
     }
 
-    public static void generateDefaultWeathersConfig(File file, Collection<String> weathers) {
-        try {
-            file.createNewFile();
-            YamlConfiguration config = new YamlConfiguration();
-            StringBuilder sb = new StringBuilder();
-            for (String w : weathers) {
-                sb = sb.append(w).append(',');
-            }
-            sb = sb.deleteCharAt(sb.length() - 1);
-            config.options().header("Weathers: " + sb.toString());
-            WeatherDefaults instance = null;
-            List<String> allBiomes = new ArrayList<String>();
-            for (Biome biome : Biome.values()) {
-                allBiomes.add(biome.name().toLowerCase());
-            }
-            for (String weather : weathers) {
-                instance = ProperWeather.instance().getWeathers().get(weather).getDefaults();
-                if (instance == null)
-                    throw new NullPointerException("WeatherDefaults for `"+weather+"` not found.");
-                config.set(weather + ".probability", Integer.valueOf(instance.getDefProbability()));
-                config.set(weather + ".max-duration", Integer.valueOf(instance.getDefMaxDuration()));
-                config.set(weather + ".min-duration", instance.getMinDuration());
-                config.set(weather + ".rand-time-probability", Integer.valueOf(instance.getDefRandomTimeProbability()));
-                config.set(weather + ".cant-be-after", Arrays.asList(instance.getDefCantBeAfter()));
-                config.set(weather + ".customs", instance.getCustomNodes());
-                config.set(weather + ".active-elements", instance.getDefElements());
-                config.set(weather + ".biomes", allBiomes);
-                
-            }
-            config.save(file);
-            ProperWeather.log.fine("Weather description file created at: " + file.getAbsolutePath());
-        } catch (Exception e) {
-            ProperWeather.log.severe("Weather description file creation error: ");
-            e.printStackTrace();
-        }
-    }
-
     public String getName() {
         return cs.getName();
     }
@@ -111,6 +67,6 @@ public class WeatherDescription {
     }
 
     public int getMinDuration() {
-        return cs.getInt("min-duration",0);
+        return cs.getInt("min-duration", 0);
     }
 }

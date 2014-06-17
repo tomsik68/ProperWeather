@@ -17,7 +17,9 @@ package sk.tomsik68.pw.api;
 import java.util.HashMap;
 import java.util.Set;
 
-public abstract interface WeatherDefaults {
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
+
+public abstract interface WeatherDefaults extends ConfigurationSerializable {
     public abstract int getDefMaxDuration();
 
     public abstract String[] getDefCantBeAfter();

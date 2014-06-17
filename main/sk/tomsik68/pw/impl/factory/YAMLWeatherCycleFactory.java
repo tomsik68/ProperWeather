@@ -19,7 +19,7 @@ public class YAMLWeatherCycleFactory extends WeatherCycleFactory {
         weathers = cs.getStringList("weathers");
         stop = cs.getBoolean("stop");
         name = cs.getName();
-        if(!stop)
+        if (!stop)
             order = EOrder.valueOf(cs.getString("order").toUpperCase());
 
     }
