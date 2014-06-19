@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import sk.tomsik68.pw.impl.factory.YAMLWeatherCycleFactory;
@@ -15,7 +16,7 @@ public class WeatherCyclesConfig {
         config = cfg;
     }
 
-    public Map<String, YAMLWeatherCycleFactory> getWeatherCycles() {
+    public Map<String, YAMLWeatherCycleFactory> getWeatherCycles() throws InvalidConfigurationException {
         HashMap<String, YAMLWeatherCycleFactory> result = new HashMap<String, YAMLWeatherCycleFactory>();
         Set<String> cyclesKeys = config.getKeys(false);
         for (String cycleName : cyclesKeys) {

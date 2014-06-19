@@ -14,21 +14,13 @@
     along with ProperWeather.  If not, see <http://www.gnu.org/licenses/>.*/
 package sk.tomsik68.pw.config;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.bukkit.block.Biome;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class WeatherDescription {
     private ConfigurationSection cs;
-    public static final List<String> allBiomes = new ArrayList<String>();
-    static {
-        for (Biome biome : Biome.values()) {
-            allBiomes.add(biome.name().toLowerCase());
-        }
-    }
 
     public WeatherDescription(ConfigurationSection s) {
         cs = s;
@@ -38,35 +30,15 @@ public class WeatherDescription {
         return cs.getInt("rand-time-probability", 0);
     }
 
-    public int getMaxDuration() {
-        return cs.getInt("max-duration");
-    }
-
-    public boolean canBeAfter(String previous) {
-        return !cs.getList("cant-be-after").contains(previous);
-    }
-
-    public int getProbability() {
-        return cs.getInt("probability");
-    }
-
     public String getName() {
         return cs.getName();
     }
 
     public Map<String, Object> getCustomNodes() {
-        return cs.getConfigurationSection("customs").getValues(true);
-    }
-
-    public List<String> getAllowedBiomes() {
-        return cs.getStringList("biomes");
+        return cs.getConfigurationSection("custom").getValues(true);
     }
 
     public List<String> getActiveElements() {
         return cs.getStringList("active-elements");
-    }
-
-    public int getMinDuration() {
-        return cs.getInt("min-duration", 0);
     }
 }

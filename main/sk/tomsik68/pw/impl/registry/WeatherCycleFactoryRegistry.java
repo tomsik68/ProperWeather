@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 
 import javax.naming.NameAlreadyBoundException;
 
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -18,6 +19,7 @@ import sk.tomsik68.pw.impl.StoppedWeatherCycle;
 import sk.tomsik68.pw.impl.factory.ClassWeatherCycleFactory;
 import sk.tomsik68.pw.impl.factory.WeatherCycleFactory;
 import sk.tomsik68.pw.impl.factory.YAMLWeatherCycleFactory;
+import sk.tomsik68.pw.plugin.ProperWeather;
 
 public class WeatherCycleFactoryRegistry extends BaseRegistry<WeatherCycleFactory> {
 
@@ -36,6 +38,9 @@ public class WeatherCycleFactoryRegistry extends BaseRegistry<WeatherCycleFactor
                 }
             }
         } catch (NameAlreadyBoundException e) {
+            e.printStackTrace();
+        } catch (InvalidConfigurationException e) {
+            ProperWeather.log.severe("Invalid cycles.yml. Cause:");
             e.printStackTrace();
         }
     }

@@ -15,7 +15,6 @@
 package sk.tomsik68.pw.api;
 
 import java.util.HashMap;
-import java.util.Set;
 
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
@@ -29,8 +28,6 @@ public abstract interface WeatherDefaults extends ConfigurationSerializable {
     public abstract int getDefProbability();
 
     public abstract String[] getDefElements();
-
-    public abstract Set<String> getAllowedBiomes();
 
     public HashMap<String, Object> getCustomNodes();
 

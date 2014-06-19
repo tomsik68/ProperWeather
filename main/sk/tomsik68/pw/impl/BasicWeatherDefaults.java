@@ -15,12 +15,9 @@
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import sk.tomsik68.pw.api.WeatherDefaults;
-import sk.tomsik68.pw.config.WeatherDescription;
 
 public class BasicWeatherDefaults implements WeatherDefaults {
     private final int maxDuration, minDuration;
@@ -28,24 +25,16 @@ public class BasicWeatherDefaults implements WeatherDefaults {
     private final int randTimeProbability;
     private final String[] cantBeAfter;
     private final String[] activeElements;
-    private final Set<String> biomes;
     private HashMap<String, Object> customNodes = new HashMap<String, Object>();
 
     public BasicWeatherDefaults(int minDuration1, int maxDuration1, int probability1, int randTimeProbability1, String[] cantBeAfter1,
             String... elements) {
-        this(minDuration1, maxDuration1, probability1, randTimeProbability1, cantBeAfter1, new HashSet<String>(WeatherDescription.allBiomes),
-                elements);
-    }
-
-    public BasicWeatherDefaults(int minDuration1, int maxDuration1, int probability1, int randTimeProbability1, String[] cantBeAfter1,
-            Set<String> allowedBiomes, String... elements) {
         this.minDuration = minDuration1;
         this.maxDuration = maxDuration1;
         this.probability = probability1;
         this.randTimeProbability = randTimeProbability1;
         this.cantBeAfter = cantBeAfter1;
         this.activeElements = elements;
-        this.biomes = allowedBiomes;
     }
 
     public int getDefMaxDuration() {
@@ -67,11 +56,6 @@ public class BasicWeatherDefaults implements WeatherDefaults {
     @Override
     public String[] getDefElements() {
         return activeElements;
-    }
-
-    @Override
-    public Set<String> getAllowedBiomes() {
-        return biomes;
     }
 
     @Override

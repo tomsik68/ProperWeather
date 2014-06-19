@@ -29,18 +29,18 @@ import sk.tomsik68.pw.config.EOrder;
 import sk.tomsik68.pw.plugin.ProperWeather;
 
 public class YAMLWeatherCycle extends WeatherCycle {
-    private final List<String> weathers;
+    private final List<WeatherSpec> specs;
     private int last = 0;
     private final boolean stop;
     private final EOrder order;
     private final Random rand = new Random();
     private LinkedList<String> previousWeathers = new LinkedList<String>();
 
-    public YAMLWeatherCycle(WeatherSystem ws, boolean stop, EOrder order, String name, List<String> weathers) {
+    public YAMLWeatherCycle(WeatherSystem ws, boolean stop, EOrder order, String name, List<WeatherSpec> specs) {
         super(ws, name);
         this.stop = stop;
         this.order = order;
-        this.weathers = weathers;
+        this.specs = specs;
     }
 
     @Override
@@ -54,25 +54,27 @@ public class YAMLWeatherCycle extends WeatherCycle {
                 // recursity was removed, using while instead...
                 boolean done = false;
                 while (!done) {
-                    Weather weather = ProperWeather.instance().getWeathers()
-                            .createWeather(weathers.get(rand.nextInt(weathers.size())), wd.getRegion());
-                    if (weather.canBeStarted(getPreviousWeather()) && !weather.getName().equalsIgnoreCase(getPreviousWeather())
-                            && (!wasWeather(weather)) && (rand.nextInt(100) < weather.getProbability())) {
+                    WeatherSpec spec = specs.get(rand.nextInt(specs.size()));
+                    if ((rand.nextInt(100) < spec.getProbability())) {
+                        Weather weather = ProperWeather.instance().getWeathers().createWeather(spec.getWeatherName(), wd.getRegion());
                         addPrevWeather(weather.getName());
 
                         weatherSystem.setRegionalWeather(weather, wd.getRegion());
 
-                        wd.setDuration(weather.getMinDuration() + rand.nextInt(weather.getMaxDuration() - weather.getMinDuration()));
+                        wd.setDuration(spec.getMinDuration() + rand.nextInt(spec.getMaxDuration() - spec.getMinDuration()));
                         done = true;
                     }
                 }
                 break;
             case SPECIFIED:
-                Weather weather = ProperWeather.instance().getWeathers().createWeather(weathers.get(last++), wd.getRegion());
-                if (last == weathers.size())
+                WeatherSpec spec = specs.get(last++);
+                Weather weather = ProperWeather.instance().getWeathers().createWeather(spec.getWeatherName(), wd.getRegion());
+                if (last == specs.size())
                     last = 0;
+
                 weatherSystem.setRegionalWeather(weather, wd.getRegion());
-                wd.setDuration(weather.getMinDuration() + rand.nextInt(weather.getMaxDuration() - weather.getMinDuration()));
+
+                wd.setDuration(spec.getMinDuration() + rand.nextInt(spec.getMaxDuration() - spec.getMinDuration()));
                 break;
             }
         }

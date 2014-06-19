@@ -45,35 +45,10 @@ public abstract class Weather {
 
     /**
      * 
-     * @param previousID
-     * @return Whether this weather can be started after previous one. This
-     *         option is specified by weather's {@link WeatherDescription}. Devs
-     *         can only make defaults.
-     */
-    public final boolean canBeStarted(String previous) {
-        return this.wd.canBeAfter(previous);
-        // return this.wd.canBeAfter(previous) &&
-        // ((!(getController().getRegion() instanceof BiomeRegion)) ||
-        // (getController().getRegion() instanceof BiomeRegion &&
-        // wd.getAllowedBiomes().contains(((BiomeRegion)getController().getRegion()).getBiome().name().toLowerCase())));
-    }
-
-    /**
-     * 
      * @return Random time probability.
      */
     public final int getRandomTimeProbability() {
-        if (this.wd == null)
-            this.wd = ProperWeather.instance().getWeatherDescription(getClass().getSimpleName().replace("Weather", ""));
-        return this.wd.getRandomTimeProbability();
-    }
-
-    /**
-     * 
-     * @return Probability of this weather.
-     */
-    public final int getProbability() {
-        return this.wd.getProbability();
+        return wd.getRandomTimeProbability();
     }
 
     /**
@@ -98,19 +73,11 @@ public abstract class Weather {
     public void onRandomTime() {
     }
 
-    public final int getMaxDuration() {
-        return this.wd.getMaxDuration();
-    }
-
     public final String getName() {
-        return this.wd.getName();
+        return wd.getName();
     }
 
     public String toString() {
         return getName();
-    }
-
-    public int getMinDuration() {
-        return wd.getMinDuration();
     }
 }
