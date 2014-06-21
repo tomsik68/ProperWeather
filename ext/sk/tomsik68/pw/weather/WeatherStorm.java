@@ -28,7 +28,7 @@ import sk.tomsik68.pw.impl.WeatherController;
 import sk.tomsik68.pw.region.Region;
 
 public class WeatherStorm extends Weather {
-    public static final WeatherDefaults def = new BasicWeatherDefaults(3000, 24000, 45, 45, new String[] { "meteorstorm", "storm", "itemrain" });
+    public static final WeatherDefaults def = new BasicWeatherDefaults(45);
 
     public WeatherStorm(WeatherDescription wd1, Integer uid) {
         super(wd1, uid);

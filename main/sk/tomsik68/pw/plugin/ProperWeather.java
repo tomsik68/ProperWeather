@@ -203,6 +203,7 @@ public class ProperWeather extends JavaPlugin implements Listener {
             weatherSettings.save(new File(getDataFolder(), "weather_settings.yml"));
             weatherDefinitions.save(new File(getDataFolder(), "weather_defs.yml"));
             oldWeathersYmlFile.delete();
+            log.warning("It was detected, that you were using weathers.yml. If you changed any values there, you might want to migrate them to new format for 1.1.1. If you didn't touch the file, everything should behave as expected. Otherwise, please read plugin's homepage for more information.");
         }
         weatherFactoryRegistry = new WeatherFactoryRegistry(wim = new WeatherInfoManager());
         weatherCycleFactoryRegistry = new WeatherCycleFactoryRegistry();

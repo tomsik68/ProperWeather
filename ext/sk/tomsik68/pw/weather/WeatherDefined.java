@@ -23,9 +23,7 @@ import sk.tomsik68.pw.impl.WeatherController;
 
 public class WeatherDefined extends Weather {
     private final WeatherDefinition defi;
-    public static final WeatherDefaults def = new BasicWeatherDefaults(0, 0, 0, 0, new String[] {
-        ""
-    });
+    public static final WeatherDefaults def = new BasicWeatherDefaults(0);
 
     public WeatherDefined(WeatherDescription wd1, Integer reg, WeatherDefinition d) {
         super(wd1, reg);

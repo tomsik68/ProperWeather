@@ -19,17 +19,9 @@ import java.util.HashMap;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
 public abstract interface WeatherDefaults extends ConfigurationSerializable {
-    public abstract int getDefMaxDuration();
-
-    public abstract String[] getDefCantBeAfter();
-
     public abstract int getDefRandomTimeProbability();
-
-    public abstract int getDefProbability();
 
     public abstract String[] getDefElements();
 
     public HashMap<String, Object> getCustomNodes();
-
-    public abstract int getMinDuration();
 }
