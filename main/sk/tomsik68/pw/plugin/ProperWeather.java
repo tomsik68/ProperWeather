@@ -38,7 +38,6 @@ import sk.tomsik68.pw.api.WeatherSystem;
 import sk.tomsik68.pw.command.CommandHandler;
 import sk.tomsik68.pw.command.PWCommand;
 import sk.tomsik68.pw.config.ConfigFile;
-import sk.tomsik68.pw.config.WeatherDefinition;
 import sk.tomsik68.pw.config.WeatherDescription;
 import sk.tomsik68.pw.impl.DefaultBiomeMapperManager;
 import sk.tomsik68.pw.impl.DefaultWeatherSystem;
@@ -124,7 +123,6 @@ public class ProperWeather extends JavaPlugin implements Listener {
         try {
             initFactories();
         } catch (IOException e1) {
-            // TODO Auto-generated catch block
             e1.printStackTrace();
         }
 
@@ -181,12 +179,27 @@ public class ProperWeather extends JavaPlugin implements Listener {
     }
 
     private void initFactories() throws IOException {
+        tryMigrateOldWeathersYML();
+        weatherFactoryRegistry = new WeatherFactoryRegistry(wim = new WeatherInfoManager());
+        weatherCycleFactoryRegistry = new WeatherCycleFactoryRegistry();
+        weatherElementFactoryRegistry = new WeatherElementFactoryRegistry();
+        try {
+            weatherFactoryRegistry.load(getDataFolder());
+            weatherCycleFactoryRegistry.load(getDataFolder());
+            weatherElementFactoryRegistry.load(getDataFolder());
+        } catch (IOException e1) {
+            log.severe("ERROR: Failed to load");
+            e1.printStackTrace();
+        }
+    }
+
+    private void tryMigrateOldWeathersYML() throws IOException {
         File oldWeathersYmlFile = new File(getDataFolder(), "weathers.yml");
         if (oldWeathersYmlFile.exists()) {
             YamlConfiguration weathersYml = YamlConfiguration.loadConfiguration(oldWeathersYmlFile);
             YamlConfiguration weatherSettings = new YamlConfiguration();
             YamlConfiguration weatherDefinitions = new YamlConfiguration();
-            
+
             Set<String> keys = weathersYml.getKeys(false);
             for (String key : keys) {
                 if (weathersYml.isConfigurationSection(key)) {
@@ -205,17 +218,6 @@ public class ProperWeather extends JavaPlugin implements Listener {
             oldWeathersYmlFile.delete();
             log.warning("It was detected, that you were using weathers.yml. If you changed any values there, you might want to migrate them to new format for 1.1.1. If you didn't touch the file, everything should behave as expected. Otherwise, please read plugin's homepage for more information.");
         }
-        weatherFactoryRegistry = new WeatherFactoryRegistry(wim = new WeatherInfoManager());
-        weatherCycleFactoryRegistry = new WeatherCycleFactoryRegistry();
-        weatherElementFactoryRegistry = new WeatherElementFactoryRegistry();
-        try {
-            weatherFactoryRegistry.load(getDataFolder());
-            weatherCycleFactoryRegistry.load(getDataFolder());
-            weatherElementFactoryRegistry.load(getDataFolder());
-        } catch (IOException e1) {
-            log.severe("ERROR: Failed to load");
-            e1.printStackTrace();
-        }
     }
 
     private void registerTasks() {
@@ -227,7 +229,7 @@ public class ProperWeather extends JavaPlugin implements Listener {
         regionUpdateTask = getServer().getScheduler().scheduleSyncRepeatingTask(this, new RegionUpdateTask(weatherSystem.getRegionManager()), 88L,
                 88L);
         if ((weatherUpdateTask == -1) || (regionUpdateTask == -1)) {
-            log.severe(ChatColor.RED + "FATAL ERROR: Task scheduling failed! Plugin will now shut down itself");
+            log.severe("FATAL ERROR: Task scheduling failed! Plugin will now shut down itself");
             getServer().getPluginManager().disablePlugin(this);
         }
     }

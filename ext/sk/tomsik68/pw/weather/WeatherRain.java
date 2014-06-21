@@ -37,6 +37,7 @@ public class WeatherRain extends Weather {
         getController().setRaining(true);
     }
 
+    @SuppressWarnings("deprecation")
     public void onRandomTime() {
         Region region = getController().getRegion();
         for (Block block : region) {
@@ -55,6 +56,9 @@ public class WeatherRain extends Weather {
                 if (!data.isFull()) {
                     data.setData((byte) (data.getData() + 1));
                 }
+                
+                state.setData(data);
+                region.updateBlockState(state);
             }
 
         }

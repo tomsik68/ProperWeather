@@ -10,6 +10,7 @@ import javax.naming.NameAlreadyBoundException;
 import org.bukkit.Server;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import sk.tomsik68.pw.Util;
 import sk.tomsik68.pw.api.IServerBackend;
 import sk.tomsik68.pw.api.IServerBackendMatcher;
 import sk.tomsik68.pw.api.registry.BaseRegistry;
@@ -54,13 +55,14 @@ public class ServerBackendMatcherRegistry extends BaseRegistry<IServerBackendMat
                 matching.add(key);
             }
         }
-        if (matching.size() == 0) {
+        if (matching.size() < 1) {
             return null;
-        } else if (matching.size() == 1) {
-            return get(matching.get(0)).createBackend(server);
         } else {
-            ProperWeather.log
-                    .warning("Multiple backends for your server were found. Please check if the correct one was chosen. If not, please change your configuration.");
+            if (matching.size() > 1) {
+                ProperWeather.log
+                        .warning("Multiple backends for your server were found. Please check if the correct one was chosen. If not, please change your configuration. Available backends: "
+                                + Util.dumpArray(matching.toArray()));
+            }
             return get(matching.get(0)).createBackend(server);
         }
 

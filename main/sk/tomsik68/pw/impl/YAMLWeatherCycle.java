@@ -17,7 +17,6 @@ package sk.tomsik68.pw.impl;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
@@ -34,7 +33,6 @@ public class YAMLWeatherCycle extends WeatherCycle {
     private final boolean stop;
     private final EOrder order;
     private final Random rand = new Random();
-    private LinkedList<String> previousWeathers = new LinkedList<String>();
 
     public YAMLWeatherCycle(WeatherSystem ws, boolean stop, EOrder order, String name, List<WeatherSpec> specs) {
         super(ws, name);
@@ -57,7 +55,6 @@ public class YAMLWeatherCycle extends WeatherCycle {
                     WeatherSpec spec = specs.get(rand.nextInt(specs.size()));
                     if ((rand.nextInt(100) < spec.getProbability())) {
                         Weather weather = ProperWeather.instance().getWeathers().createWeather(spec.getWeatherName(), wd.getRegion());
-                        addPrevWeather(weather.getName());
 
                         weatherSystem.setRegionalWeather(weather, wd.getRegion());
 
@@ -79,25 +76,6 @@ public class YAMLWeatherCycle extends WeatherCycle {
             }
         }
         return wd;
-    }
-
-    private void addPrevWeather(String name) {
-        previousWeathers.add(name);
-        if (previousWeathers.size() < 3) {
-            previousWeathers.removeFirst();
-        }
-
-    }
-
-    private boolean wasWeather(Weather weather) {
-        return previousWeathers.contains(weather.getName());
-    }
-
-    private String getPreviousWeather() {
-        if (previousWeathers.size() == 0)
-            return "";
-        else
-            return previousWeathers.get(previousWeathers.size() - 1);
     }
 
     @Override

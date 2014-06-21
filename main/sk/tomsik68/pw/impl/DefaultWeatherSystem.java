@@ -105,7 +105,8 @@ public class DefaultWeatherSystem implements WeatherSystem {
             // set cycle for the data
             WeatherCycle cycle = cycles.get(cycleName).create(this);
             wd.setCycle(cycle);
-            // start the initial weather or set weather to clear with -1 duration to get replaced
+            // start the initial weather or set weather to clear with -1
+            // duration to get replaced
             if (startWeather.length() == 0) {
                 wd.setDuration(-1);
                 setRegionalWeather(weathers.get("clear").create(r), r);
