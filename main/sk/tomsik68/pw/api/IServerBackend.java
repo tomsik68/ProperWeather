@@ -2,11 +2,6 @@ package sk.tomsik68.pw.api;
 
 import org.bukkit.entity.Player;
 
-/**
- * Here comes the `ugly` code that works differently on each server
- * implementation.
- * 
- */
 public interface IServerBackend {
     public void reset(Player player);
 

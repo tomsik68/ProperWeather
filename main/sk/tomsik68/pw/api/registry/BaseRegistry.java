@@ -11,9 +11,6 @@ import javax.naming.NameAlreadyBoundException;
 
 import org.apache.commons.lang.Validate;
 
-/**
- * Base class for all registries
- */
 public class BaseRegistry<R> {
     private final Object lock = new Object();
     protected HashMap<String, R> elements = new HashMap<String, R>();

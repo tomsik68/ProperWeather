@@ -23,9 +23,6 @@ import sk.tomsik68.pw.weather.WeatherClear;
 import sk.tomsik68.pw.weather.WeatherRain;
 import sk.tomsik68.pw.weather.WeatherStorm;
 
-/**
- * This was previously in WeatherManager, which is now deprecated
- */
 public class WeatherFactoryRegistry extends BaseRegistry<WeatherFactory<?>> {
     private final WeatherInfoManager wim;
 
