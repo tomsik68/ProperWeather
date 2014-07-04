@@ -12,8 +12,8 @@ import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import sk.tomsik68.permsguru.EPermissions;
-import sk.tomsik68.pw.RegionType;
 import sk.tomsik68.pw.plugin.ProperWeather;
+import sk.tomsik68.pw.region.RegionType;
 
 public class ConfigFile {
     private static final String NODE_PERMISSION_SYSTEM = "default-permissions";

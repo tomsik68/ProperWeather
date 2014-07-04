@@ -13,22 +13,32 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.block.Biome;
-
-import sk.tomsik68.pw.RegionType;
 import sk.tomsik68.pw.api.RegionManager;
 import sk.tomsik68.pw.files.impl.regions.RegionSaveStructure;
 import sk.tomsik68.pw.files.impl.regions.RegionsDataFile;
 import sk.tomsik68.pw.plugin.ProperWeather;
-import sk.tomsik68.pw.region.BiomeRegion;
 import sk.tomsik68.pw.region.Region;
-import sk.tomsik68.pw.region.WorldRegion;
+import sk.tomsik68.pw.region.RegionDivider;
+import sk.tomsik68.pw.region.RegionType;
 
 public class SimpleRegionManager implements RegionManager {
     private final Map<Integer, Region> regions = new HashMap<Integer, Region>();
     private final Map<UUID, Integer[]> worldRegions = new HashMap<UUID, Integer[]>();
+    private static final Map<RegionType, RegionDivider> dividers = new HashMap<RegionType, RegionDivider>();
     private RegionsDataFile dataFile;
     private static int lastRegionID = -1;
+
+    public SimpleRegionManager() {
+        if (dividers.isEmpty()) {
+            addDividers();
+        }
+    }
+
+    private void addDividers() {
+        dividers.put(RegionType.WORLD, new WorldRegionDivider());
+        dividers.put(RegionType.BIOME, new BiomeRegionDivider());
+        // dividers.put(RegionType.CUBOID, new CuboidRegionDivider());
+    }
 
     public Region getRegion(Integer id) {
         return regions.get(id);
@@ -87,14 +97,10 @@ public class SimpleRegionManager implements RegionManager {
     public void hook(World world, RegionType regionType) {
         List<Integer> ids = new ArrayList<Integer>();
 
-        switch (regionType) {
-        case BIOME:
-            for (Biome biome : Biome.values()) {
-                ids.add(addRegion(new BiomeRegion(world.getUID(), biome)));
-            }
-            break;
-        default:
-            ids.add(addRegion(new WorldRegion(world.getUID())));
+        RegionDivider div = dividers.get(regionType);
+        List<Region> regions = div.divideToRegions(world);
+        for (Region region : regions) {
+            ids.add(addRegion(region));
         }
     }
 

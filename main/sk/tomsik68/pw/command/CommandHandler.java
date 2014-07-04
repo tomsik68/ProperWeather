@@ -10,10 +10,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import sk.tomsik68.pw.RegionType;
 import sk.tomsik68.pw.api.WeatherSystem;
 import sk.tomsik68.pw.plugin.ProperWeather;
 import sk.tomsik68.pw.region.Region;
+import sk.tomsik68.pw.region.RegionType;
 import sk.tomsik68.pw.transl.Translator;
 
 public class CommandHandler implements ICommandHandler {

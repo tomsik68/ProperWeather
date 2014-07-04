@@ -7,8 +7,8 @@ import java.util.UUID;
 import org.bukkit.Location;
 import org.bukkit.World;
 
-import sk.tomsik68.pw.RegionType;
 import sk.tomsik68.pw.region.Region;
+import sk.tomsik68.pw.region.RegionType;
 /** Manages regions.
  * 
  * @author Tomsik68

@@ -1,4 +1,4 @@
-package sk.tomsik68.pw;
+package sk.tomsik68.pw.region;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -19,7 +19,6 @@ import org.bukkit.plugin.EventExecutor;
 
 import sk.tomsik68.pw.api.BaseWeatherElement;
 import sk.tomsik68.pw.plugin.ProperWeather;
-import sk.tomsik68.pw.region.Region;
 
 public class RegionalEventExecutor implements EventExecutor {
     private Method m;
