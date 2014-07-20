@@ -14,17 +14,17 @@ public abstract interface WeatherSystem {
 
     public abstract void init() throws Exception;
 
-    public abstract void update(World paramWorld);
+    public abstract void update(World destWorld);
 
-    public abstract WeatherController getWeatherController(Region paramRegion);
+    public abstract WeatherController getWeatherController(Region where);
 
-    public abstract boolean canNowBeLightning(Region paramRegion);
+    public abstract boolean canNowBeLightning(Region where);
 
-    public abstract void setWeatherController(Region paramRegion, WeatherController paramWeatherController);
+    public abstract void setWeatherController(Region where, WeatherController paramWeatherController);
 
-    public abstract void setWeatherController(int paramInt, WeatherController paramWeatherController);
+    public abstract void setWeatherController(int regionID, WeatherController paramWeatherController);
 
-    public abstract WeatherController getWeatherController(int paramInt);
+    public abstract WeatherController getWeatherController(int regionID);
 
     public abstract RegionManager getRegionManager();
 

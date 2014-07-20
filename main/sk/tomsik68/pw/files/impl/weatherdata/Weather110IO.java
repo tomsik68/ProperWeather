@@ -8,10 +8,10 @@ import java.util.ArrayList;
 
 import sk.tomsik68.pw.files.api.IDataIO;
 
-public class Weather110IO implements IDataIO<WeatherFileFormat> {
+public class Weather110IO implements IDataIO<WeathersFileFormat> {
 
     @Override
-    public WeatherFileFormat load(InputStream in) throws Exception {
+    public Weathers110Format load(InputStream in) throws Exception {
         DataInputStream dis = new DataInputStream(in);
         ArrayList<WeatherSaveEntry> entries = new ArrayList<WeatherSaveEntry>();
         int length = dis.readInt();
@@ -26,14 +26,15 @@ public class Weather110IO implements IDataIO<WeatherFileFormat> {
             dis.read(entry.cycleData, 0, dataLength);
             entries.add(entry);
         }
-        return new WeatherFileFormat(entries);
+        return new Weathers110Format(entries);
     }
 
     @Override
-    public void save(OutputStream out, WeatherFileFormat data) throws Exception {
+    public void save(OutputStream out, WeathersFileFormat data) throws Exception {
         DataOutputStream dos = new DataOutputStream(out);
-        dos.writeInt(data.getData().size());
-        for (WeatherSaveEntry entry : data.getData()) {
+        Weathers110Format data2 = (Weathers110Format) data;
+        dos.writeInt(data2.getWDList().size());
+        for (WeatherSaveEntry entry : data2.getWDList()) {
             dos.writeInt(entry.region);
             dos.writeInt(entry.duration);
             dos.writeUTF(entry.weather);

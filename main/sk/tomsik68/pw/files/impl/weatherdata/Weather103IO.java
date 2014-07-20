@@ -16,11 +16,11 @@ import sk.tomsik68.pw.struct.WeatherData;
 import sk.tomsik68.pw.struct.WeatherDataExt;
 import sk.tomsik68.pw.struct.WeatherDatav4;
 
-public class Weather103IO implements IDataIO<WeatherFileFormat> {
+public class Weather103IO implements IDataIO<WeathersFileFormat> {
 
     @SuppressWarnings("deprecation")
     @Override
-    public WeatherFileFormat load(InputStream in) throws Exception {
+    public Weathers110Format load(InputStream in) throws Exception {
         ArrayList<WeatherSaveEntry> entries = new ArrayList<WeatherSaveEntry>();
         ObjectInputStream ois = new ObjectInputStream(in);
         List<?> loadedList = (List<?>) ois.readObject();
@@ -73,11 +73,11 @@ public class Weather103IO implements IDataIO<WeatherFileFormat> {
             } else
                 ProperWeather.log.severe("Detected corrupted/incompatible save file. Class=" + test.getClass());
         }
-        return new WeatherFileFormat(entries);
+        return new Weathers110Format(entries);
     }
 
     @Override
-    public void save(OutputStream out, WeatherFileFormat data) throws Exception {
+    public void save(OutputStream out, WeathersFileFormat data) throws Exception {
         throw new NotImplementedException("Don't use this format to save data!");
     }
 

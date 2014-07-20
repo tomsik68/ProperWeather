@@ -13,13 +13,16 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+
 import sk.tomsik68.pw.api.RegionManager;
 import sk.tomsik68.pw.files.impl.regions.RegionSaveStructure;
 import sk.tomsik68.pw.files.impl.regions.RegionsDataFile;
 import sk.tomsik68.pw.plugin.ProperWeather;
+import sk.tomsik68.pw.region.BiomeRegionDivider;
 import sk.tomsik68.pw.region.Region;
 import sk.tomsik68.pw.region.RegionDivider;
 import sk.tomsik68.pw.region.RegionType;
+import sk.tomsik68.pw.region.WorldRegionDivider;
 
 public class SimpleRegionManager implements RegionManager {
     private final Map<Integer, Region> regions = new HashMap<Integer, Region>();

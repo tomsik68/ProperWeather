@@ -21,8 +21,7 @@ import sk.tomsik68.pw.api.BiomeMapperManager;
 import sk.tomsik68.pw.api.IServerBackend;
 import sk.tomsik68.pw.api.WeatherDefaults;
 import sk.tomsik68.pw.api.WeatherSystem;
-import sk.tomsik68.pw.command.CommandHandler;
-import sk.tomsik68.pw.command.PWCommand;
+import sk.tomsik68.pw.command.PW_AC;
 import sk.tomsik68.pw.config.ConfigFile;
 import sk.tomsik68.pw.config.WeatherDescription;
 import sk.tomsik68.pw.impl.DefaultBiomeMapperManager;
@@ -63,6 +62,7 @@ public class ProperWeather extends JavaPlugin implements Listener {
     private ServerBackendMatcherRegistry serverBackendMatcherRegistry;
     private IServerBackend backend;
     private boolean weatherSystemInitFail;
+    private PW_AC commandHandler = new PW_AC();
 
     public ProperWeather() {
     }
@@ -125,7 +125,9 @@ public class ProperWeather extends JavaPlugin implements Listener {
         playerListener = new PWPlayerListener(weatherSystem);
         if (permissions == null)
             permissions = EPermissions.OP;
-        getCommand("pw").setExecutor(new PWCommand(new CommandHandler(weatherSystem)));
+        // getCommand("pw").setExecutor(new PWCommand(new
+        // CommandHandler(weatherSystem)));
+        commandHandler.register(getCommand("pw"), weatherSystem);
 
         registerTasks();
         log.fine("Permissions system: " + permissions.toString());

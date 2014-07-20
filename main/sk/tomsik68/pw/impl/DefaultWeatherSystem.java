@@ -1,9 +1,7 @@
 package sk.tomsik68.pw.impl;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,8 +21,9 @@ import sk.tomsik68.pw.api.Weather;
 import sk.tomsik68.pw.api.WeatherCycle;
 import sk.tomsik68.pw.api.WeatherSystem;
 import sk.tomsik68.pw.files.impl.weatherdata.WeatherDataFile;
-import sk.tomsik68.pw.files.impl.weatherdata.WeatherFileFormat;
 import sk.tomsik68.pw.files.impl.weatherdata.WeatherSaveEntry;
+import sk.tomsik68.pw.files.impl.weatherdata.Weathers110Format;
+import sk.tomsik68.pw.files.impl.weatherdata.WeathersFileFormat;
 import sk.tomsik68.pw.impl.registry.WeatherCycleFactoryRegistry;
 import sk.tomsik68.pw.impl.registry.WeatherFactoryRegistry;
 import sk.tomsik68.pw.plugin.ProperWeather;
@@ -122,6 +121,7 @@ public class DefaultWeatherSystem implements WeatherSystem {
 
     public synchronized void deInit() throws Exception {
         regionManager.saveRegions();
+///*        // TODO go away!! begin
         ArrayList<WeatherSaveEntry> toSave = new ArrayList<WeatherSaveEntry>();
         for (Entry<Integer, IWeatherData> entry : weatherData.entrySet()) {
             WeatherSaveEntry save = new WeatherSaveEntry();
@@ -139,33 +139,17 @@ public class DefaultWeatherSystem implements WeatherSystem {
             save.cycleData = baos.toByteArray();
             toSave.add(save);
         }
-        dataFile.saveData(new WeatherFileFormat(toSave));
+        // go away!! end*/
+        //dataFile.saveData(this);
     }
 
     public void init() throws Exception {
         regionManager.loadRegions();
         dataFile = new WeatherDataFile(new File(ProperWeather.instance().getDataFolder(), "data.dat"));
-        WeatherFileFormat format = dataFile.loadData();
-        for (WeatherSaveEntry entry : format.getData()) {
-            try {
-                regionManager.getRegion(entry.region).getWorld();
-            } catch (Exception e) {
-                continue;
-            }
-            IWeatherData wd = createDefaultWeatherData();
-            wd.setDuration(entry.duration);
-            wd.setRegion(entry.region);
 
-            WeatherCycle cycle = cycles.get(entry.cycle).create(this);
-            if (entry.cycleData != null && entry.cycleData.length > 0) {
-                cycle.loadState(new ObjectInputStream(new ByteArrayInputStream(entry.cycleData)));
-            }
-            wd.setCycle(cycle);
-            wd.setCurrentWeather(weathers.get(entry.weather).create(entry.region));
-            wd.getCurrentWeather().initWeather();
-            getWeatherController(entry.region).updateAll();
-            weatherData.put(entry.region, wd);
-        }
+        WeathersFileFormat format = dataFile.loadData();
+        format.loadDataToWS(this);
+
         // cancel raining, so minecraft server doesn't change it(raining is
         // handled by individual backends, which send packets directly to
         // players)

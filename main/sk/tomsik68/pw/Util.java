@@ -28,7 +28,6 @@ public class Util {
         for (Field f : fields) {
             f.setAccessible(true);
             if (f.getType().isAssignableFrom(WeatherDefaults.class)) {
-                System.out.println("WeatherDefaults field of " + wClazz.getSimpleName() + ": " + f.getName());
                 Object obj = f.get(null);
                 Validate.notNull(obj, wClazz.getName() + " is invalid! WeatherDefaults are null!");
                 return (WeatherDefaults) obj;
