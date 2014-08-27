@@ -2,10 +2,10 @@ package sk.tomsik68.pw.command;
 
 import org.bukkit.command.PluginCommand;
 
-import sk.tomsik68.bukkit.autocommand.AutoCommandHandler;
-import sk.tomsik68.bukkit.autocommand.MultipleCommands;
-import sk.tomsik68.bukkit.autocommand.args.BasicParsers;
-import sk.tomsik68.bukkit.autocommand.args.BukkitArgumentParsers;
+import sk.tomsik68.autocommand.AutoCommandHandler;
+import sk.tomsik68.autocommand.MultipleCommands;
+import sk.tomsik68.autocommand.args.BasicParsers;
+import sk.tomsik68.autocommand.args.BukkitArgumentParsers;
 import sk.tomsik68.permsguru.EPermissions;
 import sk.tomsik68.pw.api.WeatherSystem;
 

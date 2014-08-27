@@ -224,11 +224,11 @@ public class ProperWeather extends JavaPlugin implements Listener {
 
     private void initTranslations() {
         try {
-            Translator.init(config.getTranslationFilePath());
+            Translator.init(config.getTranslationFilePath(), getResource("en.txt"));
         } catch (Exception e) {
             e.printStackTrace();
             try {
-                Translator.init(new File(getDataFolder(), config.getTranslationFilePath()).getAbsolutePath());
+                Translator.init(new File(getDataFolder(), config.getTranslationFilePath()).getAbsolutePath(), getResource("en.txt"));
             } catch (Exception e1) {
                 e1.printStackTrace();
             }

@@ -174,7 +174,7 @@ public class DefaultWeatherSystem implements WeatherSystem {
                     ProperWeather.log.severe("WeatherCycle has malfunctioned. Class: " + wd.getCycle().getClass().getName());
                     e.printStackTrace();
                 }
-                if (rand.nextInt(100) <= wd.getCurrentWeather().getRandomTimeProbability()) {
+                if (wd.getCurrentWeather() != null && (rand.nextInt(100) <= wd.getCurrentWeather().getRandomTimeProbability())) {
                     wd.getCurrentWeather().onRandomTime();
                 }
             } else {

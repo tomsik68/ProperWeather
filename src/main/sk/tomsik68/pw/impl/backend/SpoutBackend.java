@@ -1,8 +1,8 @@
 package sk.tomsik68.pw.impl.backend;
 
 import org.bukkit.entity.Player;
-import org.getspout.spoutapi.SpoutManager;
-import org.getspout.spoutapi.player.SpoutPlayer;
+/*import org.getspout.spoutapi.SpoutManager;
+import org.getspout.spoutapi.player.SpoutPlayer;*/
 
 import sk.tomsik68.pw.api.IServerBackend;
 
@@ -13,7 +13,7 @@ public class SpoutBackend implements IServerBackend {
 
     @Override
     public void setRaining(Player player, boolean raining) {
-        SpoutPlayer p = SpoutManager.getPlayer(player);
+        //SpoutPlayer p = SpoutManager.getPlayer(player);
     }
 
     @Override

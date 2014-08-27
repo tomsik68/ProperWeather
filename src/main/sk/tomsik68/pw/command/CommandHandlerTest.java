@@ -11,9 +11,9 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import sk.tomsik68.bukkit.autocommand.AutoCommand;
-import sk.tomsik68.bukkit.autocommand.args.ArgumentParsers;
-import sk.tomsik68.bukkit.autocommand.args.EnumParser;
+import sk.tomsik68.autocommand.AutoCommand;
+import sk.tomsik68.autocommand.args.ArgumentParsers;
+import sk.tomsik68.autocommand.args.EnumParser;
 import sk.tomsik68.pw.api.WeatherSystem;
 import sk.tomsik68.pw.plugin.ProperWeather;
 import sk.tomsik68.pw.region.Region;
@@ -29,7 +29,7 @@ public class CommandHandlerTest {
         ArgumentParsers.registerArgumentParser(RegionType.class, new EnumParser<RegionType>(RegionType.class));
     }
 
-    @AutoCommand(console = true, player = true, permission = "pw.stopat", usage = "<world> <weather>", name = "stopat")
+    @AutoCommand(console = true, player = true, permission = "pw.stopat", usage = "<world> <weather>", name = "stopat", help = "Sets weather to <weather> in <world> and stops weather")
     public void stopAt(CommandSender sender, World world, String weatherName) {
         try {
             weatherSystem.startCycle("stop", world.getName(), weatherName);
@@ -46,7 +46,7 @@ public class CommandHandlerTest {
         }
     }
 
-    @AutoCommand(console = false, player = true, permission = "pw.stopat", usage = "<weather>")
+    @AutoCommand(console = false, player = true, permission = "pw.stopat", usage = "<weather>", help = "Sets weather to <weather> in player's world and stops weather")
     public void stopAt(CommandSender sender, String weatherName) {
         try {
             Player player = (Player) sender;
@@ -64,21 +64,16 @@ public class CommandHandlerTest {
         }
     }
 
-    @AutoCommand(console = true, player = true, permission = "pw.run", usage = "<world>")
-    public void run(CommandSender sender, String worldName) {
-        if (Bukkit.getServer().getWorld(worldName) == null) {
-            sender.sendMessage(ChatColor.RED + "[ProperWeather]" + Translator.translateString("error.nofound.world", new Object[] {
-                worldName
-            }));
-            return;
-        }
-        weatherSystem.startCycle("random", worldName, "");
+    @AutoCommand(console = true, player = true, permission = "pw.run", usage = "<world>", help = "Starts random weather changes of weather in <world>")
+    public void run(CommandSender sender, World world) {
+        weatherSystem.startCycle("random", world.getName(), "");
         sender.sendMessage(ProperWeather.color + "[ProperWeather]" + Translator.translateString("notify.running", new Object[] {
-            worldName
+            world.getName()
         }));
     }
 
-    @AutoCommand(console = true, player = true, name = "list", permission = "pw.list")
+    @AutoCommand(console = true, player = true, name = "list", permission = "pw.list",
+            help="Lists worlds where ProperWeather is active")
     public void sendWorldList(CommandSender sender) {
         List<String> worlds = weatherSystem.getWorldList();
         if (worlds.isEmpty()) {
@@ -95,7 +90,8 @@ public class CommandHandlerTest {
         }
     }
 
-    @AutoCommand(console = true, player = true, name = "wlist", permission = "pw.wlist")
+    @AutoCommand(console = true, player = true, name = "wlist", permission = "pw.wlist",
+            help="Lists available weathers")
     public void sendWeatherList(CommandSender sender) {
         Collection<String> weathers = getRegisteredWeathers();
         if ((weathers == null) || (weathers.isEmpty())) {
@@ -116,7 +112,8 @@ public class CommandHandlerTest {
         return ProperWeather.instance().getWeathers().getRegistered();
     }
 
-    @AutoCommand(console = true, player = true, name = "off", permission = "pw.off")
+    @AutoCommand(console = true, player = true, name = "off", permission = "pw.off",
+            help="Disables ProperWeather in specified world")
     public void disable(CommandSender sender, String worldName) {
         weatherSystem.unHook(worldName);
         sender.sendMessage(ProperWeather.color + "[ProperWeather]" + Translator.translateString("notify.unhooked", new Object[] {
@@ -131,13 +128,15 @@ public class CommandHandlerTest {
         return true;
     }
 
-    @AutoCommand(console = true, player = true, name = "v", permission = "pw.pw")
+    @AutoCommand(console = true, player = true, name = "v", permission = "pw.pw",
+            help="Shows useful information about plugin")
     public void sendVersionInfo(CommandSender sender) {
         for (String s : ProperWeather.getVersionInfo())
             sender.sendMessage(s);
     }
 
-    @AutoCommand(console = true, player = true, name = "perm", permission = "pw.pw")
+    @AutoCommand(console = true, player = true, name = "perm", permission = "pw.pw",
+            help="Shows which permission nodes you have allowed")
     public void sendPermissionInfo(CommandSender sender) {
         sender.sendMessage(ProperWeather.color + Translator.translateString("notify.permissionsys", new Object[] {
             ProperWeather.instance().permissions.name()
@@ -160,14 +159,16 @@ public class CommandHandlerTest {
         return ChatColor.RED.toString().concat(node);
     }
 
-    @AutoCommand(console = true, player = true, permission = "pw.reload")
+    @AutoCommand(console = true, player = true, permission = "pw.reload",
+            help="Reloads the plugin")
     public void reload(CommandSender sender) {
         sender.sendMessage(ProperWeather.color + "[ProperWeather]" + Translator.translateString("notify.reload"));
         ProperWeather.instance().reload();
         sender.sendMessage(ProperWeather.color + "[ProperWeather]" + Translator.translateString("notify.reload.finish"));
     }
 
-    @AutoCommand(console = true, player = true, permission = "pw.sit", name = "sit")
+    @AutoCommand(console = true, player = true, permission = "pw.sit", name = "sit",
+            help="Shows situation in all regions(console) or player's region(player)")
     public void sendSitutation(CommandSender sender) {
         try {
             if (!(sender instanceof Player)) {
@@ -192,22 +193,24 @@ public class CommandHandlerTest {
         }
     }
 
-    @AutoCommand(console = true, player = true, name = "rgt", permission = "pw.rgt")
-    public void setRegionType(CommandSender sender, String world, RegionType type) {
-        ProperWeather.instance().getConfigFile().setRegionType(world, type);
-        sender.sendMessage(ProperWeather.color + "[ProperWeather] " + Translator.translateString("notify.region-type", world, type));
+    @AutoCommand(console = true, player = true, name = "rgt", permission = "pw.rgt",
+            usage="<world> <type>",
+            help="Sets region type in <world> to <type>")
+    public void setRegionType(CommandSender sender, World world, RegionType type) {
+        ProperWeather.instance().getConfigFile().setRegionType(world.getName(), type);
+        sender.sendMessage(ProperWeather.color + "[ProperWeather] " + Translator.translateString("notify.region-type", world.getName(), type));
     }
 
-    @AutoCommand(name = "getconf", console = true, player = true, permission = "pw.conf")
+    @AutoCommand(name = "getconf", console = true, player = true, permission = "pw.conf",
+            usage="<property>",
+            help="Shows value of configuration property")
     public void sendConfigProperty(CommandSender sender, String prop) {
-        if (!verifyPermission(sender, "pw.conf")) {
-            sender.sendMessage(ChatColor.RED + "[ProperWeather]" + Translator.translateString("notify.noperm"));
-            return;
-        }
         sender.sendMessage(ProperWeather.color + "[ProperWeather] '" + prop + "': '" + ProperWeather.instance().getConfig().getString(prop) + "'");
     }
 
-    @AutoCommand(console = true, player = true, name = "conf", permission = "pw.conf")
+    @AutoCommand(console = true, player = true, name = "conf", permission = "pw.conf",
+            usage="<prop> <value>",
+            help="Sets value of configuration property")
     public void inGameConfig(CommandSender sender, String prop, String val) {
         if (!verifyPermission(sender, "pw.conf")) {
             sender.sendMessage(ChatColor.RED + "[ProperWeather]" + Translator.translateString("notify.noperm"));
@@ -245,7 +248,9 @@ public class CommandHandlerTest {
         return val.equalsIgnoreCase("true") || val.equalsIgnoreCase("false");
     }
 
-    @AutoCommand(console = true, player = true, permission = "pw.start")
+    @AutoCommand(console = true, player = true, permission = "pw.start",
+            usage="<world> <cycle>",
+            help="Starts <cycle> in <world>")
     public void start(CommandSender sender, World world, String cycle) {
         try {
             weatherSystem.startCycle(cycle, world.getName(), "");

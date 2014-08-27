@@ -17,4 +17,7 @@
 			
 		</chain>
 	</resolvers>
+	<modules>
+		<module organisation="sk.tomsik68" resolver="local"/>
+	</modules>
 </ivysettings>

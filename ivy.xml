@@ -25,8 +25,8 @@
         status="integration">
 	</info>
 	<dependencies>
-		<dependency org="sk.tomsik68" name="permsguru" rev="0.1" />
-		<dependency org="sk.tomsik68" name="autocommand" rev="0.1" />
+		<dependency org="sk.tomsik68" name="permsguru" rev="latest.integration" />
+		<dependency org="sk.tomsik68" name="autocommand" rev="latest.integration" />
 		<dependency org="junit" name="junit" rev="4.11"/>
 		<dependency org="org.bukkit" name="bukkit" rev="1.7.9-R0.2"/>
 	</dependencies>

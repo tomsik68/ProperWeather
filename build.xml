@@ -25,10 +25,13 @@
 	</zipfileset>
 
 	<!-- Additional non-class files you want to include in your JAR file(plugin.yml, default config etc.) -->
-	<zipfileset id="jar_include" dir=".">
+	<path id="jar_include">
 		<!-- Please don't remove plugin.yml :) -->
-		<includesfile name="plugin.yml" />
-	</zipfileset>
+		<fileset dir=".">
+			<include name="plugin.yml" />
+			<include name="en.txt" />
+		</fileset>
+	</path>
 
 	<!-- You shouldn't need to modify the script below this line, everything is in variables... -->
 	<target name="clean">
@@ -48,10 +51,16 @@
 		<javac srcdir="${sources.dir}" destdir="${build}/classes" classpathref="compile_against.jars" debug="on" />
 	</target>
 
-	<target name="jar" depends="compile">
+	<target name="copyInclude">
+		<copy todir="${build}/classes">
+		<path refid="jar_include" />
+			
+		</copy>
+	</target>
+
+	<target name="jar" depends="compile,copyInclude">
 		<mkdir dir="${build}/jar/" />
-		<jar destfile="${build}/jar/${jarname}" basedir="${build}">
-			<zipfileset refid="jar_include" />
+		<jar destfile="${build}/jar/${jarname}" basedir="${build}/classes">
 		</jar>
 	</target>
 

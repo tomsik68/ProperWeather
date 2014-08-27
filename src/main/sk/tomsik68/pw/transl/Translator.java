@@ -15,18 +15,18 @@ public class Translator {
     
     private static Translator instance;
 
-    public static void init(String s) {
-        instance = new Translator(s);
+    public static void init(String s, InputStream resource) {
+        instance = new Translator(s, resource);
     }
 
-    private Translator(String path) {
+    private Translator(String path, InputStream resource) {
         if (instance == null)
             instance = this;
         file = new Properties();
         defaultFile = new Properties();
         try {
             file.load(new FileInputStream(path));
-            defaultFile.load(Translator.class.getResourceAsStream("en.txt"));
+            defaultFile.load(resource);
         } catch (FileNotFoundException e) {
             ProperWeather.log.info("Localisation file not found. Defaulting to built-in");
             try {

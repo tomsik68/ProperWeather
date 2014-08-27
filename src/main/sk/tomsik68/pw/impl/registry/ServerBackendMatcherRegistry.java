@@ -14,8 +14,7 @@ import sk.tomsik68.pw.Util;
 import sk.tomsik68.pw.api.IServerBackend;
 import sk.tomsik68.pw.api.IServerBackendMatcher;
 import sk.tomsik68.pw.api.registry.BaseRegistry;
-import sk.tomsik68.pw.impl.backend.BukkitAPIMatcher;
-import sk.tomsik68.pw.impl.backend.CB16BackendMatcher;
+import sk.tomsik68.pw.impl.backend.*;
 import sk.tomsik68.pw.plugin.ProperWeather;
 
 public class ServerBackendMatcherRegistry extends BaseRegistry<IServerBackendMatcher> {
@@ -26,7 +25,7 @@ public class ServerBackendMatcherRegistry extends BaseRegistry<IServerBackendMat
     public void load(File pluginFolder) throws IOException {
         try {
             register("BukkitAPI", new BukkitAPIMatcher());
-            register("CraftBukkit-pre1.7", new CB16BackendMatcher());
+            //register("CraftBukkit-pre1.7", new CB16BackendMatcher());
         } catch (NameAlreadyBoundException ignore) {
         }
         File cfgFile = new File(pluginFolder, "backend.yml");
