@@ -1,0 +1,20 @@
+<!-- http://repo.bukkit.org/content/groups/public/ -->
+<ivysettings>
+	<settings defaultResolver="chainWithBukkit" />
+	<resolvers>
+		<chain name="chainWithBukkit">
+			<!-- Local repo -->
+			<filesystem name="local">
+      			<ivy pattern="${ivy.default.ivy.user.dir}/local/[organisation]/[module]/[type]s/[artifact]-[revision]-[type]s.[ext]" />
+      			<artifact pattern="${ivy.default.ivy.user.dir}/local/[organisation]/[module]/[type]s/[artifact]-[revision]-[type]s.[ext]" />
+   			</filesystem>
+			<!-- Public repo -->
+			<ibiblio name="maven" m2compatible="true" usepoms="false"/>
+			<!-- Bukkit repo -->
+			<url name="bukkit">
+				<artifact pattern="http://repo.bukkit.org/content/groups/public/[orgPath]/[artifact]/[revision]/[artifact]-[revision].[ext]"/>
+			</url>
+			
+		</chain>
+	</resolvers>
+</ivysettings>

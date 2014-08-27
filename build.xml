@@ -1,0 +1,65 @@
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="ProperWeather" default="deploy_test_server">
+
+	<!-- Global variables -->
+	<property name="build" location="build" />
+	<loadproperties srcfile="../testserver.properties" />
+	<property name="sources.dir" location="src" />
+	<property name="lib" location="lib" />
+	<property name="version" value="1.1.7b" />
+	<property name="jarname" value="ProperWeather-${version}.jar" />
+
+	<!-- These JARs will be compiled against. Here, you can put bukkit, other plugin JARs which user should install etc. -->
+	<path id="compile_against.jars">
+		<fileset dir="lib">
+			<include name="*bukkit*.jar" />
+			<include name="*junit*.jar" />
+		</fileset>
+	</path>
+
+	<!-- These JARs will be compiled into your output JAR. You can use this for libraries which you have in separate projects etc. 
+	If you put someone else's library here, you must make sure the license allows it.
+	-->
+	<zipfileset id="compile_into.jars" dir="${lib}">
+		<include name="permsguru-*.jar" />
+		<include name="autocommand-*.jar" />
+	</zipfileset>
+
+	<!-- Additional non-class files you want to include in your JAR file(plugin.yml, default config etc.) -->
+	<zipfileset id="jar_include" dir=".">
+		<!-- Please don't remove plugin.yml :) -->
+		<includesfile name="plugin.yml" />
+	</zipfileset>
+
+	<!-- You shouldn't need to modify the script below this line, everything is in variables... -->
+	<target name="clean">
+		<delete dir="${build}" />
+	</target>
+
+
+	<!-- All JARs that need to be compiled into the project will be re-packaged -->
+	<target name="extractJars">
+		<unzip dest="${build}/classes">
+			<fileset refid="compile_into.jars" />
+		</unzip>
+	</target>
+
+	<target name="compile" depends="clean,resolve,extractJars" description="--> compile the project">
+		<mkdir dir="${build}/classes" />
+		<javac srcdir="${sources.dir}" destdir="${build}/classes" classpathref="compile_against.jars" debug="on" />
+	</target>
+
+	<target name="jar" depends="compile">
+		<mkdir dir="${build}/jar/" />
+		<jar destfile="${build}/jar/${jarname}" basedir="${build}">
+			<zipfileset refid="jar_include" />
+		</jar>
+	</target>
+
+	<target name="deploy_test_server" depends="jar" description="--> deploy the plugin to test server">
+		<copy file="${build}/jar/${jarname}" overwrite="yes" todir="${testServer.dir}/plugins" />
+	</target>
+
+	<target name="resolve" description="--> retrieve dependencies with ivy">
+		<ivy:retrieve sync="true" />
+	</target>
+</project>
