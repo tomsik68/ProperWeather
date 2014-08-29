@@ -5,15 +5,12 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.apache.commons.lang.Validate;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import sk.tomsik68.autocommand.AutoCommand;
-import sk.tomsik68.autocommand.args.ArgumentParsers;
-import sk.tomsik68.autocommand.args.EnumParser;
 import sk.tomsik68.pw.api.WeatherSystem;
 import sk.tomsik68.pw.plugin.ProperWeather;
 import sk.tomsik68.pw.region.Region;
@@ -26,7 +23,6 @@ public class CommandHandlerTest {
     public CommandHandlerTest(WeatherSystem ws) {
         Validate.notNull(ws);
         weatherSystem = ws;
-        ArgumentParsers.registerArgumentParser(RegionType.class, new EnumParser<RegionType>(RegionType.class));
     }
 
     @AutoCommand(console = true, player = true, permission = "pw.stopat", usage = "<world> <weather>", name = "stopat", help = "Sets weather to <weather> in <world> and stops weather")

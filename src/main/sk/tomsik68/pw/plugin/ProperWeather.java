@@ -62,7 +62,7 @@ public class ProperWeather extends JavaPlugin implements Listener {
     private ServerBackendMatcherRegistry serverBackendMatcherRegistry;
     private IServerBackend backend;
     private boolean weatherSystemInitFail;
-    private PW_AC commandHandler = new PW_AC();
+    private PW_AC commandsManager;
 
     public ProperWeather() {
     }
@@ -127,7 +127,8 @@ public class ProperWeather extends JavaPlugin implements Listener {
             permissions = EPermissions.OP;
         // getCommand("pw").setExecutor(new PWCommand(new
         // CommandHandler(weatherSystem)));
-        commandHandler.register(getCommand("pw"), weatherSystem);
+        commandsManager = new PW_AC(this, permissions);
+        commandsManager.register(getCommand("pw"), weatherSystem);
 
         registerTasks();
         log.fine("Permissions system: " + permissions.toString());
