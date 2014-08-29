@@ -121,6 +121,7 @@ public class DefaultWeatherSystem implements WeatherSystem {
 
     public synchronized void deInit() throws Exception {
         regionManager.saveRegions();
+        
 ///*        // TODO go away!! begin
         ArrayList<WeatherSaveEntry> toSave = new ArrayList<WeatherSaveEntry>();
         for (Entry<Integer, IWeatherData> entry : weatherData.entrySet()) {
@@ -134,13 +135,13 @@ public class DefaultWeatherSystem implements WeatherSystem {
             entry.getValue().getCycle().saveState(oos);
             oos.flush();
             baos.flush();
-            oos.close();
             baos.close();
+            oos.close();
             save.cycleData = baos.toByteArray();
             toSave.add(save);
         }
+        dataFile.saveData(new Weathers110Format(toSave));
         // go away!! end*/
-        //dataFile.saveData(this);
     }
 
     public void init() throws Exception {

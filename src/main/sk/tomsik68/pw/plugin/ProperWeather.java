@@ -145,7 +145,7 @@ public class ProperWeather extends JavaPlugin implements Listener {
         }
         if (config.shouldMapBiomes()) {
             // initiate a complete scan...
-            mapperManager.completeScan();
+            mapperManager.scheduleCompleteScan();
             getServer().getPluginManager().registerEvents(mapperManager, this);
         }
         log.info(getDescription().getVersion() + " is enabled");

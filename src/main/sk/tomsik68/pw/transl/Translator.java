@@ -30,14 +30,13 @@ public class Translator {
         } catch (FileNotFoundException e) {
             ProperWeather.log.info("Localisation file not found. Defaulting to built-in");
             try {
-                file.load(Translator.class.getResourceAsStream("en.txt"));
+                file.load(resource);
                 try {
                     ProperWeather.log.fine("Extracting built-in localisation file...");
-                    InputStream is = Translator.class.getResourceAsStream("en.txt");
                     File dest = new File(ProperWeather.instance().getDataFolder(), "en.txt");
-                    byte[] bytes = new byte[is.available()];
-                    is.read(bytes);
-                    is.close();
+                    byte[] bytes = new byte[resource.available()];
+                    resource.read(bytes);
+                    resource.close();
                     FileOutputStream fos = new FileOutputStream(dest);
                     fos.write(bytes);
                     fos.flush();

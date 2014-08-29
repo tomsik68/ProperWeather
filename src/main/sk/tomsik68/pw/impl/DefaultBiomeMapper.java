@@ -39,8 +39,6 @@ public class DefaultBiomeMapper implements BiomeMapper {
         for (int x = 0; x < 16; x++)
             for (int z = 0; z < 16; z++) {
                 ArrayList<Long> list = blocks.get(chunk.getBlock(x, z, 0).getBiome());
-                if (list == null)
-                    list = new ArrayList<Long>();
                 int xx = 16 * chunk.getX() + x;
                 int zz = 16 * chunk.getZ() + z;
                 list.add(compress(xx, zz));

@@ -130,7 +130,6 @@ public class SimpleRegionManager implements RegionManager {
         ProperWeather.log.fine("Saving region data...");
         try {
             RegionSaveStructure save = new RegionSaveStructure(new ArrayList<Region>(regions.values()));
-            ProperWeather.log.info("Region save structure size: " + save.getRegions().size());
             dataFile.saveData(save);
         } catch (Exception e) {
             e.printStackTrace();

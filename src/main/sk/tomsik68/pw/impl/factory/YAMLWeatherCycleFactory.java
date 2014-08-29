@@ -14,7 +14,6 @@ import sk.tomsik68.pw.impl.YAMLWeatherCycle;
 
 public class YAMLWeatherCycleFactory extends WeatherCycleFactory {
     private final List<WeatherSpec> weatherSpecs;
-    private final boolean stop;
     private final String name;
     private EOrder order;
 
@@ -33,16 +32,14 @@ public class YAMLWeatherCycleFactory extends WeatherCycleFactory {
             throw new InvalidConfigurationException(err);
         }
 
-        stop = cs.getBoolean("stop");
         name = cs.getName();
-        if (!stop)
-            order = EOrder.valueOf(cs.getString("order").toUpperCase());
+        order = EOrder.valueOf(cs.getString("order").toUpperCase());
 
     }
 
     @Override
     public WeatherCycle create(WeatherSystem ws) {
-        WeatherCycle result = new YAMLWeatherCycle(ws, stop, order, name, weatherSpecs);
+        WeatherCycle result = new YAMLWeatherCycle(ws, order, name, weatherSpecs);
         return result;
     }
 

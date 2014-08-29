@@ -23,7 +23,7 @@ public class BiomeBlockIterator implements Iterator<Block> {
         try {
             blocks = ProperWeather.instance().getMapperManager().getMapper(region.getWorld().getUID()).getBlocks(biome);
         } catch (NullPointerException npe) {
-            ProperWeather.instance().getMapperManager().completeScan();
+            ProperWeather.instance().getMapperManager().scheduleCompleteScan();
             //iteration request is flagged as cancelled since the "blocks" list stays null
         }
     }

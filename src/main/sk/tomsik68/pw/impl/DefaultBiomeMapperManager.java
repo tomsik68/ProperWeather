@@ -10,12 +10,13 @@ import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.world.ChunkLoadEvent;
+import org.bukkit.event.world.WorldLoadEvent;
 
 import sk.tomsik68.pw.api.BiomeMapper;
 import sk.tomsik68.pw.api.BiomeMapperManager;
 import sk.tomsik68.pw.plugin.ProperWeather;
 
-public class DefaultBiomeMapperManager implements BiomeMapperManager {
+public class DefaultBiomeMapperManager implements BiomeMapperManager, Runnable {
     private HashMap<UUID, BiomeMapper> mappers = new HashMap<UUID, BiomeMapper>();
 
     @Override
@@ -40,7 +41,6 @@ public class DefaultBiomeMapperManager implements BiomeMapperManager {
         }
     }
 
-    @Override
     @EventHandler(priority = EventPriority.MONITOR)
     public void onChunkLoaded(ChunkLoadEvent event) {
         UUID world = event.getChunk().getWorld().getUID();
@@ -54,31 +54,40 @@ public class DefaultBiomeMapperManager implements BiomeMapperManager {
         }
     }
 
-    @Override
-    public void completeScan() {
-        Thread thread = new Thread() {
-            @Override
-            public void run() {
-                final List<String> worlds = ProperWeather.instance().getWeatherSystem().getWorldList();
-                for (String s : worlds) {
-                    Chunk[] chunks = Bukkit.getWorld(s).getLoadedChunks();
-                    for (Chunk chunk : chunks) {
-                        if (chunk == null)
-                            break;
-                        UUID world = chunk.getWorld().getUID();
-                        synchronized (mappers) {
-                            if (!mappers.containsKey(world)) {
-                                mappers.put(world, new DefaultBiomeMapper());
-                            }
-                            if (!mappers.get(world).isScanned(chunk.getX(), chunk.getZ())) {
-                                mappers.get(world).scan(chunk);
-                            }
-                        }
-                    }
+    @EventHandler
+    public void onWorldLoaded(WorldLoadEvent event) {
+        scanWorld(event.getWorld());
+    }
+
+    protected void scanWorld(World world) {
+        Chunk[] chunks = world.getLoadedChunks();
+        UUID worldId = world.getUID();
+        for (Chunk chunk : chunks) {
+            if (chunk == null)
+                break;
+            synchronized (mappers) {
+                if (!mappers.containsKey(world)) {
+                    mappers.put(worldId, new DefaultBiomeMapper());
+                }
+                if (!mappers.get(worldId).isScanned(chunk.getX(), chunk.getZ())) {
+                    mappers.get(worldId).scan(chunk);
                 }
             }
-        };
-        thread.start();
+        }
+    }
+
+    @Override
+    public void scheduleCompleteScan() {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(ProperWeather.instance(), this);
+    }
+
+    // this is called from scheduler to scan all worlds
+    @Override
+    public void run() {
+        for (String w : ProperWeather.instance().getWeatherSystem().getWorldList()) {
+            World world = Bukkit.getWorld(w);
+            scanWorld(world);
+        }
     }
 
 }

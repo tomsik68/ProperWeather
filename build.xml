@@ -29,6 +29,7 @@
 		<!-- Please don't remove plugin.yml :) -->
 		<fileset dir=".">
 			<include name="plugin.yml" />
+			<include name="defconfig.yml" />
 			<include name="en.txt" />
 		</fileset>
 	</path>
