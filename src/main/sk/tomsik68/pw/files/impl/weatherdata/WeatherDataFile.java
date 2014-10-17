@@ -7,8 +7,8 @@ import javax.naming.NameAlreadyBoundException;
 
 import sk.tomsik68.pw.files.api.DataFile;
 
-public class WeatherDataFile extends DataFile<WeathersFileFormat> {
-    private static final Weathers110Format empty = new Weathers110Format(new ArrayList<WeatherSaveEntry>());
+public class WeatherDataFile extends DataFile<SavedWeathersFormat> {
+    private static final SavedWeathersFormat empty = new SavedWeathersFormat(new ArrayList<WeatherSaveEntry>());
 
     public WeatherDataFile(File file) {
         super(file);
@@ -25,7 +25,7 @@ public class WeatherDataFile extends DataFile<WeathersFileFormat> {
     }
 
     @Override
-    protected Weathers110Format getEmptyData() {
+    protected SavedWeathersFormat getEmptyData() {
         return empty;
     }
 

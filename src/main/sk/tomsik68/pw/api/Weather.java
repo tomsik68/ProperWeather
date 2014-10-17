@@ -50,6 +50,7 @@ public abstract class Weather {
             getController().activateElement(element);
         }
         doInitWeather();
+        getController().updateAll();
     }
 
     /**

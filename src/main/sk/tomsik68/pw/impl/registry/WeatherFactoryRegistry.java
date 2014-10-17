@@ -24,74 +24,93 @@ import sk.tomsik68.pw.weather.WeatherRain;
 import sk.tomsik68.pw.weather.WeatherStorm;
 
 public class WeatherFactoryRegistry extends BaseRegistry<WeatherFactory<?>> {
-    private final WeatherInfoManager wim;
+	private final WeatherInfoManager wim;
 
-    public WeatherFactoryRegistry(WeatherInfoManager wim) {
-        this.wim = wim;
-    }
+	public WeatherFactoryRegistry(WeatherInfoManager wim) {
+		this.wim = wim;
+	}
 
-    @Override
-    public void load(File pluginFolder) throws IOException {
-        ArrayList<Class<? extends Weather>> weathers = new ArrayList<Class<? extends Weather>>();
-        weathers.add(WeatherClear.class);
-        weathers.add(WeatherRain.class);
-        weathers.add(WeatherStorm.class);
-        for (Class<? extends Weather> weatherClass : weathers) {
-            try {
-                registerClass(weatherClass);
-            } catch (Exception e) {
-                throw new RuntimeException("Weather registration failed for: " + weatherClass.getName(), e);
-            }
-        }
-        
-        Collection<String> registered = getRegistered();
-        for (String name : registered) {
-            wim.register(name, get(name).getDefaults());
-        }
+	@Override
+	public void load(File pluginFolder) throws IOException {
+		ArrayList<Class<? extends Weather>> weathers = new ArrayList<Class<? extends Weather>>();
+		weathers.add(WeatherClear.class);
+		weathers.add(WeatherRain.class);
+		weathers.add(WeatherStorm.class);
+		for (Class<? extends Weather> weatherClass : weathers) {
+			try {
+				registerClass(weatherClass);
+			} catch (Exception e) {
+				throw new RuntimeException("Weather registration failed for: "
+						+ weatherClass.getName(), e);
+			}
+		}
 
-        wim.createDefaultsInFile(pluginFolder, registered);
-        
-        // defined weathers won't be added to weatherSettings file
-        loadDefinedWeathers(pluginFolder);
-    }
+		Collection<String> registered = getRegistered();
+		for (String name : registered) {
+			wim.register(name, get(name).getDefaults());
+		}
 
-    private void loadDefinedWeathers(File pluginFolder) throws IOException {
-        File weatherDefs = new File(pluginFolder, "weather_defs.yml");
-        if (weatherDefs.exists()) {
-            FileConfiguration weatherDefinitions = YamlConfiguration.loadConfiguration(weatherDefs);
-            Set<String> keys = weatherDefinitions.getKeys(false);
-            for (String weather : keys) {
-                if (isRegistered(weather)) {
-                    ProperWeather.log.severe("Weather registration problem: '" + weather
-                            + "' already exists. Please rename it in your definition file.");
-                } else {
-                    ProperWeather.log.finest("Registering new weather: " + weather);
-                    try {
-                        register(weather, new DefinedWeatherFactory(weatherDefinitions.getConfigurationSection(weather)));
-                    } catch (NameAlreadyBoundException e) {
-                        e.printStackTrace();
-                    }
+		wim.createDefaultsInFile(pluginFolder, registered);
 
-                }
-            }
-        } else
-            weatherDefs.createNewFile();
-    }
+		// defined weathers won't be added to weatherSettings file
+		loadDefinedWeathers(pluginFolder);
+	}
 
-    private String weatherNameFromClass(Class<?> clazz) {
-        String name = clazz.getSimpleName().toLowerCase().replace("weather", "");
-        if (isRegistered(name)) {
-            name = clazz.getName().toLowerCase();
-        }
-        return name;
-    }
+	private void loadDefinedWeathers(File pluginFolder) throws IOException {
+		File weatherDefs = new File(pluginFolder, "weather_defs.yml");
+		if (weatherDefs.exists()) {
+			FileConfiguration weatherDefinitions = YamlConfiguration
+					.loadConfiguration(weatherDefs);
+			Set<String> keys = weatherDefinitions.getKeys(false);
+			for (String weather : keys) {
+				if (isRegistered(weather)) {
+					ProperWeather.log
+							.severe("Weather registration problem: '"
+									+ weather
+									+ "' already exists. Please rename it in your definition file.");
+				} else {
+					ProperWeather.log.finest("Registering new weather: "
+							+ weather);
+					try {
+						register(
+								weather,
+								new DefinedWeatherFactory(weatherDefinitions
+										.getConfigurationSection(weather)));
+					} catch (NameAlreadyBoundException e) {
+						e.printStackTrace();
+					}
 
-    public <W extends Weather> void registerClass(Class<W> weather) throws Exception {
-        wim.register(weatherNameFromClass(weather), Util.getWeatherDefaults(weather));
-        register(weatherNameFromClass(weather), new ClassWeatherFactory<W>(weather));
-    }
+				}
+			}
+		} else
+			weatherDefs.createNewFile();
+	}
 
-    public Weather createWeather(String name, int region) {
-        return get(name).create(region);
-    }
+	private String weatherNameFromClass(Class<?> clazz) {
+		String name = clazz.getSimpleName().toLowerCase()
+				.replace("weather", "");
+		if (isRegistered(name)) {
+			name = clazz.getName().toLowerCase();
+		}
+		return name;
+	}
+
+	public <W extends Weather> void registerClass(Class<W> weather)
+			throws Exception {
+		wim.register(weatherNameFromClass(weather),
+				Util.getWeatherDefaults(weather));
+		register(weatherNameFromClass(weather), new ClassWeatherFactory<W>(
+				weather));
+	}
+
+	@Override
+	public void register(String name, WeatherFactory<?> element)
+			throws NameAlreadyBoundException {
+		wim.register(name, element.getDefaults());
+		super.register(name, element);
+	}
+
+	public Weather createWeather(String name, int region) {
+		return get(name).create(region);
+	}
 }

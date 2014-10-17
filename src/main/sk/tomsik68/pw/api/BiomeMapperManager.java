@@ -3,9 +3,7 @@ package sk.tomsik68.pw.api;
 import java.util.UUID;
 
 import org.bukkit.World;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.world.ChunkLoadEvent;
 
 /**
  * Manages Biome mappers for all worlds.

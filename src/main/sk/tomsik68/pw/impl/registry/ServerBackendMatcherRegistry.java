@@ -14,7 +14,7 @@ import sk.tomsik68.pw.Util;
 import sk.tomsik68.pw.api.IServerBackend;
 import sk.tomsik68.pw.api.IServerBackendMatcher;
 import sk.tomsik68.pw.api.registry.BaseRegistry;
-import sk.tomsik68.pw.impl.backend.*;
+import sk.tomsik68.pw.impl.backend.BukkitAPIMatcher;
 import sk.tomsik68.pw.plugin.ProperWeather;
 
 public class ServerBackendMatcherRegistry extends BaseRegistry<IServerBackendMatcher> {

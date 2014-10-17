@@ -12,7 +12,7 @@ public class BasicWeatherDefaults implements WeatherDefaults {
 
     public BasicWeatherDefaults(int randTimeProbability1, String... elements) {
         this.randTimeProbability = randTimeProbability1;
-        this.activeElements = elements;
+        this.activeElements = (elements != null ? elements : new String[0]);
     }
 
     public int getDefRandomTimeProbability() {

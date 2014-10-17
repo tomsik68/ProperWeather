@@ -3,12 +3,14 @@ package sk.tomsik68.pw.config;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class WeatherDescription {
     private ConfigurationSection cs;
 
     public WeatherDescription(ConfigurationSection s) {
+    	Validate.notNull(s);
         cs = s;
     }
 

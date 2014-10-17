@@ -22,14 +22,17 @@ public class RandomWeatherCycle extends WeatherCycle {
     @Override
     public IWeatherData nextWeatherData(IWeatherData wd) {
         // just choose random weather and start it with no rules
-        wd.decrementDuration();
-        if (wd.getDuration() <= 0) {
+        if (wd.decrementDuration() <= 0) {
             ArrayList<String> weathers = new ArrayList<String>(ProperWeather.instance().getWeathers().getRegistered());
 
             Weather weather = ProperWeather.instance().getWeathers().createWeather(weathers.get(rand.nextInt(weathers.size())), wd.getRegion());
 
-            weatherSystem.setRegionalWeather(weather, wd.getRegion());
-
+            // weatherSystem.setRegionalWeather(weather, wd.getRegion());
+            
+            wd.setCurrentWeather(weather);
+            weather.initWeather();
+            System.out.println("Weatherswap!");
+            
             wd.setDuration(rand.nextInt(36000));
 
         }

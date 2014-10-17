@@ -37,8 +37,10 @@ public class YAMLWeatherCycle extends WeatherCycle {
                     WeatherSpec spec = specs.get(rand.nextInt(specs.size()));
                     if ((rand.nextInt(100) < spec.getProbability())) {
                         Weather weather = ProperWeather.instance().getWeathers().createWeather(spec.getWeatherName(), wd.getRegion());
-
-                        weatherSystem.setRegionalWeather(weather, wd.getRegion());
+                        weather.initWeather();
+                        wd.setCurrentWeather(weather);
+                        // TODO: will this work?!
+                        //weatherSystem.setRegionalWeather(weather, wd.getRegion());
 
                         wd.setDuration(spec.getMinDuration() + rand.nextInt(spec.getMaxDuration() - spec.getMinDuration()));
                         done = true;
@@ -50,8 +52,9 @@ public class YAMLWeatherCycle extends WeatherCycle {
                 Weather weather = ProperWeather.instance().getWeathers().createWeather(spec.getWeatherName(), wd.getRegion());
                 if (last == specs.size())
                     last = 0;
-
-                weatherSystem.setRegionalWeather(weather, wd.getRegion());
+                weather.initWeather();
+                //weatherSystem.setRegionalWeather(weather, wd.getRegion());
+                wd.setCurrentWeather(weather);
 
                 wd.setDuration(spec.getMinDuration() + rand.nextInt(spec.getMaxDuration() - spec.getMinDuration()));
                 break;

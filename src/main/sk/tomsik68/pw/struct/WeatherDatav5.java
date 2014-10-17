@@ -50,6 +50,7 @@ public class WeatherDatav5 implements IWeatherData {
     public void setCurrentWeather(Weather w) {
         this.currentWeather = w;
     }
+    
 
     @Override
     public void setDuration(int d) {
