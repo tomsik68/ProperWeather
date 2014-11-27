@@ -24,6 +24,9 @@
         module="properweather"
         status="integration">
 	</info>
+	<publications>
+		<artifact name="properweather" type="jar" ext="jar"></artifact>
+	</publications>
 	<dependencies>
 		<dependency org="sk.tomsik68" name="permsguru" rev="latest.integration" />
 		<dependency org="sk.tomsik68" name="autocommand" rev="latest.integration" />

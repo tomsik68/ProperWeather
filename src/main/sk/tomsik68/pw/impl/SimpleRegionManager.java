@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -74,7 +73,10 @@ public class SimpleRegionManager implements RegionManager {
     }
 
     public Region getRegionAt(Location location) {
+	if (!worldRegions.containsKey(location.getWorld().getUID()))
+	    return null;
 	List<Region> check = new ArrayList<Region>();
+
 	Integer[] regionIds = worldRegions.get(location.getWorld().getUID());
 	for (Integer i : regionIds) {
 	    check.add(regions.get(i));
@@ -192,10 +194,12 @@ public class SimpleRegionManager implements RegionManager {
 
     @Override
     public Iterable<Player> getPlayers(int r) {
-	Iterable<UUID> playerUUIDS = playerRegionManager.getPlayers(r);
+	Iterable<UUID> playerUUIDs = playerRegionManager.getPlayers(r);
 	HashSet<Player> players = new HashSet<Player>();
-	for (UUID playerID : playerUUIDS) {
-	    players.add(Bukkit.getPlayer(playerID));
+	if (playerUUIDs != null) {
+	    for (UUID playerID : playerUUIDs) {
+		players.add(Bukkit.getPlayer(playerID));
+	    }
 	}
 	return players;
     }

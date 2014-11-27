@@ -5,8 +5,8 @@
 	<loadproperties srcfile="../testserver.properties" />
 	<property name="sources.dir" location="src" />
 	<property name="lib" location="lib" />
-	<property name="version" value="1.1.7b" />
-	<property name="jarname" value="ProperWeather-${version}.jar" />
+	<property name="version" value="1.1.8b" />
+	<property name="jarname" value="properweather-${version}.jar" />
 
 	<!-- These JARs will be compiled against. Here, you can put bukkit, other plugin JARs which user should install etc. -->
 	<path id="compile_against.jars">
@@ -54,8 +54,7 @@
 
 	<target name="copyInclude">
 		<copy todir="${build}/classes">
-		<path refid="jar_include" />
-			
+			<path refid="jar_include" />
 		</copy>
 	</target>
 
@@ -65,7 +64,13 @@
 		</jar>
 	</target>
 
-	<target name="deploy_test_server" depends="jar" description="--> deploy the plugin to test server">
+	<target name="local_install" depends="jar">
+		<ivy:publish status="integration" resolver="local" overwrite="true">
+			<artifacts pattern="${build}/jar/[artifact]-${version}.jar" />
+		</ivy:publish>
+	</target>
+
+	<target name="deploy_test_server" depends="local_install" description="--> deploy the plugin to test server">
 		<copy file="${build}/jar/${jarname}" overwrite="yes" todir="${testServer.dir}/plugins" />
 	</target>
 

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.UUID;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -36,6 +37,9 @@ public abstract class BaseRegion implements Region {
     }
 
     public final Iterable<Player> getPlayers() {
+	if (parent == null) {
+	    throw new NullPointerException("Parent is null!");
+	}
 	return parent.getPlayers(getUID());
     }
 
@@ -127,6 +131,7 @@ public abstract class BaseRegion implements Region {
     }
 
     public void setRegionManager(RegionManager regionManager) {
+	Validate.notNull(regionManager);
 	this.parent = regionManager;
     }
 }
