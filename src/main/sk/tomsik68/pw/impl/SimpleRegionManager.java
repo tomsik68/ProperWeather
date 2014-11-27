@@ -153,6 +153,7 @@ public class SimpleRegionManager implements RegionManager {
 	    for (Region region : regs) {
 		if (region.getWorldId() == null)
 		    continue;
+		region.setRegionManager(this);
 		regions.put(region.getUID(), region);
 		if (!worldregs.containsKey(region.getWorldId())) {
 		    worldregs
@@ -191,11 +192,11 @@ public class SimpleRegionManager implements RegionManager {
 
     @Override
     public Iterable<Player> getPlayers(int r) {
-	Region region = getRegion(r);
 	Iterable<UUID> playerUUIDS = playerRegionManager.getPlayers(r);
 	HashSet<Player> players = new HashSet<Player>();
 	for (UUID playerID : playerUUIDS) {
-
+	    players.add(Bukkit.getPlayer(playerID));
 	}
+	return players;
     }
 }

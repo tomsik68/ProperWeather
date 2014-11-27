@@ -18,7 +18,9 @@ public class BiomeRegionDivider extends RegionDivider {
     public List<Region> divideToRegions(World world) {
 	List<Region> result = new ArrayList<Region>();
 	for (Biome biome : Biome.values()) {
-	    result.add(new BiomeRegion(world.getUID(), regionManager, biome));
+	    BiomeRegion region = new BiomeRegion(world.getUID(), biome);
+	    region.setRegionManager(regionManager);
+	    result.add(region);
 	}
 	return result;
     }

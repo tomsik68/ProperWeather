@@ -18,11 +18,11 @@ public class BiomeRegion extends BaseRegion {
 	private Biome biome;
 
 	public BiomeRegion() {
-		super(null, null);
+		super(null);
 	}
 
-	public BiomeRegion(UUID worldId, RegionManager parent, Biome biome1) {
-		super(worldId, parent);
+	public BiomeRegion(UUID worldId, Biome biome1) {
+		super(worldId);
 		biome = biome1;
 	}
 
@@ -53,5 +53,11 @@ public class BiomeRegion extends BaseRegion {
 	public String toString() {
 		return "Biome '" + biome.name() + "' in '"
 				+ Bukkit.getWorld(world).getName() + "'";
+	}
+
+	@Override
+	public void setRegionManager(RegionManager simpleRegionManager) {
+	    // TODO Auto-generated method stub
+	    
 	}
 }

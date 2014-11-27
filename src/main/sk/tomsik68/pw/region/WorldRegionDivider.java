@@ -15,7 +15,8 @@ public class WorldRegionDivider extends RegionDivider {
 
     @Override
     public List<Region> divideToRegions(World world) {
-	return Arrays.asList((Region) new WorldRegion(world.getUID()));
+	Region region = new WorldRegion(world.getUID());
+	region.setRegionManager(regionManager);
+	return Arrays.asList(region);
     }
-
 }
