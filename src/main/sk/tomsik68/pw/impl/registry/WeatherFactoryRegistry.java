@@ -11,8 +11,7 @@ import javax.naming.NameAlreadyBoundException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import sk.tomsik68.pw.Util;
-import sk.tomsik68.pw.WeatherInfoManager;
+import sk.tomsik68.pw.WeatherDefaultsRegistry;
 import sk.tomsik68.pw.api.Weather;
 import sk.tomsik68.pw.api.WeatherFactory;
 import sk.tomsik68.pw.api.registry.BaseRegistry;
@@ -24,9 +23,9 @@ import sk.tomsik68.pw.weather.WeatherRain;
 import sk.tomsik68.pw.weather.WeatherStorm;
 
 public class WeatherFactoryRegistry extends BaseRegistry<WeatherFactory<?>> {
-	private final WeatherInfoManager wim;
+	private final WeatherDefaultsRegistry wim;
 
-	public WeatherFactoryRegistry(WeatherInfoManager wim) {
+	public WeatherFactoryRegistry(WeatherDefaultsRegistry wim) {
 		this.wim = wim;
 	}
 
@@ -44,13 +43,17 @@ public class WeatherFactoryRegistry extends BaseRegistry<WeatherFactory<?>> {
 						+ weatherClass.getName(), e);
 			}
 		}
-
+/* This is now done on registration
 		Collection<String> registered = getRegistered();
 		for (String name : registered) {
-			wim.register(name, get(name).getDefaults());
+			try {
+				wim.register(name, get(name).getDefaults());
+			} catch (NameAlreadyBoundException e) {
+				e.printStackTrace();
+			}
 		}
-
-		wim.createDefaultsInFile(pluginFolder, registered);
+*/
+		wim.createDefaultsInFile(pluginFolder);
 
 		// defined weathers won't be added to weatherSettings file
 		loadDefinedWeathers(pluginFolder);
@@ -97,8 +100,6 @@ public class WeatherFactoryRegistry extends BaseRegistry<WeatherFactory<?>> {
 
 	public <W extends Weather> void registerClass(Class<W> weather)
 			throws Exception {
-		wim.register(weatherNameFromClass(weather),
-				Util.getWeatherDefaults(weather));
 		register(weatherNameFromClass(weather), new ClassWeatherFactory<W>(
 				weather));
 	}
@@ -106,6 +107,7 @@ public class WeatherFactoryRegistry extends BaseRegistry<WeatherFactory<?>> {
 	@Override
 	public void register(String name, WeatherFactory<?> element)
 			throws NameAlreadyBoundException {
+		// in case super.register failed, don't register WeatherDefaults
 		wim.register(name, element.getDefaults());
 		super.register(name, element);
 	}

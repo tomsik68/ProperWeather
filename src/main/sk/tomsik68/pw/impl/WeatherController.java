@@ -94,7 +94,7 @@ public class WeatherController {
     }
 
     public void clear() {
-        ProjectileManager.killAll(Projectile.class);
+        ProjectileManager.killAll();
         setRaining(false);
         setThundering(false);
         struct = new WeatherStatusStructure();

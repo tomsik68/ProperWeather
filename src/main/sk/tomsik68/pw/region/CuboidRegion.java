@@ -24,12 +24,6 @@ public class CuboidRegion extends BaseRegion {
     }
 
     @Override
-    public Player[] getPlayers() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
     public boolean contains(Location loc) {
         return loc.getWorld().getUID().equals(world) && loc.getBlockX() > minX && loc.getBlockZ() > minZ && loc.getBlockX() < maxX
                 && loc.getBlockZ() < maxZ;

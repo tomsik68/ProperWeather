@@ -15,20 +15,23 @@ public class RegionTest {
 
     @Test
     public void test() {
-        SimpleRegionManager regionManager = new SimpleRegionManager();
-        UUID world1 = UUID.randomUUID();
-        UUID world2 = UUID.randomUUID();
-        regionManager.addRegion(new WorldRegion(world1));
-        regionManager.addRegion(new WorldRegion(world2));
-        regionManager.addRegion(new WorldRegion(world2));
-        regionManager.addRegion(new BiomeRegion(world1, Biome.BEACH));
-        regionManager.addRegion(new BiomeRegion(world1,Biome.DESERT));
-        regionManager.addRegion(new BiomeRegion(world2,Biome.DESERT));
-        regionManager.addRegion(new WorldRegion(world2));
-        regionManager.addRegion(new WorldRegion(world2));
-        assertEquals(8,regionManager.getAllRegions().size());
-        assertEquals(3, regionManager.getRegions(world1).size());
-        assertEquals(5, regionManager.getRegions(world2).size());
+	SimpleRegionManager regionManager = new SimpleRegionManager();
+	UUID world1 = UUID.randomUUID();
+	UUID world2 = UUID.randomUUID();
+	regionManager.addRegion(new WorldRegion(world1));
+	regionManager.addRegion(new WorldRegion(world2));
+	regionManager.addRegion(new WorldRegion(world2));
+	regionManager.addRegion(new BiomeRegion(world1, regionManager,
+		Biome.BEACH));
+	regionManager.addRegion(new BiomeRegion(world1, regionManager,
+		Biome.DESERT));
+	regionManager.addRegion(new BiomeRegion(world2, regionManager,
+		Biome.DESERT));
+	regionManager.addRegion(new WorldRegion(world2));
+	regionManager.addRegion(new WorldRegion(world2));
+	assertEquals(8, regionManager.getAllRegions().size());
+	assertEquals(3, regionManager.getRegions(world1).size());
+	assertEquals(5, regionManager.getRegions(world2).size());
     }
 
 }

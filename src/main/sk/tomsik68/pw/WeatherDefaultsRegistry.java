@@ -4,8 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.block.Biome;
@@ -13,20 +14,22 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import sk.tomsik68.pw.api.WeatherDefaults;
+import sk.tomsik68.pw.api.registry.BaseRegistry;
 import sk.tomsik68.pw.config.WeatherDescription;
 import sk.tomsik68.pw.plugin.ProperWeather;
 
-public class WeatherInfoManager {
+public class WeatherDefaultsRegistry extends BaseRegistry<WeatherDefaults> {
 	private FileConfiguration weatherSettings;
-	private final HashMap<String, WeatherDefaults> defaults = new HashMap<String, WeatherDefaults>();
 	private File weatherSettingsFile;
 
 	public WeatherDescription getWeatherDescription(String weatherName) {
 		weatherName = weatherName.toLowerCase();
-		if (!weatherSettings.contains(weatherName)) {
-			WeatherDefaults wd = defaults.get(weatherName);
-			Validate.notNull(wd);
-			weatherSettings.set(weatherName, wd.serialize());
+		if (!weatherSettings.isConfigurationSection(weatherName)) {
+			WeatherDefaults defaults = get(weatherName);
+			Validate.notNull(defaults);
+			Map<String, Object> sectionValues = defaults.serialize();
+			weatherSettings.createSection(weatherName, sectionValues);
+			
 			try {
 				weatherSettings.save(weatherSettingsFile);
 			} catch (IOException e) {
@@ -34,8 +37,8 @@ public class WeatherInfoManager {
 			}
 		}
 		WeatherDescription wd = new WeatherDescription(
-				weatherSettings.getConfigurationSection(weatherName
-						.toLowerCase()));
+				weatherSettings.getConfigurationSection(weatherName));
+
 		return wd;
 	}
 
@@ -73,22 +76,23 @@ public class WeatherInfoManager {
 		}
 	}
 
-	public void createDefaultsInFile(File dataFolder,
-			Collection<String> registeredWeathers) {
+	public void createDefaultsInFile(File dataFolder) {
 		if (weatherSettingsFile == null)
 			weatherSettingsFile = new File(dataFolder, "weather_settings.yml");
 		if (!weatherSettingsFile.exists()
 				|| (weatherSettingsFile.exists() && weatherSettingsFile
 						.length() == 0))
 			generateDefaultWeathersConfig(weatherSettingsFile,
-					registeredWeathers);
+					elements.keySet());
 		weatherSettings = YamlConfiguration
 				.loadConfiguration(weatherSettingsFile);
-		defaults.clear();
-		for (String weatherName : registeredWeathers) {
+		elements.clear();
+		for (Entry<String, WeatherDefaults> entry : elements.entrySet()) {
+			String weatherName = entry.getKey();
+			WeatherDefaults wd = entry.getValue();
 			if (!weatherSettings.contains(weatherName)
 					|| !weatherSettings.isConfigurationSection(weatherName)) {
-				WeatherDefaults wd = defaults.get(weatherName);
+				get(weatherName);
 				Validate.notNull(wd);
 
 				weatherSettings.set(weatherName, wd.serialize());
@@ -99,13 +103,5 @@ public class WeatherInfoManager {
 				}
 			}
 		}
-	}
-
-	public void register(String w, WeatherDefaults wd) {
-		defaults.put(w.toLowerCase(), wd);
-	}
-
-	public WeatherDefaults getWeatherDefaults(String weather) {
-		return defaults.get(weather);
 	}
 }

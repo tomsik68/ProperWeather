@@ -3,7 +3,6 @@ package sk.tomsik68.pw.plugin;
 import java.util.ArrayList;
 
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Projectile;
 
 /**
  * This class kills remained fireballs & arrows on server shutdown/reload to
@@ -35,14 +34,5 @@ public class ProjectileManager {
 
     public static int size() {
         return entities.size();
-    }
-
-    public static void killAll(Class<? extends Projectile> clazz) {
-        for (int i = 0; i < entities.size(); i++) {
-            if (clazz.isInstance(entities.get(i))) {
-                entities.get(i).remove();
-                entities.remove(i);
-            }
-        }
     }
 }

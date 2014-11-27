@@ -9,12 +9,12 @@ import java.util.List;
 
 import org.apache.commons.lang.NotImplementedException;
 
-import sk.tomsik68.pw.Util;
 import sk.tomsik68.pw.files.api.IDataIO;
 import sk.tomsik68.pw.plugin.ProperWeather;
 import sk.tomsik68.pw.struct.WeatherData;
 import sk.tomsik68.pw.struct.WeatherDataExt;
 import sk.tomsik68.pw.struct.WeatherDatav4;
+import sk.tomsik68.pw.utils.Util;
 
 public class Weather103IO implements IDataIO<SavedWeathersFormat> {
 

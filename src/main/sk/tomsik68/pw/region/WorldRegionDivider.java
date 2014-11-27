@@ -5,11 +5,17 @@ import java.util.List;
 
 import org.bukkit.World;
 
-public class WorldRegionDivider implements RegionDivider {
+import sk.tomsik68.pw.api.RegionManager;
+
+public class WorldRegionDivider extends RegionDivider {
+
+    public WorldRegionDivider(RegionManager simpleRegionManager) {
+	super(simpleRegionManager);
+    }
 
     @Override
     public List<Region> divideToRegions(World world) {
-        return Arrays.asList((Region) new WorldRegion(world.getUID()));
+	return Arrays.asList((Region) new WorldRegion(world.getUID()));
     }
 
 }

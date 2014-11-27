@@ -1,11 +1,11 @@
 package sk.tomsik68.pw.impl.factory;
 
-import sk.tomsik68.pw.Util;
 import sk.tomsik68.pw.api.Weather;
 import sk.tomsik68.pw.api.WeatherDefaults;
 import sk.tomsik68.pw.api.WeatherFactory;
 import sk.tomsik68.pw.config.WeatherDescription;
 import sk.tomsik68.pw.plugin.ProperWeather;
+import sk.tomsik68.pw.utils.Util;
 
 public class ClassWeatherFactory<W extends Weather> implements WeatherFactory<W> {
     private final Class<W> clazz;

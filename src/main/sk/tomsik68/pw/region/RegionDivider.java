@@ -4,6 +4,14 @@ import java.util.List;
 
 import org.bukkit.World;
 
-public interface RegionDivider {
-    public List<Region> divideToRegions(World world);
+import sk.tomsik68.pw.api.RegionManager;
+
+public abstract class RegionDivider {
+    protected final RegionManager regionManager;
+
+    public RegionDivider(RegionManager regionManager) {
+	this.regionManager = regionManager;
+    }
+
+    public abstract List<Region> divideToRegions(World world);
 }
