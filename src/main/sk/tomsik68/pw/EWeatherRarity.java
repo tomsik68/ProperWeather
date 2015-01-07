@@ -1,25 +1,31 @@
 package sk.tomsik68.pw;
-/** Weather rarity in %s
+
+/**
+ * Weather rarity in %s
  * 
  * @author Tomsik68
  *
  */
 public enum EWeatherRarity {
-    /**15%
-     * 
-     */
+	/**
+	 * 15%
+	 * 
+	 */
 	ExtremelyRare(15),
-	/** 25%
+	/**
+	 * 25%
 	 * 
 	 */
 	Rare(25),
-	/** 50%
+	/**
+	 * 50%
 	 * 
 	 */
 	Normal(50),
-    /** 75%
-     * 
-     */
+	/**
+	 * 75%
+	 * 
+	 */
 	Often(75),
 	/**
 	 * 90%

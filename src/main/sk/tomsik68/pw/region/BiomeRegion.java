@@ -27,8 +27,7 @@ public class BiomeRegion extends BaseRegion {
 	}
 
 	public boolean contains(Location location) {
-		return (location.getBlock().getBiome().equals(biome))
-				&& (location.getWorld().getUID().equals(world));
+		return (location.getBlock().getBiome().equals(biome)) && (location.getWorld().getUID().equals(world));
 	}
 
 	public Iterator<Block> iterator() {
@@ -44,20 +43,12 @@ public class BiomeRegion extends BaseRegion {
 		out.write(biome.ordinal());
 	}
 
-	public void readExternal(ObjectInput in) throws IOException,
-			ClassNotFoundException {
+	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
 		super.readExternal(in);
 		biome = Biome.values()[in.read()];
 	}
 
 	public String toString() {
-		return "Biome '" + biome.name() + "' in '"
-				+ Bukkit.getWorld(world).getName() + "'";
-	}
-
-	@Override
-	public void setRegionManager(RegionManager simpleRegionManager) {
-	    // TODO Auto-generated method stub
-	    
+		return "Biome '" + biome.name() + "' in '" + Bukkit.getWorld(world).getName() + "'";
 	}
 }

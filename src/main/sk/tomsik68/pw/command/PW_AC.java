@@ -12,21 +12,21 @@ import sk.tomsik68.pw.plugin.ProperWeather;
 import sk.tomsik68.pw.region.RegionType;
 
 public class PW_AC {
-    private AutoCommandInstance autoCommand;
-    private PWCommandHandler commandHandler;
+	private AutoCommandInstance autoCommand;
+	private PWCommandHandler commandHandler;
 
-    public PW_AC(ProperWeather pw, EPermissions perms) {
-        autoCommand = new AutoCommandInstance(pw, perms, new StringRespectingArgumentTokenizer(), null);
+	public PW_AC(ProperWeather pw, EPermissions perms) {
+		autoCommand = new AutoCommandInstance(pw, perms, new StringRespectingArgumentTokenizer(), null);
 
-        autoCommand.registerContextParameterProvider(new WorldFromPlayerProvider());
-        
-        BukkitArgumentParsers.registerBukkitParsers(autoCommand.getArgumentParsers());
-        autoCommand.getArgumentParsers().registerArgumentParser(RegionType.class, new EnumParser<RegionType>(RegionType.class));
-    }
+		autoCommand.registerContextParameterProvider(new WorldFromPlayerProvider());
 
-    public void register(PluginCommand command, WeatherSystem ws) {
-        commandHandler = new PWCommandHandler(ws);
-        autoCommand.registerCommands("pw", commandHandler);
-    }
+		BukkitArgumentParsers.registerBukkitParsers(autoCommand.getArgumentParsers());
+		autoCommand.getArgumentParsers().registerArgumentParser(RegionType.class, new EnumParser<RegionType>(RegionType.class));
+	}
+
+	public void register(PluginCommand command, WeatherSystem ws) {
+		commandHandler = new PWCommandHandler(ws);
+		autoCommand.registerCommands("pw", commandHandler);
+	}
 
 }

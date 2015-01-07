@@ -114,19 +114,16 @@ public class ProperWeather extends JavaPlugin implements Listener {
 		}
 
 		if (!new File(dataFolder, "config.yml").exists()) {
-			ConfigFile.generateDefaultConfig(new File(getDataFolder(),
-					"config.yml"));
+			ConfigFile.generateDefaultConfig(new File(getDataFolder(), "config.yml"));
 		}
 		config = new ConfigFile(getConfig());
 		permissions = config.getPerms();
 		color = config.getColorTheme()[0];
 		factColor = config.getColorTheme()[1];
-		weatherSystem = new DefaultWeatherSystem(weatherFactoryRegistry,
-				weatherCycleFactoryRegistry, backend);
+		weatherSystem = new DefaultWeatherSystem(weatherFactoryRegistry, weatherCycleFactoryRegistry, backend);
 
 		weatherListener = new PWWeatherListener(weatherSystem);
-		playerListener = new PWPlayerListener(weatherSystem,
-				((SimpleRegionManager) weatherSystem.getRegionManager()).getPlayerRegionManager());
+		playerListener = new PWPlayerListener(weatherSystem, ((SimpleRegionManager) weatherSystem.getRegionManager()).getPlayerRegionManager());
 		if (permissions == null)
 			permissions = EPermissions.OP;
 		// getCommand("pw").setExecutor(new PWCommand(new
@@ -173,8 +170,7 @@ public class ProperWeather extends JavaPlugin implements Listener {
 
 	private void initFactories() throws IOException {
 		tryMigrateOldWeathersYML();
-		weatherFactoryRegistry = new WeatherFactoryRegistry(
-				weatherDefaultsRegistry = new WeatherDefaultsRegistry());
+		weatherFactoryRegistry = new WeatherFactoryRegistry(weatherDefaultsRegistry = new WeatherDefaultsRegistry());
 		weatherCycleFactoryRegistry = new WeatherCycleFactoryRegistry();
 		weatherElementFactoryRegistry = new WeatherElementFactoryRegistry();
 		try {
@@ -190,33 +186,26 @@ public class ProperWeather extends JavaPlugin implements Listener {
 	private void tryMigrateOldWeathersYML() throws IOException {
 		File oldWeathersYmlFile = new File(getDataFolder(), "weathers.yml");
 		if (oldWeathersYmlFile.exists()) {
-			YamlConfiguration weathersYml = YamlConfiguration
-					.loadConfiguration(oldWeathersYmlFile);
+			YamlConfiguration weathersYml = YamlConfiguration.loadConfiguration(oldWeathersYmlFile);
 			YamlConfiguration weatherSettings = new YamlConfiguration();
 			YamlConfiguration weatherDefinitions = new YamlConfiguration();
 
 			Set<String> keys = weathersYml.getKeys(false);
 			for (String key : keys) {
 				if (weathersYml.isConfigurationSection(key)) {
-					ConfigurationSection section = weathersYml
-							.getConfigurationSection(key);
+					ConfigurationSection section = weathersYml.getConfigurationSection(key);
 					if (section.contains("raining")) {
 						// it's a definition
-						weatherDefinitions.createSection(key,
-								section.getValues(true));
+						weatherDefinitions.createSection(key, section.getValues(true));
 					} else {
 						// it's a description
-						weatherSettings.createSection(key,
-								section.getValues(true));
+						weatherSettings.createSection(key, section.getValues(true));
 					}
 				}
 			}
-			weatherSettings.save(new File(getDataFolder(),
-					"weather_settings.yml"));
-			weatherDefinitions.save(new File(getDataFolder(),
-					"weather_defs.yml"));
-			oldWeathersYmlFile.renameTo(new File(getDataFolder(),
-					"weathers.yml.old"));
+			weatherSettings.save(new File(getDataFolder(), "weather_settings.yml"));
+			weatherDefinitions.save(new File(getDataFolder(), "weather_defs.yml"));
+			oldWeathersYmlFile.renameTo(new File(getDataFolder(), "weathers.yml.old"));
 			log.warning("It was detected, that you were using weathers.yml. If you changed any values there, you might want to migrate them to new format for 1.1.1. If you didn't touch the file, everything should behave as expected. Otherwise, please read plugin's homepage for more information.");
 		}
 	}
@@ -225,15 +214,8 @@ public class ProperWeather extends JavaPlugin implements Listener {
 		registerAllEvents(PWPlayerListener.class, playerListener);
 		registerAllEvents(PWWeatherListener.class, weatherListener);
 		registerAllEvents(this.getClass(), this);
-		weatherUpdateTask = getServer()
-				.getScheduler()
-				.runTaskTimerAsynchronously(this,
-						new WeatherUpdateTask(weatherSystem), 88L, TASK_PERIOD)
-				.getTaskId();
-		regionUpdateTask = getServer().getScheduler()
-				.scheduleSyncRepeatingTask(this,
-						new RegionUpdateTask(weatherSystem.getRegionManager()),
-						88L, 88L);
+		weatherUpdateTask = getServer().getScheduler().runTaskTimerAsynchronously(this, new WeatherUpdateTask(weatherSystem), 88L, TASK_PERIOD).getTaskId();
+		regionUpdateTask = getServer().getScheduler().scheduleSyncRepeatingTask(this, new RegionUpdateTask(weatherSystem.getRegionManager()), 88L, 88L);
 		if ((weatherUpdateTask == -1) || (regionUpdateTask == -1)) {
 			log.severe("FATAL ERROR: Task scheduling failed! Plugin will now shut down itself");
 			getServer().getPluginManager().disablePlugin(this);
@@ -242,15 +224,11 @@ public class ProperWeather extends JavaPlugin implements Listener {
 
 	private void initTranslations() {
 		try {
-			Translator.init(config.getTranslationFilePath(),
-					getResource("en.txt"));
+			Translator.init(config.getTranslationFilePath(), getResource("en.txt"));
 		} catch (Exception e) {
 			e.printStackTrace();
 			try {
-				Translator.init(
-						new File(getDataFolder(), config
-								.getTranslationFilePath()).getAbsolutePath(),
-						getResource("en.txt"));
+				Translator.init(new File(getDataFolder(), config.getTranslationFilePath()).getAbsolutePath(), getResource("en.txt"));
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
@@ -258,8 +236,7 @@ public class ProperWeather extends JavaPlugin implements Listener {
 	}
 
 	public static ProperWeather instance() {
-		return (ProperWeather) Bukkit.getServer().getPluginManager()
-				.getPlugin("ProperWeather");
+		return (ProperWeather) Bukkit.getServer().getPluginManager().getPlugin("ProperWeather");
 	}
 
 	public WeatherSystem getWeatherSystem() {
@@ -267,10 +244,7 @@ public class ProperWeather extends JavaPlugin implements Listener {
 	}
 
 	public static String[] getVersionInfo() {
-		return new String[]{
-				"ProperWeather v" + instance().getDescription().getVersion(),
-				"by: Tomsik68", "Homepage:",
-				"http://dev.bukkit.org/server-mods/properweather/"};
+		return new String[] { "ProperWeather v" + instance().getDescription().getVersion(), "by: Tomsik68", "Homepage:", "http://dev.bukkit.org/server-mods/properweather/" };
 	}
 
 	public void setupPermissions() {

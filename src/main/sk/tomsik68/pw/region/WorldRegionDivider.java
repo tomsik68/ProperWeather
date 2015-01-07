@@ -9,14 +9,14 @@ import sk.tomsik68.pw.api.RegionManager;
 
 public class WorldRegionDivider extends RegionDivider {
 
-    public WorldRegionDivider(RegionManager simpleRegionManager) {
-	super(simpleRegionManager);
-    }
+	public WorldRegionDivider(RegionManager simpleRegionManager) {
+		super(simpleRegionManager);
+	}
 
-    @Override
-    public List<Region> divideToRegions(World world) {
-	Region region = new WorldRegion(world.getUID());
-	region.setRegionManager(regionManager);
-	return Arrays.asList(region);
-    }
+	@Override
+	public List<Region> divideToRegions(World world) {
+		WorldRegion region = new WorldRegion(world.getUID());
+		region.setRegionManager(regionManager);
+		return Arrays.asList((Region) region);
+	}
 }

@@ -10,17 +10,17 @@ import sk.tomsik68.pw.impl.WeatherElementFactory;
 import sk.tomsik68.pw.weather.element.Wind;
 
 public class WeatherElementFactoryRegistry extends BaseRegistry<WeatherElementFactory<?>> {
-    public WeatherElementFactoryRegistry() {
+	public WeatherElementFactoryRegistry() {
 
-    }
+	}
 
-    @Override
-    public void load(File pluginFolder) throws IOException {
-        try {
-            register(Wind.class.getName(), new ClassWeatherElementFactory<Wind>(Wind.class));
-        } catch (NameAlreadyBoundException e) {
-            e.printStackTrace();
-        }
-    }
+	@Override
+	public void load(File pluginFolder) throws IOException {
+		try {
+			register(Wind.class.getName(), new ClassWeatherElementFactory<Wind>(Wind.class));
+		} catch (NameAlreadyBoundException e) {
+			e.printStackTrace();
+		}
+	}
 
 }

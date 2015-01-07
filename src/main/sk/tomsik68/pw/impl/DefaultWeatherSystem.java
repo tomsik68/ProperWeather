@@ -33,8 +33,7 @@ public class DefaultWeatherSystem implements WeatherSystem {
 	private final Object changeLock = new Object();
 	private Map<Integer, WeatherController> controllers;
 
-	public DefaultWeatherSystem(WeatherFactoryRegistry weathers,
-			WeatherCycleFactoryRegistry cycles, IServerBackend backend) {
+	public DefaultWeatherSystem(WeatherFactoryRegistry weathers, WeatherCycleFactoryRegistry cycles, IServerBackend backend) {
 		/*
 		 * weatherData = new HashMap<Integer, IWeatherData>();
 		 */
@@ -55,8 +54,7 @@ public class DefaultWeatherSystem implements WeatherSystem {
 	}
 
 	@Override
-	public void startCycle(String cycleName, String worldName,
-			String startWeather) {
+	public void startCycle(String cycleName, String worldName, String startWeather) {
 		Validate.notNull(cycleName, "cycleName is null!");
 		Validate.notEmpty(cycleName, "cycleName is empty!");
 		Validate.notNull(worldName, "worldName is null!");
@@ -64,11 +62,9 @@ public class DefaultWeatherSystem implements WeatherSystem {
 
 		World world = Bukkit.getWorld(worldName);
 		if (!regionManager.isHooked(world))
-			regionManager.hook(Bukkit.getWorld(worldName), ProperWeather
-					.instance().getConfigFile().getRegionType(worldName));
+			regionManager.hook(Bukkit.getWorld(worldName), ProperWeather.instance().getConfigFile().getRegionType(worldName));
 
-		List<Integer> regionsInWorld = regionManager.getRegions(Bukkit
-				.getWorld(worldName));
+		List<Integer> regionsInWorld = regionManager.getRegions(Bukkit.getWorld(worldName));
 		for (int r : regionsInWorld) {
 			startCycleInRegion(cycleName, r, startWeather);
 		}
@@ -96,12 +92,12 @@ public class DefaultWeatherSystem implements WeatherSystem {
 				Weather weather = weathers.get("clear").create(r);
 				wd.setCurrentWeather(weather);
 				weather.initWeather();
-				
+
 			} else {
 				Weather weather = weathers.get(startWeather).create(r);
 				wd.setCurrentWeather(weather);
 				weather.initWeather();
-				
+
 			}
 			weatherSituations.updateSituation(wd);
 		}
@@ -115,9 +111,8 @@ public class DefaultWeatherSystem implements WeatherSystem {
 
 	public void init() throws Exception {
 		regionManager.loadRegions();
-		dataFile = new WeatherDataFile(new File(ProperWeather.instance()
-				.getDataFolder(), "data.dat"));
-		
+		dataFile = new WeatherDataFile(new File(ProperWeather.instance().getDataFolder(), "data.dat"));
+
 		weatherSituations.loadFrom(this, dataFile, weathers, cycles);
 		// cancel raining in all worlds that are controlled, so minecraft server
 		// doesn't change it(raining is
@@ -139,14 +134,10 @@ public class DefaultWeatherSystem implements WeatherSystem {
 					wd = wd.getCycle().nextWeatherData(wd);
 					weatherSituations.updateSituation(wd);
 				} catch (Exception e) {
-					ProperWeather.log
-							.severe("WeatherCycle has malfunctioned. Class: "
-									+ wd.getCycle().getClass().getName());
+					ProperWeather.log.severe("WeatherCycle has malfunctioned. Class: " + wd.getCycle().getClass().getName());
 					e.printStackTrace();
 				}
-				if (wd.getCurrentWeather() != null
-						&& (rand.nextInt(100) <= wd.getCurrentWeather()
-								.getRandomTimeProbability())) {
+				if (wd.getCurrentWeather() != null && (rand.nextInt(100) <= wd.getCurrentWeather().getRandomTimeProbability())) {
 					wd.getCurrentWeather().onRandomTime();
 				}
 			} else {
@@ -163,8 +154,7 @@ public class DefaultWeatherSystem implements WeatherSystem {
 	public WeatherController getWeatherController(int regionId) {
 		WeatherController wc;
 		if (!controllers.containsKey(Integer.valueOf(regionId))) {
-			wc = new WeatherController(regionManager.getRegion(regionId),
-					backend);
+			wc = new WeatherController(regionManager.getRegion(regionId), backend);
 			controllers.put(Integer.valueOf(regionId), wc);
 		} else
 			wc = controllers.get(Integer.valueOf(regionId));
@@ -173,8 +163,7 @@ public class DefaultWeatherSystem implements WeatherSystem {
 
 	public boolean canNowBeLightning(Region region) {
 		Validate.notNull(region);
-		return controllers.get(Integer.valueOf(region.getUID()))
-				.isThunderingAllowed();
+		return controllers.get(Integer.valueOf(region.getUID())).isThunderingAllowed();
 	}
 
 	public void setWeatherController(int regionID, WeatherController wc) {
@@ -217,8 +206,7 @@ public class DefaultWeatherSystem implements WeatherSystem {
 
 	@Override
 	public void unHook(String worldName) {
-		List<Integer> regions = regionManager.getRegions(Bukkit
-				.getWorld(worldName));
+		List<Integer> regions = regionManager.getRegions(Bukkit.getWorld(worldName));
 		for (int r : regions) {
 			Region region = regionManager.getRegion(r);
 			getWeatherController(region).finish();

@@ -10,5 +10,5 @@ import org.bukkit.entity.Entity;
  * 
  */
 public interface CustomizeEntityTask {
-    public void perform(Entity entity);
+	public void perform(Entity entity);
 }

@@ -13,38 +13,37 @@ import sk.tomsik68.pw.api.WeatherSystem;
 import sk.tomsik68.pw.plugin.ProperWeather;
 
 public class RandomWeatherCycle extends WeatherCycle {
-    private static final Random rand = new Random();
+	private static final Random rand = new Random();
 
-    public RandomWeatherCycle(WeatherSystem ws, String name) {
-        super(ws, name);
-    }
+	public RandomWeatherCycle(WeatherSystem ws, String name) {
+		super(ws, name);
+	}
 
-    @Override
-    public IWeatherData nextWeatherData(IWeatherData wd) {
-        // just choose random weather and start it with no rules
-        if (wd.decrementDuration() <= 0) {
-            ArrayList<String> weathers = new ArrayList<String>(ProperWeather.instance().getWeathers().getRegistered());
+	@Override
+	public IWeatherData nextWeatherData(IWeatherData wd) {
+		// just choose random weather and start it with no rules
+		if (wd.decrementDuration() <= 0) {
+			ArrayList<String> weathers = new ArrayList<String>(ProperWeather.instance().getWeathers().getRegistered());
 
-            Weather weather = ProperWeather.instance().getWeathers().createWeather(weathers.get(rand.nextInt(weathers.size())), wd.getRegion());
+			Weather weather = ProperWeather.instance().getWeathers().createWeather(weathers.get(rand.nextInt(weathers.size())), wd.getRegion());
 
-            // weatherSystem.setRegionalWeather(weather, wd.getRegion());
-            
-            wd.setCurrentWeather(weather);
-            weather.initWeather();
-            System.out.println("Weatherswap!");
-            
-            wd.setDuration(rand.nextInt(36000));
+			// weatherSystem.setRegionalWeather(weather, wd.getRegion());
 
-        }
-        return wd;
-    }
+			wd.setCurrentWeather(weather);
+			weather.initWeather();
 
-    @Override
-    public void loadState(ObjectInput in) throws IOException, ClassNotFoundException {
-    }
+			wd.setDuration(rand.nextInt(36000));
 
-    @Override
-    public void saveState(ObjectOutput out) throws IOException {
-    }
+		}
+		return wd;
+	}
+
+	@Override
+	public void loadState(ObjectInput in) throws IOException, ClassNotFoundException {
+	}
+
+	@Override
+	public void saveState(ObjectOutput out) throws IOException {
+	}
 
 }

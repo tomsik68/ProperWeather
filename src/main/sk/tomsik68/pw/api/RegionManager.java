@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 
 import sk.tomsik68.pw.region.Region;
 import sk.tomsik68.pw.region.RegionType;
+
 /**
  * Manages regions.
  * 
@@ -66,32 +67,43 @@ public abstract interface RegionManager {
 	 * @return Region ID list for specified world
 	 */
 	public List<Integer> getRegions(UUID worldId);
+
 	/**
 	 * 
 	 * @param paramWorld
 	 * @return Whether manager is hooked to the world
 	 */
 	public abstract boolean isHooked(World paramWorld);
+
 	/**
 	 * 
 	 * @return Worlds this manager is currently hooked to.
 	 */
 	public abstract List<String> getWorlds();
+
 	/**
 	 * Loads regions.
 	 * 
 	 */
 	public abstract void loadRegions();
+
 	/**
 	 * Saves regions.
 	 * 
 	 */
 	public abstract void saveRegions();
+
 	/**
 	 * 
 	 * @return All regions managed by the manager.
 	 */
 	public abstract Collection<Region> getAllRegions();
 
+	/**
+	 * 
+	 * @param region
+	 *            - ID of region where to get players
+	 * @return {@link Iterable} of all players located in that region
+	 */
 	public abstract Iterable<Player> getPlayers(int region);
 }

@@ -12,82 +12,90 @@ import sk.tomsik68.pw.plugin.ProperWeather;
 
 @Deprecated
 public class WeatherDatav4 implements Externalizable, IWeatherData {
-    private static final long serialVersionUID = -7099393484035l;
+	private static final long serialVersionUID = -7099393484035l;
 
-    private Weather currentWeather;
-    private int duration;
-    private int region;
-    private WeatherCycle cycle;
+	private Weather currentWeather;
+	private int duration;
+	private int region;
+	private WeatherCycle cycle;
 
-    public String weather;
+	public String weather;
 
-    public String cycleName;
+	public String cycleName;
 
-    public WeatherDatav4() {
-    }
+	public WeatherDatav4() {
+	}
 
-    public void setCurrentWeather(Weather currentWeather1) {
-        this.currentWeather = currentWeather1;
-    }
+	public void setCurrentWeather(Weather currentWeather1) {
+		this.currentWeather = currentWeather1;
+	}
 
-    public Weather getCurrentWeather() {
-        return currentWeather;
-    }
+	public Weather getCurrentWeather() {
+		return currentWeather;
+	}
 
-    public void setDuration(int duration1) {
-        this.duration = duration1;
-    }
+	public void setDuration(int duration1) {
+		this.duration = duration1;
+	}
 
-    public int getDuration() {
-        return duration;
-    }
+	public int getDuration() {
+		return duration;
+	}
 
-    public int decrementDuration() {
-        return duration -= ProperWeather.TASK_PERIOD;
-    }
+	public int decrementDuration() {
+		return duration -= ProperWeather.TASK_PERIOD;
+	}
 
-    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        this.duration = in.readInt();
-        this.region = in.readInt();
-        this.weather = in.readUTF();
-        //this.currentWeather = ProperWeather.instance().getWeathers().createWeather(weather, region);
-        /*if (currentWeather == null)
-            ProperWeather.log.severe("Invalid data for region #" + region + ". Weather = null !");*/
-        this.cycleName = in.readUTF();
-        
-        /*cycle = ProperWeather.instance().getCycles().get(cycleName).create(ProperWeather.instance().getWeatherSystem());
-        if (cycle == null)
-            ProperWeather.log.severe("Invalid data for region #" + region + ". cycle = null !");
-        cycle.loadState(in);*/
-    }
+	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+		this.duration = in.readInt();
+		this.region = in.readInt();
+		this.weather = in.readUTF();
+		// this.currentWeather =
+		// ProperWeather.instance().getWeathers().createWeather(weather,
+		// region);
+		/*
+		 * if (currentWeather == null)
+		 * ProperWeather.log.severe("Invalid data for region #" + region +
+		 * ". Weather = null !");
+		 */
+		this.cycleName = in.readUTF();
 
-    public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeInt(duration);
-        out.writeInt(region);
-        out.writeUTF(currentWeather.getName());
-        out.writeUTF(cycle.getName());
-        cycle.saveState(out);
-    }
+		/*
+		 * cycle =
+		 * ProperWeather.instance().getCycles().get(cycleName).create(ProperWeather
+		 * .instance().getWeatherSystem()); if (cycle == null)
+		 * ProperWeather.log.severe("Invalid data for region #" + region +
+		 * ". cycle = null !"); cycle.loadState(in);
+		 */
+	}
 
-    public int getRegion() {
-        return region;
-    }
+	public void writeExternal(ObjectOutput out) throws IOException {
+		out.writeInt(duration);
+		out.writeInt(region);
+		out.writeUTF(currentWeather.getName());
+		out.writeUTF(cycle.getName());
+		cycle.saveState(out);
+	}
 
-    public void setRegion(int region1) {
-        this.region = region1;
-    }
+	public int getRegion() {
+		return region;
+	}
 
-    public WeatherCycle getCycle() {
-        return cycle;
-    }
+	public void setRegion(int region1) {
+		this.region = region1;
+	}
 
-    public void setCycle(WeatherCycle newCycle) {
-        cycle = newCycle;
-    }
+	public WeatherCycle getCycle() {
+		return cycle;
+	}
 
-    @Override
-    public String toString() {
-        return "WeatherData[region=" + region + " weather=" + currentWeather.getName() + " duration=" + duration + "]";
-    }
+	public void setCycle(WeatherCycle newCycle) {
+		cycle = newCycle;
+	}
+
+	@Override
+	public String toString() {
+		return "WeatherData[region=" + region + " weather=" + currentWeather.getName() + " duration=" + duration + "]";
+	}
 
 }

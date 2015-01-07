@@ -8,13 +8,13 @@ import sk.tomsik68.pw.api.RegionManager;
 
 public class CuboidRegionDivider extends RegionDivider {
 
-    public CuboidRegionDivider(RegionManager regionManager) {
-	super(regionManager);
-    }
+	public CuboidRegionDivider(RegionManager regionManager) {
+		super(regionManager);
+	}
 
-    @Override
-    public List<Region> divideToRegions(World world) {
-	return null;
-    }
+	@Override
+	public List<Region> divideToRegions(World world) {
+		return null;
+	}
 
 }

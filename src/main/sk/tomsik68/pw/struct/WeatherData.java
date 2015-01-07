@@ -17,79 +17,79 @@ import sk.tomsik68.pw.plugin.ProperWeather;
  */
 @Deprecated
 public class WeatherData implements Externalizable {
-    private static final long serialVersionUID = -7099393484035l;
+	private static final long serialVersionUID = -7099393484035l;
 
-    private LinkedList<Integer> list;
-    private int numberOfWeather;
-    private int duration;
-    private int region;
-    private boolean canEverChange;
+	private LinkedList<Integer> list;
+	private int numberOfWeather;
+	private int duration;
+	private int region;
+	private boolean canEverChange;
 
-    public WeatherData() {
-        list = new LinkedList<Integer>();
-    }
+	public WeatherData() {
+		list = new LinkedList<Integer>();
+	}
 
-    public void setDuration(int duration1) {
-        this.duration = duration1;
-    }
+	public void setDuration(int duration1) {
+		this.duration = duration1;
+	}
 
-    public int getDuration() {
-        return duration;
-    }
+	public int getDuration() {
+		return duration;
+	}
 
-    public void setCanEverChange(boolean canEverChange1) {
-        this.canEverChange = canEverChange1;
-    }
+	public void setCanEverChange(boolean canEverChange1) {
+		this.canEverChange = canEverChange1;
+	}
 
-    public boolean canEverChange() {
-        return canEverChange;
-    }
+	public boolean canEverChange() {
+		return canEverChange;
+	}
 
-    public int decrementDuration() {
-        return duration -= ProperWeather.TASK_PERIOD;
-    }
+	public int decrementDuration() {
+		return duration -= ProperWeather.TASK_PERIOD;
+	}
 
-    public Integer getPreviousWeather() {
-        if (list.size() > 0)
-            return list.get(list.size() - 1);
-        return 0;
-    }
+	public Integer getPreviousWeather() {
+		if (list.size() > 0)
+			return list.get(list.size() - 1);
+		return 0;
+	}
 
-    public List<Integer> getPreviousWeathers() {
-        return list;
-    }
+	public List<Integer> getPreviousWeathers() {
+		return list;
+	}
 
-    @SuppressWarnings("unchecked")
-    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        canEverChange = in.readBoolean();
-        duration = in.readInt();
-        region = in.readInt();
-        numberOfWeather = in.readInt();
-        list = ((LinkedList<Integer>) in.readObject());
-    }
+	@SuppressWarnings("unchecked")
+	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+		canEverChange = in.readBoolean();
+		duration = in.readInt();
+		region = in.readInt();
+		numberOfWeather = in.readInt();
+		list = ((LinkedList<Integer>) in.readObject());
+	}
 
-    public void writeExternal(ObjectOutput out) throws IOException {
-        throw new NotImplementedException("Don't dare to write the old format!!!");
-    }
+	public void writeExternal(ObjectOutput out) throws IOException {
+		throw new NotImplementedException("Don't dare to write the old format!!!");
+	}
 
-    public int getRegion() {
-        return region;
-    }
+	public int getRegion() {
+		return region;
+	}
 
-    public void setRegion(int region1) {
-        this.region = region1;
-    }
+	public void setRegion(int region1) {
+		this.region = region1;
+	}
 
-    @Override
-    public String toString() {
-        return "WeatherData[region=" + region + " weatherNO=" + numberOfWeather + " canEverChange=" + canEverChange + " duration=" + duration + "]";
-    }
+	@Override
+	public String toString() {
+		return "WeatherData[region=" + region + " weatherNO=" + numberOfWeather + " canEverChange=" + canEverChange + " duration=" + duration + "]";
+	}
 
-    public int getNumberOfWeather() {
-        return numberOfWeather;
-    }
+	public int getNumberOfWeather() {
+		return numberOfWeather;
+	}
 
-    public void setNumberOfWeather(int numberOfWeather) {
-        this.numberOfWeather = numberOfWeather;
-    }
+	public void setNumberOfWeather(int numberOfWeather) {
+		this.numberOfWeather = numberOfWeather;
+	}
 }

@@ -18,67 +18,67 @@ import sk.tomsik68.pw.utils.Util;
 
 public class Weather103IO implements IDataIO<SavedWeathersFormat> {
 
-    @SuppressWarnings("deprecation")
-    @Override
-    public SavedWeathersFormat load(InputStream in) throws Exception {
-        ArrayList<WeatherSaveEntry> entries = new ArrayList<WeatherSaveEntry>();
-        ObjectInputStream ois = new ObjectInputStream(in);
-        List<?> loadedList = (List<?>) ois.readObject();
+	@SuppressWarnings("deprecation")
+	@Override
+	public SavedWeathersFormat load(InputStream in) throws Exception {
+		ArrayList<WeatherSaveEntry> entries = new ArrayList<WeatherSaveEntry>();
+		ObjectInputStream ois = new ObjectInputStream(in);
+		List<?> loadedList = (List<?>) ois.readObject();
 
-        if ((loadedList != null) && (loadedList.size() > 0)) {
-            Object test = loadedList.get(0);
-            if ((test instanceof WeatherData)) {
-                ProperWeather.log.fine("Detected v2 data file. Converting...");
-                HashMap<Integer, String> oldWeatherMap = Util.generateOLDIntWeatherLookupMap();
-                for (Object obj : loadedList) {
-                    WeatherData wd = (WeatherData) obj;
-                    if (wd != null) {
-                        WeatherSaveEntry entry = new WeatherSaveEntry();
-                        entry.duration = wd.getDuration();
-                        entry.region = wd.getRegion();
-                        entry.weather = oldWeatherMap.get(wd.getNumberOfWeather());
-                        entry.cycle = wd.canEverChange() ? "random" : "stop";
-                        entries.add(entry);
-                    }
-                }
-                ProperWeather.log.fine("Conversion finished.");
-            } else if (test instanceof WeatherDataExt) {
-                ProperWeather.log.fine("Detected v3 data file. Converting...");
-                for (Object obj : loadedList) {
-                    WeatherDataExt oldWD = (WeatherDataExt) obj;
-                    if (oldWD != null) {
-                        WeatherSaveEntry entry = new WeatherSaveEntry();
-                        entry.cycle = oldWD.canEverChange() ? "random" : "stop";
-                        entry.duration = oldWD.getDuration();
-                        entry.region = oldWD.getRegion();
-                        entry.weather = oldWD.sCurrentWeather;
-                        entries.add(entry);
-                    }
-                }
-                ProperWeather.log.fine("Conversion finished.");
-            } else if (test instanceof WeatherDatav4) {
-                ProperWeather.log.fine("Detected v4 data file. Converting...");
-                for (Object obj : loadedList) {
-                    WeatherDatav4 wd = (WeatherDatav4) obj;
-                    if (wd != null) {
-                        WeatherSaveEntry entry = new WeatherSaveEntry();
-                        entry.weather = wd.weather;
-                        entry.cycle = wd.cycleName;
-                        entry.duration = wd.getDuration();
-                        entry.region = wd.getRegion();
-                        entries.add(entry);
-                    }
-                }
-                ProperWeather.log.fine("Conversion finished.");
-            } else
-                ProperWeather.log.severe("Detected corrupted/incompatible save file. Class=" + test.getClass());
-        }
-        return new SavedWeathersFormat(entries);
-    }
+		if ((loadedList != null) && (loadedList.size() > 0)) {
+			Object test = loadedList.get(0);
+			if ((test instanceof WeatherData)) {
+				ProperWeather.log.fine("Detected v2 data file. Converting...");
+				HashMap<Integer, String> oldWeatherMap = Util.generateOLDIntWeatherLookupMap();
+				for (Object obj : loadedList) {
+					WeatherData wd = (WeatherData) obj;
+					if (wd != null) {
+						WeatherSaveEntry entry = new WeatherSaveEntry();
+						entry.duration = wd.getDuration();
+						entry.region = wd.getRegion();
+						entry.weather = oldWeatherMap.get(wd.getNumberOfWeather());
+						entry.cycle = wd.canEverChange() ? "random" : "stop";
+						entries.add(entry);
+					}
+				}
+				ProperWeather.log.fine("Conversion finished.");
+			} else if (test instanceof WeatherDataExt) {
+				ProperWeather.log.fine("Detected v3 data file. Converting...");
+				for (Object obj : loadedList) {
+					WeatherDataExt oldWD = (WeatherDataExt) obj;
+					if (oldWD != null) {
+						WeatherSaveEntry entry = new WeatherSaveEntry();
+						entry.cycle = oldWD.canEverChange() ? "random" : "stop";
+						entry.duration = oldWD.getDuration();
+						entry.region = oldWD.getRegion();
+						entry.weather = oldWD.sCurrentWeather;
+						entries.add(entry);
+					}
+				}
+				ProperWeather.log.fine("Conversion finished.");
+			} else if (test instanceof WeatherDatav4) {
+				ProperWeather.log.fine("Detected v4 data file. Converting...");
+				for (Object obj : loadedList) {
+					WeatherDatav4 wd = (WeatherDatav4) obj;
+					if (wd != null) {
+						WeatherSaveEntry entry = new WeatherSaveEntry();
+						entry.weather = wd.weather;
+						entry.cycle = wd.cycleName;
+						entry.duration = wd.getDuration();
+						entry.region = wd.getRegion();
+						entries.add(entry);
+					}
+				}
+				ProperWeather.log.fine("Conversion finished.");
+			} else
+				ProperWeather.log.severe("Detected corrupted/incompatible save file. Class=" + test.getClass());
+		}
+		return new SavedWeathersFormat(entries);
+	}
 
-    @Override
-    public void save(OutputStream out, SavedWeathersFormat data) throws Exception {
-        throw new NotImplementedException("Don't use this format to save data!");
-    }
+	@Override
+	public void save(OutputStream out, SavedWeathersFormat data) throws Exception {
+		throw new NotImplementedException("Don't use this format to save data!");
+	}
 
 }

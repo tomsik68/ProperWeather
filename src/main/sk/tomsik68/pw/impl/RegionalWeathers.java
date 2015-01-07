@@ -36,7 +36,7 @@ class RegionalWeathers {
 
 	void updateSituation(IWeatherData wd) {
 		Validate.notNull(wd);
-		if(weatherData.containsKey(wd.getRegion()))
+		if (weatherData.containsKey(wd.getRegion()))
 			remove(wd.getRegion());
 		weatherData.put(wd.getRegion(), wd);
 	}
@@ -54,9 +54,7 @@ class RegionalWeathers {
 		return wd;
 	}
 
-	void loadFrom(WeatherSystem parent, DataFile<SavedWeathersFormat> dataFile,
-			WeatherFactoryRegistry weathers, WeatherCycleFactoryRegistry cycles)
-			throws Exception {
+	void loadFrom(WeatherSystem parent, DataFile<SavedWeathersFormat> dataFile, WeatherFactoryRegistry weathers, WeatherCycleFactoryRegistry cycles) throws Exception {
 		SavedWeathersFormat entries = dataFile.loadData();
 		for (WeatherSaveEntry entry : entries) {
 			// duration, cycle, weather, region, cycleData
@@ -67,9 +65,7 @@ class RegionalWeathers {
 
 	}
 
-	private IWeatherData convertSaveEntry(WeatherSystem parent,
-			WeatherSaveEntry entry, WeatherFactoryRegistry weathers,
-			WeatherCycleFactoryRegistry cycles) {
+	private IWeatherData convertSaveEntry(WeatherSystem parent, WeatherSaveEntry entry, WeatherFactoryRegistry weathers, WeatherCycleFactoryRegistry cycles) {
 		IWeatherData wd = createDefaultWeatherData();
 		wd.setDuration(entry.duration);
 		wd.setRegion(entry.region);

@@ -10,18 +10,18 @@ import sk.tomsik68.pw.api.RegionManager;
 
 public class BiomeRegionDivider extends RegionDivider {
 
-    public BiomeRegionDivider(RegionManager regionManager) {
-	super(regionManager);
-    }
-
-    @Override
-    public List<Region> divideToRegions(World world) {
-	List<Region> result = new ArrayList<Region>();
-	for (Biome biome : Biome.values()) {
-	    BiomeRegion region = new BiomeRegion(world.getUID(), biome);
-	    region.setRegionManager(regionManager);
-	    result.add(region);
+	public BiomeRegionDivider(RegionManager regionManager) {
+		super(regionManager);
 	}
-	return result;
-    }
+
+	@Override
+	public List<Region> divideToRegions(World world) {
+		List<Region> result = new ArrayList<Region>();
+		for (Biome biome : Biome.values()) {
+			BiomeRegion region = new BiomeRegion(world.getUID(), biome);
+			region.setRegionManager(regionManager);
+			result.add(region);
+		}
+		return result;
+	}
 }

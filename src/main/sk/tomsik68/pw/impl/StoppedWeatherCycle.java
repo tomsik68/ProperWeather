@@ -10,21 +10,21 @@ import sk.tomsik68.pw.api.WeatherSystem;
 
 public class StoppedWeatherCycle extends WeatherCycle {
 
-    public StoppedWeatherCycle(WeatherSystem ws, String name) {
-        super(ws, name);
-    }
+	public StoppedWeatherCycle(WeatherSystem ws, String name) {
+		super(ws, name);
+	}
 
-    @Override
-    public IWeatherData nextWeatherData(IWeatherData current) {
-        return current;
-    }
+	@Override
+	public IWeatherData nextWeatherData(IWeatherData current) {
+		return current;
+	}
 
-    @Override
-    public void loadState(ObjectInput in) throws IOException, ClassNotFoundException {
-    }
+	@Override
+	public void loadState(ObjectInput in) throws IOException, ClassNotFoundException {
+	}
 
-    @Override
-    public void saveState(ObjectOutput out) throws IOException {
-    }
+	@Override
+	public void saveState(ObjectOutput out) throws IOException {
+	}
 
 }

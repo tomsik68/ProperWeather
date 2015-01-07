@@ -5,8 +5,8 @@ import java.io.OutputStream;
 
 public interface IDataIO<D extends IData> {
 
-    D load(InputStream in) throws Exception;
+	D load(InputStream in) throws Exception;
 
-    void save(OutputStream out, D data) throws Exception;
+	void save(OutputStream out, D data) throws Exception;
 
 }

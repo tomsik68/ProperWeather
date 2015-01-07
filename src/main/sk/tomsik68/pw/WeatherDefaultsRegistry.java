@@ -29,21 +29,19 @@ public class WeatherDefaultsRegistry extends BaseRegistry<WeatherDefaults> {
 			Validate.notNull(defaults);
 			Map<String, Object> sectionValues = defaults.serialize();
 			weatherSettings.createSection(weatherName, sectionValues);
-			
+
 			try {
 				weatherSettings.save(weatherSettingsFile);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-		WeatherDescription wd = new WeatherDescription(
-				weatherSettings.getConfigurationSection(weatherName));
+		WeatherDescription wd = new WeatherDescription(weatherSettings.getConfigurationSection(weatherName));
 
 		return wd;
 	}
 
-	public void generateDefaultWeathersConfig(File file,
-			Collection<String> weathers) {
+	public void generateDefaultWeathersConfig(File file, Collection<String> weathers) {
 		try {
 			file.createNewFile();
 			YamlConfiguration config = new YamlConfiguration();
@@ -59,19 +57,15 @@ public class WeatherDefaultsRegistry extends BaseRegistry<WeatherDefaults> {
 				allBiomes.add(biome.name().toLowerCase());
 			}
 			for (String weather : weathers) {
-				instance = ProperWeather.instance().getWeathers().get(weather)
-						.getDefaults();
+				instance = ProperWeather.instance().getWeathers().get(weather).getDefaults();
 				if (instance == null)
-					throw new NullPointerException("WeatherDefaults for `"
-							+ weather + "` not found.");
+					throw new NullPointerException("WeatherDefaults for `" + weather + "` not found.");
 				config.set(weather, instance.serialize());
 			}
 			config.save(file);
-			ProperWeather.log.fine("Weather description file created at: "
-					+ file.getAbsolutePath());
+			ProperWeather.log.fine("Weather description file created at: " + file.getAbsolutePath());
 		} catch (Exception e) {
-			ProperWeather.log
-					.severe("Weather description file creation error: ");
+			ProperWeather.log.severe("Weather description file creation error: ");
 			e.printStackTrace();
 		}
 	}
@@ -79,19 +73,14 @@ public class WeatherDefaultsRegistry extends BaseRegistry<WeatherDefaults> {
 	public void createDefaultsInFile(File dataFolder) {
 		if (weatherSettingsFile == null)
 			weatherSettingsFile = new File(dataFolder, "weather_settings.yml");
-		if (!weatherSettingsFile.exists()
-				|| (weatherSettingsFile.exists() && weatherSettingsFile
-						.length() == 0))
-			generateDefaultWeathersConfig(weatherSettingsFile,
-					elements.keySet());
-		weatherSettings = YamlConfiguration
-				.loadConfiguration(weatherSettingsFile);
+		if (!weatherSettingsFile.exists() || (weatherSettingsFile.exists() && weatherSettingsFile.length() == 0))
+			generateDefaultWeathersConfig(weatherSettingsFile, elements.keySet());
+		weatherSettings = YamlConfiguration.loadConfiguration(weatherSettingsFile);
 		elements.clear();
 		for (Entry<String, WeatherDefaults> entry : elements.entrySet()) {
 			String weatherName = entry.getKey();
 			WeatherDefaults wd = entry.getValue();
-			if (!weatherSettings.contains(weatherName)
-					|| !weatherSettings.isConfigurationSection(weatherName)) {
+			if (!weatherSettings.contains(weatherName) || !weatherSettings.isConfigurationSection(weatherName)) {
 				get(weatherName);
 				Validate.notNull(wd);
 

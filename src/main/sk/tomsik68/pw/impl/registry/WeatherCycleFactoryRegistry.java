@@ -23,29 +23,29 @@ import sk.tomsik68.pw.plugin.ProperWeather;
 
 public class WeatherCycleFactoryRegistry extends BaseRegistry<WeatherCycleFactory> {
 
-    @Override
-    public void load(File pluginFolder) throws IOException {
-        try {
-            registerClass("random", RandomWeatherCycle.class);
-            registerClass("stop", StoppedWeatherCycle.class);
-            File cyclesFile = new File(pluginFolder, "cycles.yml");
-            if (cyclesFile.exists()) {
-                FileConfiguration cfg = YamlConfiguration.loadConfiguration(cyclesFile);
-                WeatherCyclesConfig config = new WeatherCyclesConfig(cfg);
-                Map<String, YAMLWeatherCycleFactory> definedCycles = config.getWeatherCycles();
-                for (Entry<String, YAMLWeatherCycleFactory> entry : definedCycles.entrySet()) {
-                    register(entry.getKey(), entry.getValue());
-                }
-            }
-        } catch (NameAlreadyBoundException e) {
-            e.printStackTrace();
-        } catch (InvalidConfigurationException e) {
-            ProperWeather.log.severe("Invalid cycles.yml. Cause:");
-            e.printStackTrace();
-        }
-    }
+	@Override
+	public void load(File pluginFolder) throws IOException {
+		try {
+			registerClass("random", RandomWeatherCycle.class);
+			registerClass("stop", StoppedWeatherCycle.class);
+			File cyclesFile = new File(pluginFolder, "cycles.yml");
+			if (cyclesFile.exists()) {
+				FileConfiguration cfg = YamlConfiguration.loadConfiguration(cyclesFile);
+				WeatherCyclesConfig config = new WeatherCyclesConfig(cfg);
+				Map<String, YAMLWeatherCycleFactory> definedCycles = config.getWeatherCycles();
+				for (Entry<String, YAMLWeatherCycleFactory> entry : definedCycles.entrySet()) {
+					register(entry.getKey(), entry.getValue());
+				}
+			}
+		} catch (NameAlreadyBoundException e) {
+			e.printStackTrace();
+		} catch (InvalidConfigurationException e) {
+			ProperWeather.log.severe("Invalid cycles.yml. Cause:");
+			e.printStackTrace();
+		}
+	}
 
-    public void registerClass(String name, Class<? extends WeatherCycle> clazz) throws NameAlreadyBoundException {
-        register(name, new ClassWeatherCycleFactory(clazz, name));
-    }
+	public void registerClass(String name, Class<? extends WeatherCycle> clazz) throws NameAlreadyBoundException {
+		register(name, new ClassWeatherCycleFactory(clazz, name));
+	}
 }

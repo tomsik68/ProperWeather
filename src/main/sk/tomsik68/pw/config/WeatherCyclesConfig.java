@@ -10,18 +10,18 @@ import org.bukkit.configuration.file.FileConfiguration;
 import sk.tomsik68.pw.impl.factory.YAMLWeatherCycleFactory;
 
 public class WeatherCyclesConfig {
-    private FileConfiguration config;
+	private FileConfiguration config;
 
-    public WeatherCyclesConfig(FileConfiguration cfg) {
-        config = cfg;
-    }
+	public WeatherCyclesConfig(FileConfiguration cfg) {
+		config = cfg;
+	}
 
-    public Map<String, YAMLWeatherCycleFactory> getWeatherCycles() throws InvalidConfigurationException {
-        HashMap<String, YAMLWeatherCycleFactory> result = new HashMap<String, YAMLWeatherCycleFactory>();
-        Set<String> cyclesKeys = config.getKeys(false);
-        for (String cycleName : cyclesKeys) {
-            result.put(cycleName, new YAMLWeatherCycleFactory(config.getConfigurationSection(cycleName)));
-        }
-        return result;
-    }
+	public Map<String, YAMLWeatherCycleFactory> getWeatherCycles() throws InvalidConfigurationException {
+		HashMap<String, YAMLWeatherCycleFactory> result = new HashMap<String, YAMLWeatherCycleFactory>();
+		Set<String> cyclesKeys = config.getKeys(false);
+		for (String cycleName : cyclesKeys) {
+			result.put(cycleName, new YAMLWeatherCycleFactory(config.getConfigurationSection(cycleName)));
+		}
+		return result;
+	}
 }

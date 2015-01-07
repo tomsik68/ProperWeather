@@ -7,14 +7,14 @@ package sk.tomsik68.pw.region;
  * 
  */
 public enum RegionType {
-    /**
-     * Biome-specific regions
-     * 
-     */
-    BIOME,
-    /**
-     * Whole world is a region
-     * 
-     */
-    WORLD
+	/**
+	 * Biome-specific regions
+	 * 
+	 */
+	BIOME,
+	/**
+	 * Whole world is a region
+	 * 
+	 */
+	WORLD
 }

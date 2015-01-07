@@ -24,20 +24,17 @@ public class Util {
 		}
 	}
 
-	public static WeatherDefaults getWeatherDefaults(
-			Class<? extends Weather> wClazz) throws Exception {
+	public static WeatherDefaults getWeatherDefaults(Class<? extends Weather> wClazz) throws Exception {
 		Field[] fields = wClazz.getDeclaredFields();
 		for (Field f : fields) {
 			f.setAccessible(true);
 			if (f.getType().isAssignableFrom(WeatherDefaults.class)) {
 				Object obj = f.get(null);
-				Validate.notNull(obj, wClazz.getName()
-						+ " is invalid! WeatherDefaults are null!");
+				Validate.notNull(obj, wClazz.getName() + " is invalid! WeatherDefaults are null!");
 				return (WeatherDefaults) obj;
 			}
 		}
-		throw new InvalidObjectException(wClazz.getName()
-				+ " is invalid! No WeatherDefaults found!");
+		throw new InvalidObjectException(wClazz.getName() + " is invalid! No WeatherDefaults found!");
 	}
 
 	@Deprecated

@@ -30,8 +30,7 @@ public class Weather110IO implements IDataIO<SavedWeathersFormat> {
 	}
 
 	@Override
-	public void save(OutputStream out, SavedWeathersFormat data)
-			throws Exception {
+	public void save(OutputStream out, SavedWeathersFormat data) throws Exception {
 		DataOutputStream dos = new DataOutputStream(out);
 		dos.writeInt(data.count());
 		for (WeatherSaveEntry entry : data) {
