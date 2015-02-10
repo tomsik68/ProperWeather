@@ -43,13 +43,11 @@ public class PWPlayerListener implements Listener {
 		long lastCheck = player.getMetadata("pw.moveTimestamp").get(0).asLong();
 		// check if sufficient time has passed after last check
 		if (System.currentTimeMillis() - lastCheck >= PLAYER_MOVE_CHECK_DELAY) {
-
 			// check if player has metadata flag for lastRegion(PW can be
 			// started/stopped in various regions during game, which is what
 			// often leads to meta variable not being present...
 
 			if (player.hasMetadata("pw.lastRegion")) {
-				// TODO: Debug
 				Region region = weatherSystem.getRegionManager().getRegionAt(event.getTo());
 				// check if the region changed
 				if (region != null && player.getMetadata("pw.lastRegion").get(0).asInt() != region.getUID()) {
