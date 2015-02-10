@@ -100,6 +100,7 @@ public class WeatherController {
 		for (BaseWeatherElement elem : elements) {
 			elem.deactivate(this);
 		}
+		updateAll();
 	}
 
 	public void finish() {
@@ -115,6 +116,7 @@ public class WeatherController {
 		for (BaseWeatherElement elem : elements) {
 			elem.deactivate(this);
 		}
+		updateAll();
 	}
 
 	public void updateAll() {
@@ -130,6 +132,7 @@ public class WeatherController {
 
 	public void setSkyColor(int rgb) {
 		struct.skyColor = rgb;
+		updateAll();
 	}
 
 	public int getSkyColorRGB() {
@@ -138,6 +141,7 @@ public class WeatherController {
 
 	public void setFogColor(int rgb) {
 		struct.fogColor = rgb;
+		updateAll();
 	}
 
 	public int getFogColorRGB() {
@@ -150,14 +154,17 @@ public class WeatherController {
 
 	public void setSunSize(int pcent) {
 		struct.sunSize = pcent;
+		updateAll();
 	}
 
 	public void setStarFrequency(int pcent) {
 		struct.starFrequency = pcent;
+		updateAll();
 	}
 
 	public void setMoonSize(int pcent) {
 		struct.moonSize = pcent;
+		updateAll();
 	}
 
 	public int getMoonSize() {
@@ -182,10 +189,12 @@ public class WeatherController {
 
 	public void setCloudsColor(int rgb) {
 		struct.cloudsColor = rgb;
+		updateAll();
 	}
 
 	public void setCloudsHeight(int h) {
 		struct.cloudsHeight = h;
+		updateAll();
 	}
 
 	public int getCloudsHeight() {
@@ -194,6 +203,7 @@ public class WeatherController {
 
 	public void setRaining(boolean b) {
 		struct.rain = b;
+		updateAll();
 	}
 
 	public boolean isRaining() {
@@ -202,6 +212,7 @@ public class WeatherController {
 
 	public void setThundering(boolean b) {
 		struct.thundersAllowed = b;
+		updateAll();
 	}
 
 	public boolean isThunderingAllowed() {
@@ -218,6 +229,7 @@ public class WeatherController {
 
 	public void setSnowing(boolean snow) {
 		struct.snowing = snow;
+		updateAll();
 	}
 
 	public boolean isSnowing() {
@@ -226,18 +238,22 @@ public class WeatherController {
 
 	public void setMoon(boolean moon) {
 		struct.moonVisible = moon;
+		updateAll();
 	}
 
 	public void setSun(boolean sun) {
 		struct.sunVisible = sun;
+		updateAll();
 	}
 
 	public void setStars(boolean stars) {
 		struct.starsVisible = stars;
+		updateAll();
 	}
 
 	public void setClouds(boolean c) {
 		struct.cloudsVisible = c;
+		updateAll();
 	}
 
 	public void playerLeft(Player player) {
