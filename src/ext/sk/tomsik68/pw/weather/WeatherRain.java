@@ -1,7 +1,6 @@
 package sk.tomsik68.pw.weather;
 
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.material.Cauldron;
 
@@ -26,18 +25,15 @@ public class WeatherRain extends Weather {
 	@SuppressWarnings("deprecation")
 	public void onRandomTime() {
 		Region region = getController().getRegion();
-		for (Block block : region) {
-			if (block == null)
+		for (BlockState state : region) {
+			if (state == null)
 				continue;
 			// extinguish all fire
-			if (block.getType() == Material.FIRE) {
-				BlockState state = block.getState();
+			if (state.getType() == Material.FIRE) {
 				state.setType(Material.AIR);
 				region.updateBlockState(state);
 			} // add water to cauldrons
-			else if (block.getType() == Material.CAULDRON) {
-				BlockState state = block.getState();
-
+			else if (state.getType() == Material.CAULDRON) {
 				Cauldron data = (Cauldron) state.getData();
 				if (!data.isFull()) {
 					data.setData((byte) (data.getData() + 1));
