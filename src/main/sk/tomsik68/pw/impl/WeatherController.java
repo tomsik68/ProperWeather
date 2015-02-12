@@ -105,14 +105,14 @@ public class WeatherController {
 
 	public void finish() {
 		for (Player p : region.getPlayers()) {
-			backend.setRaining(p, p.getWorld().hasStorm());
+			backend.reset(p);
 
 			p.removeMetadata("pw.weather", ProperWeather.instance());
 			p.removeMetadata("pw.moveTimestamp", ProperWeather.instance());
 			p.removeMetadata("pw.lastRegion", ProperWeather.instance());
 		}
 		getRegion().getWorld();
-		setThundering(true);
+		getRegion().getWorld().setThundering(true);
 		for (BaseWeatherElement elem : elements) {
 			elem.deactivate(this);
 		}

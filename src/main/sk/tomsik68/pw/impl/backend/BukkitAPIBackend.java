@@ -19,7 +19,7 @@ public class BukkitAPIBackend implements IServerBackend {
 
 	@Override
 	public void reset(Player player) {
-
+		setRaining(player, player.getWorld().hasStorm());
 	}
 
 	@Override
