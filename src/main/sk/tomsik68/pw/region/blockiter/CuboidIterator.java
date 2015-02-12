@@ -4,10 +4,11 @@ import java.util.Iterator;
 
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 
 import sk.tomsik68.pw.region.CuboidRegion;
 
-public class CuboidIterator implements Iterator<Block> {
+public class CuboidIterator implements Iterator<BlockState> {
 	private final int minX, minZ, maxX, maxZ;
 	private int x, z;
 	private final World world;
@@ -18,6 +19,7 @@ public class CuboidIterator implements Iterator<Block> {
 		minZ = cuboidRegion.getMinZ();
 		maxX = cuboidRegion.getMaxX();
 		maxZ = cuboidRegion.getMaxZ();
+		x = minX;
 		z = minZ;
 	}
 
@@ -27,13 +29,13 @@ public class CuboidIterator implements Iterator<Block> {
 	}
 
 	@Override
-	public Block next() {
+	public BlockState next() {
 		++x;
 		if (x == maxX) {
 			x = minX;
 			z++;
 		}
-		return world.getBlockAt(x, world.getHighestBlockYAt(x, z), z);
+		return world.getBlockAt(x, world.getHighestBlockYAt(x, z), z).getState();
 	}
 
 	@Override

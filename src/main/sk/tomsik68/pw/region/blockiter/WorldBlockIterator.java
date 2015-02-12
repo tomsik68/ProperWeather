@@ -3,30 +3,31 @@ package sk.tomsik68.pw.region.blockiter;
 import java.util.Iterator;
 
 import org.bukkit.Chunk;
+import org.bukkit.ChunkSnapshot;
 import org.bukkit.World;
-import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 
 import sk.tomsik68.pw.region.WorldRegion;
 
-public class WorldBlockIterator implements Iterator<Block> {
+public class WorldBlockIterator implements Iterator<BlockState> {
 	private World world;
 	private int x = 0;
 	private int z = 0;
 	private int chunkID = 0;
-	private Chunk chunk;
+	private ChunkSnapshot currentChunk;
 	private Chunk[] chunks;
 
 	public WorldBlockIterator(WorldRegion region) {
 		this.world = region.getWorld();
 		chunks = world.getLoadedChunks();
-		chunk = chunks[0];
+		currentChunk = chunks[0].getChunkSnapshot();
 	}
 
 	public boolean hasNext() {
 		return this.chunkID < this.chunks.length;
 	}
 
-	public Block next() {
+	public BlockState next() {
 		this.x += 1;
 		if (this.x == 16) {
 			this.x = 0;
@@ -37,11 +38,11 @@ public class WorldBlockIterator implements Iterator<Block> {
 			this.z = 0;
 			this.chunkID += 1;
 			if (this.chunks.length > this.chunkID)
-				this.chunk = this.chunks[this.chunkID];
+				this.currentChunk = this.chunks[this.chunkID].getChunkSnapshot();
 			else
 				this.chunkID = (this.chunks.length + 1);
 		}
-		return this.chunk.getBlock(this.x, this.world.getHighestBlockYAt(this.x + 16 * this.chunk.getX(), this.z + 16 * this.chunk.getZ()), this.z);
+		return world.getHighestBlockAt(currentChunk.getX() * 16 + x, currentChunk.getZ() * 16 + z).getState();
 	}
 
 	public void remove() {

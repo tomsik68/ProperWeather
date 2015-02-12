@@ -75,7 +75,7 @@ public abstract class BaseRegion implements Region {
 		return Bukkit.getWorld(world) != null;
 	}
 
-	public abstract Iterator<Block> iterator();
+	public abstract Iterator<BlockState> iterator();
 
 	public synchronized void update() {
 		synchronized (changedBlocks) {

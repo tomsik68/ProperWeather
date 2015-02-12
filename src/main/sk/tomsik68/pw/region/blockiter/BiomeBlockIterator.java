@@ -5,12 +5,12 @@ import java.util.List;
 
 import org.bukkit.World;
 import org.bukkit.block.Biome;
-import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 
 import sk.tomsik68.pw.plugin.ProperWeather;
 import sk.tomsik68.pw.region.BiomeRegion;
 
-public class BiomeBlockIterator implements Iterator<Block> {
+public class BiomeBlockIterator implements Iterator<BlockState> {
 	private World world;
 	private Biome biome;
 	private List<Long> blocks;
@@ -35,11 +35,11 @@ public class BiomeBlockIterator implements Iterator<Block> {
 		return blocks != null && current < blocks.size();
 	}
 
-	public Block next() {
+	public BlockState next() {
 		long location = blocks.get(current);
 		int x = decompress(location)[0];
 		int z = decompress(location)[1];
-		Block result = world.getHighestBlockAt(x, z);
+		BlockState result = world.getHighestBlockAt(x, z).getState();
 		current++;
 		return result;
 	}

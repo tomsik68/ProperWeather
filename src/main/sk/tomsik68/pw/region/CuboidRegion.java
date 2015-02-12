@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 
 import sk.tomsik68.pw.api.RegionManager;
@@ -30,7 +31,7 @@ public class CuboidRegion extends BaseRegion {
 	}
 
 	@Override
-	public Iterator<Block> iterator() {
+	public Iterator<BlockState> iterator() {
 		return new CuboidIterator(this);
 	}
 

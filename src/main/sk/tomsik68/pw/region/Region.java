@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -20,7 +19,7 @@ import sk.tomsik68.pw.api.RegionManager;
  * @author Tomsik68
  * 
  */
-public interface Region extends Comparable<Region>, Iterable<Block>, Externalizable {
+public interface Region extends Comparable<Region>, Iterable<BlockState>, Externalizable {
 	/**
 	 * 
 	 * @return All players in the region

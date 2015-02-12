@@ -5,7 +5,8 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+
 import sk.tomsik68.pw.region.blockiter.WorldBlockIterator;
 
 public class WorldRegion extends BaseRegion {
@@ -25,7 +26,7 @@ public class WorldRegion extends BaseRegion {
 		return location.getWorld().getUID().equals(getWorld().getUID());
 	}
 
-	public Iterator<Block> iterator() {
+	public Iterator<BlockState> iterator() {
 		return new WorldBlockIterator(this);
 	}
 

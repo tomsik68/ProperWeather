@@ -9,8 +9,8 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Biome;
-import org.bukkit.block.Block;
-import sk.tomsik68.pw.api.RegionManager;
+import org.bukkit.block.BlockState;
+
 import sk.tomsik68.pw.region.blockiter.BiomeBlockIterator;
 
 public class BiomeRegion extends BaseRegion {
@@ -30,7 +30,7 @@ public class BiomeRegion extends BaseRegion {
 		return (location.getBlock().getBiome().equals(biome)) && (location.getWorld().getUID().equals(world));
 	}
 
-	public Iterator<Block> iterator() {
+	public Iterator<BlockState> iterator() {
 		return new BiomeBlockIterator(this);
 	}
 
