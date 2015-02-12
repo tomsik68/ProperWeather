@@ -207,13 +207,15 @@ public class DefaultWeatherSystem implements WeatherSystem {
 	@Override
 	public void unHook(String worldName) {
 		List<Integer> regions = regionManager.getRegions(Bukkit.getWorld(worldName));
-		for (int r : regions) {
-			Region region = regionManager.getRegion(r);
-			getWeatherController(region).finish();
-			controllers.remove(r);
-			weatherSituations.remove(r);
+		if (regions != null) {
+			for (int r : regions) {
+				Region region = regionManager.getRegion(r);
+				getWeatherController(region).finish();
+				controllers.remove(r);
+				weatherSituations.remove(r);
+			}
+			regionManager.unHook(Bukkit.getWorld(worldName));
 		}
-		regionManager.unHook(Bukkit.getWorld(worldName));
 	}
 
 	@Override

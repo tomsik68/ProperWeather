@@ -102,9 +102,9 @@ public class SimpleRegionManager implements RegionManager {
 		int j = (arrayOfInteger1 = toRemove).length;
 		for (int i = 0; i < j; i++) {
 			int r = arrayOfInteger1[i].intValue();
-			Region region = getRegion(Integer.valueOf(r));
+			Region region = getRegion(r);
 			if (region.getWorld().getUID().equals(world.getUID())) {
-				regions.remove(Integer.valueOf(region.getUID()));
+				regions.remove(region.getUID());
 			}
 		}
 		worldRegions.remove(world.getUID());
