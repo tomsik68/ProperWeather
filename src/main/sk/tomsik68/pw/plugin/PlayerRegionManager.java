@@ -2,10 +2,12 @@ package sk.tomsik68.pw.plugin;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.entity.Player;
+import org.bukkit.metadata.MetadataValue;
 
 /**
  * This class tracks players' position. It's updated from player listener and is
@@ -41,9 +43,20 @@ public class PlayerRegionManager {
 		playerRegions.remove(player.getUniqueId());
 	}
 
+	private MetadataValue getMetadata(Player player, String key) {
+		MetadataValue result = null;
+		List<MetadataValue> values = player.getMetadata(key);
+		for (MetadataValue value : values) {
+			if (value.getOwningPlugin().equals(ProperWeather.instance())) {
+				result = value;
+			}
+		}
+		return result;
+	}
+	
 	void onQuit(Player player) {
 		if (player.hasMetadata("pw.lastRegion")) {
-			int region = player.getMetadata("pw.lastRegion").get(0).asInt();
+			int region = getMetadata(player, "pw.lastRegion").asInt();
 			removePlayerFromRegion(region, player);
 		}
 	}
