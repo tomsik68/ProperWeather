@@ -154,8 +154,12 @@ public class DefaultWeatherSystem implements WeatherSystem {
 	public WeatherController getWeatherController(int regionId) {
 		WeatherController wc;
 		if (!controllers.containsKey(Integer.valueOf(regionId))) {
-			wc = new WeatherController(regionManager.getRegion(regionId), backend);
-			controllers.put(Integer.valueOf(regionId), wc);
+			Region region = regionManager.getRegion(regionId);
+			if(region != null){
+				wc = new WeatherController(regionManager.getRegion(regionId), backend);
+				controllers.put(Integer.valueOf(regionId), wc);
+			} else
+				return null;
 		} else
 			wc = controllers.get(Integer.valueOf(regionId));
 		return wc;
