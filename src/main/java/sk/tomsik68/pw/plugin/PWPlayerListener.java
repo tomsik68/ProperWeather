@@ -13,6 +13,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 
 import sk.tomsik68.pw.api.WeatherSystem;
+import sk.tomsik68.pw.impl.WeatherController;
 import sk.tomsik68.pw.region.Region;
 
 public class PWPlayerListener implements Listener {
@@ -26,10 +27,14 @@ public class PWPlayerListener implements Listener {
 	}
 
 	public void onPlayerChangedRegion(Player player) {
-		int region = getOrCreateMetaData(player, "pw.lastRegion", -1).asInt();
-		if (weatherSystem.getRegionManager().getRegion(region) != null) {
-			weatherSystem.getWeatherController(region).update(player);
-			playerRegions.playerChangedRegion(player);
+		MetadataValue lastRegionValue = getMetadata(player, "pw.lastRegion");
+		if (lastRegionValue != null) {
+			int region = lastRegionValue.asInt();
+			WeatherController wc = weatherSystem.getWeatherController(region);
+			if(wc != null) {
+				wc.update(player);
+				playerRegions.playerChangedRegion(player);
+			}
 		}
 	}
 
