@@ -1,0 +1,11 @@
+# ProperWeather default configuration file
+# PW version: ProperWeather v1.1.7b
+default-permissions: OP
+notify-mv: true
+colors: green;red
+translation-file: plugins/ProperWeather/en.txt
+use-biome-weather: false
+region-type:
+  world: WORLD
+  world_nether: WORLD
+  world_the_end: WORLD
