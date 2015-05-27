@@ -43,6 +43,7 @@ public class WeatherStatusStructure {
 		sb.append(cloudsVisible ? "1" : "0");
 		sb.append(sunVisible ? "1" : "0");
 		sb.append(starsVisible ? "1" : "0");
+		sb.append(rain ? "1" : "0");
 		return sb.toString();
 	}
 
