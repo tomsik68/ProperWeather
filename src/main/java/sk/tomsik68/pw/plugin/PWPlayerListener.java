@@ -56,11 +56,15 @@ public class PWPlayerListener implements Listener {
 			if (player.hasMetadata("pw.lastRegion")) {
 				Region region = weatherSystem.getRegionManager().getRegionAt(event.getTo());
 				// check if the region changed
-				if (region != null && getMetadata(player, "pw.lastRegion").asInt() != region.getUID()) {
-					// save the new region in metadata
-					player.setMetadata("pw.lastRegion", new FixedMetadataValue(ProperWeather.instance(), region.getUID()));
-					// call onPlayerChangedRegion
-					onPlayerChangedRegion(player);
+				if (region != null) {
+					WeatherController wc = weatherSystem.getWeatherController(region);
+					wc.update(player);
+					if(getMetadata(player, "pw.lastRegion").asInt() != region.getUID()) {
+						// save the new region in metadata
+						player.setMetadata("pw.lastRegion", new FixedMetadataValue(ProperWeather.instance(), region.getUID()));
+						// call onPlayerChangedRegion
+						onPlayerChangedRegion(player);
+					}
 				} else if (region == null && getMetadata(player, "pw.lastRegion").asInt() != -1) {
 					playerRegions.onQuit(player);
 				}
