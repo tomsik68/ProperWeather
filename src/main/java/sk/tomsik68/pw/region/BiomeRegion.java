@@ -11,9 +11,7 @@ import org.bukkit.Location;
 import org.bukkit.block.Biome;
 import org.bukkit.block.BlockState;
 
-import sk.tomsik68.pw.region.blockiter.BiomeBlockIterator;
-
-public class BiomeRegion extends BaseRegion {
+final class BiomeRegion extends BaseRegion {
 	private static final long serialVersionUID = 1623708448177398641L;
 	private Biome biome;
 

@@ -7,7 +7,7 @@ import org.bukkit.World;
 
 import sk.tomsik68.pw.api.RegionManager;
 
-public class WorldRegionDivider extends RegionDivider {
+public final class WorldRegionDivider extends RegionDivider {
 
 	public WorldRegionDivider(RegionManager simpleRegionManager) {
 		super(simpleRegionManager);

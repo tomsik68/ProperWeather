@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 import sk.tomsik68.pw.api.Weather;
 import sk.tomsik68.pw.api.WeatherDefaults;
 
-public class Util {
+public final class Util {
 
 	public static Iterable<Player> getPlayers(World world) {
 		synchronized (world) {

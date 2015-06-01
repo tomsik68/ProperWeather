@@ -27,7 +27,7 @@ import sk.tomsik68.pw.region.RegionDivider;
 import sk.tomsik68.pw.region.RegionType;
 import sk.tomsik68.pw.region.WorldRegionDivider;
 
-public class SimpleRegionManager implements RegionManager {
+public final class SimpleRegionManager implements RegionManager {
 	private final Map<Integer, Region> regions = new HashMap<Integer, Region>();
 	private final Map<UUID, Integer[]> worldRegions = new HashMap<UUID, Integer[]>();
 	private static final Map<RegionType, RegionDivider> dividers = new HashMap<RegionType, RegionDivider>();

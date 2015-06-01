@@ -18,7 +18,7 @@ import sk.tomsik68.pw.api.registry.BaseRegistry;
 import sk.tomsik68.pw.config.WeatherDescription;
 import sk.tomsik68.pw.plugin.ProperWeather;
 
-public class WeatherDefaultsRegistry extends BaseRegistry<WeatherDefaults> {
+public final class WeatherDefaultsRegistry extends BaseRegistry<WeatherDefaults> {
 	private FileConfiguration weatherSettings;
 	private File weatherSettingsFile;
 

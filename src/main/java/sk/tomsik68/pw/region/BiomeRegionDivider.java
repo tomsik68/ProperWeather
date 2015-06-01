@@ -8,7 +8,7 @@ import org.bukkit.block.Biome;
 
 import sk.tomsik68.pw.api.RegionManager;
 
-public class BiomeRegionDivider extends RegionDivider {
+public final class BiomeRegionDivider extends RegionDivider {
 
 	public BiomeRegionDivider(RegionManager regionManager) {
 		super(regionManager);

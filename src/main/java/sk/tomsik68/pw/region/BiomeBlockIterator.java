@@ -1,4 +1,4 @@
-package sk.tomsik68.pw.region.blockiter;
+package sk.tomsik68.pw.region;
 
 import java.util.Iterator;
 import java.util.List;
@@ -10,7 +10,7 @@ import org.bukkit.block.BlockState;
 import sk.tomsik68.pw.plugin.ProperWeather;
 import sk.tomsik68.pw.region.BiomeRegion;
 
-public class BiomeBlockIterator implements Iterator<BlockState> {
+final class BiomeBlockIterator implements Iterator<BlockState> {
 	private World world;
 	private Biome biome;
 	private List<Long> blocks;

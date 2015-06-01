@@ -6,7 +6,7 @@ import org.bukkit.World;
 
 import sk.tomsik68.pw.api.RegionManager;
 
-public class CuboidRegionDivider extends RegionDivider {
+final class CuboidRegionDivider extends RegionDivider {
 
 	public CuboidRegionDivider(RegionManager regionManager) {
 		super(regionManager);

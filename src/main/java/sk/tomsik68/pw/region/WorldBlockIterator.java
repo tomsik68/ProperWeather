@@ -1,4 +1,4 @@
-package sk.tomsik68.pw.region.blockiter;
+package sk.tomsik68.pw.region;
 
 import java.util.Iterator;
 
@@ -7,9 +7,7 @@ import org.bukkit.ChunkSnapshot;
 import org.bukkit.World;
 import org.bukkit.block.BlockState;
 
-import sk.tomsik68.pw.region.WorldRegion;
-
-public class WorldBlockIterator implements Iterator<BlockState> {
+final class WorldBlockIterator implements Iterator<BlockState> {
 	private World world;
 	private int x = 0;
 	private int z = 0;

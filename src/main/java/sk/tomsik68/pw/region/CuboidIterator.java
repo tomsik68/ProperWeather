@@ -1,4 +1,4 @@
-package sk.tomsik68.pw.region.blockiter;
+package sk.tomsik68.pw.region;
 
 import java.util.Iterator;
 
@@ -8,7 +8,7 @@ import org.bukkit.block.BlockState;
 
 import sk.tomsik68.pw.region.CuboidRegion;
 
-public class CuboidIterator implements Iterator<BlockState> {
+final class CuboidIterator implements Iterator<BlockState> {
 	private final int minX, minZ, maxX, maxZ;
 	private int x, z;
 	private final World world;

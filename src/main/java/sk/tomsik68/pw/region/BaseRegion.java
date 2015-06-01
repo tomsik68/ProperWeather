@@ -24,7 +24,7 @@ import sk.tomsik68.pw.plugin.ProjectileManager;
 import sk.tomsik68.pw.plugin.ProperWeather;
 import sk.tomsik68.pw.struct.SpawnListEntry;
 
-public abstract class BaseRegion implements Region {
+abstract class BaseRegion implements Region {
 	private static final long serialVersionUID = 3917523437018474830L;
 	protected UUID world;
 	protected int u = -1;

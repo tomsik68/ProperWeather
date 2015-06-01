@@ -7,14 +7,9 @@ import java.util.Iterator;
 import java.util.UUID;
 
 import org.bukkit.Location;
-import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
-import org.bukkit.entity.Player;
 
-import sk.tomsik68.pw.api.RegionManager;
-import sk.tomsik68.pw.region.blockiter.CuboidIterator;
-
-public class CuboidRegion extends BaseRegion {
+final class CuboidRegion extends BaseRegion {
 	private int minX, minZ, maxX, maxZ;
 
 	public CuboidRegion() {

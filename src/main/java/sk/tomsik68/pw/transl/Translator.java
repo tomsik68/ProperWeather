@@ -10,7 +10,7 @@ import java.util.Properties;
 
 import sk.tomsik68.pw.plugin.ProperWeather;
 
-public class Translator {
+public final class Translator {
 	private final Properties file, defaultFile;
 
 	private static Translator instance;

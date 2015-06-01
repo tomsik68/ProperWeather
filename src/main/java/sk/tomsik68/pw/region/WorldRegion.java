@@ -7,9 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.BlockState;
 
-import sk.tomsik68.pw.region.blockiter.WorldBlockIterator;
-
-public class WorldRegion extends BaseRegion {
+final class WorldRegion extends BaseRegion {
 	private static final long serialVersionUID = 4642185874482764224L;
 
 	public WorldRegion() {

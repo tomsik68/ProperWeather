@@ -2,7 +2,7 @@ package sk.tomsik68.pw.utils;
 
 import java.util.Iterator;
 
-class SynchronizedReadOnlyListIterator<E> implements Iterator<E> {
+final class SynchronizedReadOnlyListIterator<E> implements Iterator<E> {
 	private final SynchronizedReadOnlyListWrapper<E> list;
 	private int i;
 

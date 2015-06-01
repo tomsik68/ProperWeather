@@ -9,7 +9,6 @@ import org.bukkit.plugin.RegisteredListener;
 import sk.tomsik68.pw.impl.WeatherController;
 import sk.tomsik68.pw.plugin.ProperWeather;
 import sk.tomsik68.pw.region.Region;
-import sk.tomsik68.pw.region.RegionalEventExecutor;
 
 /**
  * Represents a weather element like wind. It'll soon be extended to plugins.

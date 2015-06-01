@@ -10,7 +10,7 @@ import sk.tomsik68.pw.config.WeatherDescription;
 import sk.tomsik68.pw.impl.BasicWeatherDefaults;
 import sk.tomsik68.pw.region.Region;
 
-public class WeatherRain extends Weather {
+public final class WeatherRain extends Weather {
 
 	public static final WeatherDefaults def = new BasicWeatherDefaults(50);
 

@@ -6,7 +6,7 @@ import org.bukkit.util.Vector;
 
 import sk.tomsik68.pw.api.CustomizeEntityTask;
 
-public class SpawnListEntry {
+public final class SpawnListEntry {
 	private final Location location;
 	private final Class<? extends Entity> entityClass;
 	private final Vector velocity;

@@ -3,7 +3,7 @@ package sk.tomsik68.pw.utils;
 import java.util.Iterator;
 import java.util.List;
 
-class SynchronizedReadOnlyListWrapper<E> implements Iterable<E> {
+final class SynchronizedReadOnlyListWrapper<E> implements Iterable<E> {
 	private List<E> list;
 
 	public SynchronizedReadOnlyListWrapper(List<E> actualList) {
@@ -15,7 +15,7 @@ class SynchronizedReadOnlyListWrapper<E> implements Iterable<E> {
 		return new SynchronizedReadOnlyListIterator<E>(this);
 	}
 
-	public E nth(int n) {
+	E nth(int n) {
 		return list.get(n);
 	}
 
