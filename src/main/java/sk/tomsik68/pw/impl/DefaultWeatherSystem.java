@@ -10,6 +10,7 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 
+import org.bukkit.scheduler.BukkitScheduler;
 import sk.tomsik68.pw.api.IServerBackend;
 import sk.tomsik68.pw.api.IWeatherData;
 import sk.tomsik68.pw.api.RegionManager;
@@ -29,11 +30,13 @@ public class DefaultWeatherSystem implements WeatherSystem {
 	private final WeatherFactoryRegistry weathers;
 	private final IServerBackend backend;
 	private final WeatherCycleFactoryRegistry cycles;
+	private final BukkitScheduler scheduler;
 	private WeatherDataFile dataFile;
 	private final Object changeLock = new Object();
 	private Map<Integer, WeatherController> controllers;
 
-	public DefaultWeatherSystem(WeatherFactoryRegistry weathers, WeatherCycleFactoryRegistry cycles, IServerBackend backend) {
+
+	public DefaultWeatherSystem(WeatherFactoryRegistry weathers, WeatherCycleFactoryRegistry cycles, BukkitScheduler scheduler, IServerBackend backend) {
 		/*
 		 * weatherData = new HashMap<Integer, IWeatherData>();
 		 */
@@ -43,6 +46,7 @@ public class DefaultWeatherSystem implements WeatherSystem {
 		this.weathers = weathers;
 		this.backend = backend;
 		this.cycles = cycles;
+		this.scheduler = scheduler;
 	}
 
 	public void runWeather(String worldName) {
@@ -97,7 +101,6 @@ public class DefaultWeatherSystem implements WeatherSystem {
 				Weather weather = weathers.get(startWeather).create(r);
 				wd.setCurrentWeather(weather);
 				weather.initWeather();
-
 			}
 			weatherSituations.updateSituation(wd);
 		}
@@ -138,7 +141,14 @@ public class DefaultWeatherSystem implements WeatherSystem {
 					e.printStackTrace();
 				}
 				if (wd.getCurrentWeather() != null && (rand.nextInt(100) <= wd.getCurrentWeather().getRandomTimeProbability())) {
-					wd.getCurrentWeather().onRandomTime();
+					final Weather weather = wd.getCurrentWeather();
+					// random time events will be executed synchronously
+					scheduler.runTask(ProperWeather.instance(), new Runnable() {
+						@Override
+						public void run() {
+							weather.onRandomTime();
+						}
+					});
 				}
 			} else {
 				ProperWeather.log.severe("Alert: NULL WeatherData!");

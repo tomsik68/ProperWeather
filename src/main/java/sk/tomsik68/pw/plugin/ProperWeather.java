@@ -120,7 +120,7 @@ public class ProperWeather extends JavaPlugin implements Listener {
 		permissions = config.getPerms();
 		color = config.getColorTheme()[0];
 		factColor = config.getColorTheme()[1];
-		weatherSystem = new DefaultWeatherSystem(weatherFactoryRegistry, weatherCycleFactoryRegistry, backend);
+		weatherSystem = new DefaultWeatherSystem(weatherFactoryRegistry, weatherCycleFactoryRegistry, getServer().getScheduler(), backend);
 
 		weatherListener = new PWWeatherListener(weatherSystem);
 		playerListener = new PWPlayerListener(weatherSystem, ((SimpleRegionManager) weatherSystem.getRegionManager()).getPlayerRegionManager());
