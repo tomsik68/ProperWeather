@@ -7,7 +7,7 @@ import org.bukkit.configuration.ConfigurationSection;
 
 import sk.tomsik68.pw.plugin.ProperWeather;
 
-public class WeatherDefinition {
+public final class WeatherDefinition {
 	private final ConfigurationSection cs;
 
 	public WeatherDefinition(ConfigurationSection s) {

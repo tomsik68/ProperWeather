@@ -8,7 +8,7 @@ import sk.tomsik68.pw.config.WeatherDefinition;
 import sk.tomsik68.pw.config.WeatherDescription;
 import sk.tomsik68.pw.weather.WeatherDefined;
 
-public class DefinedWeatherFactory implements WeatherFactory<WeatherDefined> {
+public final class DefinedWeatherFactory implements WeatherFactory<WeatherDefined> {
 	private final WeatherDefinition defi;
 	private final WeatherDescription desc;
 

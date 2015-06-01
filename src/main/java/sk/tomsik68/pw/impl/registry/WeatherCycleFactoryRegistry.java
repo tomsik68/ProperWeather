@@ -21,7 +21,7 @@ import sk.tomsik68.pw.impl.factory.WeatherCycleFactory;
 import sk.tomsik68.pw.impl.factory.YAMLWeatherCycleFactory;
 import sk.tomsik68.pw.plugin.ProperWeather;
 
-public class WeatherCycleFactoryRegistry extends BaseRegistry<WeatherCycleFactory> {
+public final class WeatherCycleFactoryRegistry extends BaseRegistry<WeatherCycleFactory> {
 
 	@Override
 	public void load(File pluginFolder) throws IOException {

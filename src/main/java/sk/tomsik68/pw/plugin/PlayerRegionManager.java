@@ -16,7 +16,7 @@ import org.bukkit.metadata.MetadataValue;
  * @author Tomsik68
  *
  */
-public class PlayerRegionManager {
+public final class PlayerRegionManager {
 	private HashMap<Integer, Set<UUID>> playersInRegion = new HashMap<>();
 	private HashMap<UUID, Integer> playerRegions = new HashMap<>();
 

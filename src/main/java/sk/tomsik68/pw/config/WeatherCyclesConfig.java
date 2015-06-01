@@ -9,7 +9,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 import sk.tomsik68.pw.impl.factory.YAMLWeatherCycleFactory;
 
-public class WeatherCyclesConfig {
+public final class WeatherCyclesConfig {
 	private FileConfiguration config;
 
 	public WeatherCyclesConfig(FileConfiguration cfg) {

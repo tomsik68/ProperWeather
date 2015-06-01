@@ -18,7 +18,7 @@ import sk.tomsik68.pw.plugin.ProperWeather;
 import sk.tomsik68.pw.region.Region;
 import sk.tomsik68.pw.struct.WeatherStatusStructure;
 
-public class WeatherController {
+public final class WeatherController {
 	private WeatherStatusStructure struct = new WeatherStatusStructure();
 
 	protected final Region region;

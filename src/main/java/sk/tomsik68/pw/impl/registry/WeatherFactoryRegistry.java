@@ -22,7 +22,7 @@ import sk.tomsik68.pw.weather.WeatherClear;
 import sk.tomsik68.pw.weather.WeatherRain;
 import sk.tomsik68.pw.weather.WeatherStorm;
 
-public class WeatherFactoryRegistry extends BaseRegistry<WeatherFactory<?>> {
+public final class WeatherFactoryRegistry extends BaseRegistry<WeatherFactory<?>> {
 	private final WeatherDefaultsRegistry wim;
 
 	public WeatherFactoryRegistry(WeatherDefaultsRegistry wim) {

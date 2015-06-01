@@ -9,7 +9,7 @@ import sk.tomsik68.pw.api.registry.BaseRegistry;
 import sk.tomsik68.pw.impl.WeatherElementFactory;
 import sk.tomsik68.pw.weather.element.Wind;
 
-public class WeatherElementFactoryRegistry extends BaseRegistry<WeatherElementFactory<?>> {
+public final class WeatherElementFactoryRegistry extends BaseRegistry<WeatherElementFactory<?>> {
 	public WeatherElementFactoryRegistry() {
 
 	}

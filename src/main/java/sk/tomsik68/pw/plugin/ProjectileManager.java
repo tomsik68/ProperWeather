@@ -11,7 +11,7 @@ import org.bukkit.entity.Entity;
  * @author Tomsik68
  * 
  */
-public class ProjectileManager {
+public final class ProjectileManager {
 	private static ArrayList<Entity> entities = new ArrayList<Entity>();
 	public static int cacheSize = 468;
 

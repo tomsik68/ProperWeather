@@ -13,7 +13,7 @@ import sk.tomsik68.pw.api.WeatherSystem;
 import sk.tomsik68.pw.config.EOrder;
 import sk.tomsik68.pw.plugin.ProperWeather;
 
-public class YAMLWeatherCycle extends WeatherCycle {
+public final class YAMLWeatherCycle extends WeatherCycle {
 	private final List<WeatherSpec> specs;
 	private int last = 0;
 	private final EOrder order;

@@ -8,7 +8,7 @@ import sk.tomsik68.pw.api.IWeatherData;
 import sk.tomsik68.pw.api.WeatherCycle;
 import sk.tomsik68.pw.api.WeatherSystem;
 
-public class StoppedWeatherCycle extends WeatherCycle {
+public final class StoppedWeatherCycle extends WeatherCycle {
 
 	public StoppedWeatherCycle(WeatherSystem ws, String name) {
 		super(ws, name);

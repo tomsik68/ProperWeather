@@ -11,7 +11,7 @@ import sk.tomsik68.pw.api.WeatherSystem;
 import sk.tomsik68.pw.plugin.ProperWeather;
 import sk.tomsik68.pw.region.RegionType;
 
-public class PW_AC {
+public final class PW_AC {
 	private AutoCommandInstance autoCommand;
 	private PWCommandHandler commandHandler;
 

@@ -2,7 +2,7 @@ package sk.tomsik68.pw.impl;
 
 import java.util.Map;
 
-public class WeatherSpec {
+public final class WeatherSpec {
 	private final Map<String, Object> map;
 
 	public WeatherSpec(Map<String, Object> map) {

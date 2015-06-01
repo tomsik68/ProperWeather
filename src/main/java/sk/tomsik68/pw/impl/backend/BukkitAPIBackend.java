@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 
 import sk.tomsik68.pw.api.IServerBackend;
 
-public class BukkitAPIBackend implements IServerBackend {
+public final class BukkitAPIBackend implements IServerBackend {
 
 	@Override
 	public void setRaining(Player player, boolean raining) {

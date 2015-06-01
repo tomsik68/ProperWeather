@@ -15,7 +15,7 @@ import sk.tomsik68.permsguru.EPermissions;
 import sk.tomsik68.pw.plugin.ProperWeather;
 import sk.tomsik68.pw.region.RegionType;
 
-public class ConfigFile {
+public final class ConfigFile {
 	private static final String NODE_PERMISSION_SYSTEM = "default-permissions";
 	private static final String NODE_COLOR_THEME = "colors";
 	private static final String NODE_NOTIFY_MV = "notify-mv";

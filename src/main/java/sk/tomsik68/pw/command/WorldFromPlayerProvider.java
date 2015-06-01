@@ -6,7 +6,7 @@ import sk.tomsik68.autocommand.context.CommandExecutionContext;
 import sk.tomsik68.autocommand.context.ContextParameterProvider;
 import sk.tomsik68.autocommand.context.LocatedCommandExecutionContext;
 
-public class WorldFromPlayerProvider implements ContextParameterProvider {
+final class WorldFromPlayerProvider implements ContextParameterProvider {
 
 	@Override
 	public boolean canProvide(CommandExecutionContext arg0) {

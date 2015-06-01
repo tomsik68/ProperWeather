@@ -12,7 +12,7 @@ import sk.tomsik68.pw.api.WeatherCycle;
 import sk.tomsik68.pw.api.WeatherSystem;
 import sk.tomsik68.pw.plugin.ProperWeather;
 
-public class RandomWeatherCycle extends WeatherCycle {
+public final class RandomWeatherCycle extends WeatherCycle {
 	private static final Random rand = new Random();
 
 	public RandomWeatherCycle(WeatherSystem ws, String name) {

@@ -8,7 +8,7 @@ import org.bukkit.event.weather.WeatherChangeEvent;
 
 import sk.tomsik68.pw.api.WeatherSystem;
 
-public class PWWeatherListener implements Listener {
+public final class PWWeatherListener implements Listener {
 	private final WeatherSystem weatherSystem;
 
 	public PWWeatherListener(WeatherSystem ws) {

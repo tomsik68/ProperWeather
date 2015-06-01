@@ -5,7 +5,7 @@ import java.util.Map;
 
 import sk.tomsik68.pw.api.WeatherDefaults;
 
-public class BasicWeatherDefaults implements WeatherDefaults {
+public final class BasicWeatherDefaults implements WeatherDefaults {
 	private final int randTimeProbability;
 	private final String[] activeElements;
 	private HashMap<String, Object> customNodes = new HashMap<String, Object>();

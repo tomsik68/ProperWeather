@@ -13,7 +13,7 @@ import sk.tomsik68.pw.config.EOrder;
 import sk.tomsik68.pw.impl.WeatherSpec;
 import sk.tomsik68.pw.impl.YAMLWeatherCycle;
 
-public class YAMLWeatherCycleFactory extends WeatherCycleFactory {
+public final class YAMLWeatherCycleFactory extends WeatherCycleFactory {
 	private final List<WeatherSpec> weatherSpecs;
 	private final String name;
 	private EOrder order;

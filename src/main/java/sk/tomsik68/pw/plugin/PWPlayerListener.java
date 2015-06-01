@@ -16,7 +16,7 @@ import sk.tomsik68.pw.api.WeatherSystem;
 import sk.tomsik68.pw.impl.WeatherController;
 import sk.tomsik68.pw.region.Region;
 
-public class PWPlayerListener implements Listener {
+public final class PWPlayerListener implements Listener {
 	private final WeatherSystem weatherSystem;
 	private final int PLAYER_MOVE_CHECK_DELAY = 3000;// ms
 	private final PlayerRegionManager playerRegions;

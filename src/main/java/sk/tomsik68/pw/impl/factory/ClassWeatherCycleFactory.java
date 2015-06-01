@@ -5,7 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import sk.tomsik68.pw.api.WeatherCycle;
 import sk.tomsik68.pw.api.WeatherSystem;
 
-public class ClassWeatherCycleFactory extends WeatherCycleFactory {
+public final class ClassWeatherCycleFactory extends WeatherCycleFactory {
 	private final Class<? extends WeatherCycle> clazz;
 	private final String name;
 

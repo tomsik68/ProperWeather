@@ -11,7 +11,7 @@ import org.bukkit.util.Vector;
 import sk.tomsik68.pw.api.BaseWeatherElement;
 import sk.tomsik68.pw.impl.WeatherController;
 
-public class Wind extends BaseWeatherElement {
+public final class Wind extends BaseWeatherElement {
 	private final Point2D windSpeed;
 	private final int minLayer;
 	private static final Random rand = new Random();

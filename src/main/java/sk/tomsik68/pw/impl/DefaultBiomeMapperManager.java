@@ -15,7 +15,7 @@ import sk.tomsik68.pw.api.BiomeMapper;
 import sk.tomsik68.pw.api.BiomeMapperManager;
 import sk.tomsik68.pw.plugin.ProperWeather;
 
-public class DefaultBiomeMapperManager implements BiomeMapperManager, Runnable {
+public final class DefaultBiomeMapperManager implements BiomeMapperManager, Runnable {
 	private HashMap<UUID, BiomeMapper> mappers = new HashMap<UUID, BiomeMapper>();
 
 	@Override

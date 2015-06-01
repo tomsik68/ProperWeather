@@ -23,7 +23,7 @@ import sk.tomsik68.pw.impl.registry.WeatherFactoryRegistry;
 import sk.tomsik68.pw.plugin.ProperWeather;
 import sk.tomsik68.pw.region.Region;
 
-public class DefaultWeatherSystem implements WeatherSystem {
+public final class DefaultWeatherSystem implements WeatherSystem {
 	private RegionalWeathers weatherSituations;
 	private RegionManager regionManager = new SimpleRegionManager();
 	private Random rand = new Random();

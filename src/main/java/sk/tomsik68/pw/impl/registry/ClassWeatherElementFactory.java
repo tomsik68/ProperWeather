@@ -6,7 +6,7 @@ import sk.tomsik68.pw.api.BaseWeatherElement;
 import sk.tomsik68.pw.impl.WeatherController;
 import sk.tomsik68.pw.impl.WeatherElementFactory;
 
-public class ClassWeatherElementFactory<W extends BaseWeatherElement> extends WeatherElementFactory<W> {
+public final class ClassWeatherElementFactory<W extends BaseWeatherElement> extends WeatherElementFactory<W> {
 	private Class<W> clazz;
 
 	public ClassWeatherElementFactory(Class<W> clazz) {

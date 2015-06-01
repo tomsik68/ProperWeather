@@ -6,7 +6,7 @@ import java.util.Map;
 import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.ConfigurationSection;
 
-public class WeatherDescription {
+public final class WeatherDescription {
 	private ConfigurationSection cs;
 
 	public WeatherDescription(ConfigurationSection s) {

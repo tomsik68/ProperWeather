@@ -7,7 +7,7 @@ import sk.tomsik68.pw.config.WeatherDescription;
 import sk.tomsik68.pw.plugin.ProperWeather;
 import sk.tomsik68.pw.utils.Util;
 
-public class ClassWeatherFactory<W extends Weather> implements WeatherFactory<W> {
+public final class ClassWeatherFactory<W extends Weather> implements WeatherFactory<W> {
 	private final Class<W> clazz;
 
 	public ClassWeatherFactory(Class<W> clazz1) {

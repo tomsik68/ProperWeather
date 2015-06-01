@@ -8,7 +8,7 @@ import org.bukkit.World;
 
 import sk.tomsik68.pw.api.WeatherSystem;
 
-public class WeatherUpdateTask implements Runnable {
+public final class WeatherUpdateTask implements Runnable {
 	private final WeatherSystem weatherSystem;
 
 	public WeatherUpdateTask(WeatherSystem ws) {

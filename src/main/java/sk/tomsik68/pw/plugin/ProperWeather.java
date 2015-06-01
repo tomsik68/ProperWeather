@@ -33,7 +33,7 @@ import sk.tomsik68.pw.impl.registry.WeatherFactoryRegistry;
 import sk.tomsik68.pw.impl.SimpleRegionManager;
 import sk.tomsik68.pw.transl.Translator;
 
-public class ProperWeather extends JavaPlugin implements Listener {
+public final class ProperWeather extends JavaPlugin implements Listener {
 	public static Logger log;
 	public static boolean isSpout = true;
 

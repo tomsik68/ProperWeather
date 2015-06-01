@@ -3,7 +3,7 @@ package sk.tomsik68.pw.plugin;
 import sk.tomsik68.pw.api.RegionManager;
 import sk.tomsik68.pw.region.Region;
 
-public class RegionUpdateTask implements Runnable {
+public final class RegionUpdateTask implements Runnable {
 	private RegionManager regions;
 
 	public RegionUpdateTask(RegionManager regionManager) {

@@ -5,7 +5,7 @@ import org.bukkit.Server;
 import sk.tomsik68.pw.api.IServerBackend;
 import sk.tomsik68.pw.api.IServerBackendMatcher;
 
-public class BukkitAPIMatcher implements IServerBackendMatcher {
+public final class BukkitAPIMatcher implements IServerBackendMatcher {
 
 	@Override
 	public boolean matches(Server server) {

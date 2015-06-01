@@ -19,7 +19,7 @@ import sk.tomsik68.pw.region.Region;
 import sk.tomsik68.pw.region.RegionType;
 import sk.tomsik68.pw.transl.Translator;
 
-public class PWCommandHandler {
+final class PWCommandHandler {
 	private final WeatherSystem weatherSystem;
 
 	public PWCommandHandler(WeatherSystem ws) {

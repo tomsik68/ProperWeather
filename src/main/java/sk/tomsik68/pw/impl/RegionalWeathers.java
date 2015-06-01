@@ -27,7 +27,7 @@ import sk.tomsik68.pw.struct.WeatherDatav5;
  * @author Tomsik68
  *
  */
-class RegionalWeathers {
+final class RegionalWeathers {
 	private Map<Integer, IWeatherData> weatherData;
 
 	RegionalWeathers() {

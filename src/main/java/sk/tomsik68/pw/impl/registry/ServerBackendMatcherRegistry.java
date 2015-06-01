@@ -17,7 +17,7 @@ import sk.tomsik68.pw.impl.backend.BukkitAPIMatcher;
 import sk.tomsik68.pw.plugin.ProperWeather;
 import sk.tomsik68.pw.utils.Util;
 
-public class ServerBackendMatcherRegistry extends BaseRegistry<IServerBackendMatcher> {
+public final class ServerBackendMatcherRegistry extends BaseRegistry<IServerBackendMatcher> {
 
 	private String backendName = "";
 

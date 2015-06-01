@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 import sk.tomsik68.pw.api.IServerBackend;
 
 // TODO Implement spout backend
-public class SpoutBackend implements IServerBackend {
+public final class SpoutBackend implements IServerBackend {
 
 	public SpoutBackend() {
 	}

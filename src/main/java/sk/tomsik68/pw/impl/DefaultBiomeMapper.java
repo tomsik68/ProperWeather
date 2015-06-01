@@ -10,7 +10,7 @@ import org.bukkit.block.Biome;
 
 import sk.tomsik68.pw.api.BiomeMapper;
 
-public class DefaultBiomeMapper implements BiomeMapper {
+public final class DefaultBiomeMapper implements BiomeMapper {
 	private HashMap<Biome, ArrayList<Long>> blocks = new HashMap<Biome, ArrayList<Long>>();
 	private HashSet<Long> scannedChunks = new HashSet<Long>();
 
